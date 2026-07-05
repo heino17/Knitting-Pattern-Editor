@@ -1,0 +1,696 @@
+/*
+  Strickmuster Editor
+  Copyright (C) 2026 heino17
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+/* ==========================================================
+   Strickmuster Editor – Styling
+   Palette: warmes Wollweiß, Burgunder-Garn, Salbei, Ockergold
+   ========================================================== */
+
+:root {
+  --paper: #f7f2e9;
+  --paper-raised: #fffdf9;
+  --ink: #322c26;
+  --ink-soft: #6b6255;
+  --line: #ddd4c2;
+  --line-bold: #a89c86;
+  --wine: #7a2e3a;
+  --wine-dark: #5e2029;
+  --sage: #6b7a5e;
+  --gold: #c69b4e;
+  --cell-empty: #ffffff;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(50, 44, 38, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  /* Serif-Stack zuerst (Original-Look), Fallback auf System-/CJK-Fonts,
+     damit ja/ko/zh_CN-Texte nicht als leere Kästchen erscheinen */
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif,
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Malgun Gothic", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------- Kopfbereich ---------- */
+
+.app-header {
+  position: relative;
+  padding: 18px clamp(56px, 4vw, 64px) 14px clamp(16px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(120% 200% at 0% 0%, rgba(122, 46, 58, 0.06), transparent 60%),
+    var(--paper);
+  transition: padding 0.2s ease;
+}
+
+.app-header.is-collapsed {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.app-header.is-collapsed .app-header__hint {
+  display: none;
+}
+.app-header.is-collapsed .app-header__eyebrow {
+  display: none;
+}
+.app-header.is-collapsed h1 {
+  font-size: 17px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.lang-select-wrap {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  z-index: 4;
+}
+
+.lang-select {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: #fff;
+  border: 1px solid var(--line-bold);
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.lang-select:hover { background: #f2ebdd; color: var(--wine); }
+.lang-select:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+.app-header.is-collapsed .lang-select-wrap {
+  display: none;
+}
+
+.header-toggle {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-bold);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  z-index: 4;
+}
+.header-toggle:hover { background: #f2ebdd; color: var(--wine); }
+
+.app-header .chevron-icon--down {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+  transform: rotate(180deg);
+}
+.app-header.is-collapsed .chevron-icon--down { transform: rotate(0deg); }
+
+.app-header__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-header__eyebrow {
+  font-family: "Courier New", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--wine);
+  border: 1px solid var(--wine);
+  border-radius: 999px;
+  padding: 3px 9px;
+  line-height: 1.4;
+  margin-bottom: -6px;
+}
+
+.app-header h1 {
+  margin: -7px 0 -7px 0;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.app-header__hint {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+/* ---------- Layout ---------- */
+
+.layout {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  min-height: 0;
+  height: 0; /* zwingt Flex-Kinder auf die verfügbare Höhe, damit nur intern gescrollt wird */
+}
+
+/* ---------- Seitenpanel ---------- */
+
+.panel {
+  position: relative;
+  width: 280px;
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: var(--paper-raised);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  transition: width 0.2s ease, flex-basis 0.2s ease;
+  overflow: hidden;
+}
+
+.panel.is-collapsed {
+  width: 56px;
+  flex: 0 0 56px;
+}
+
+.panel__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  padding-top: 44px;
+  transition: padding 0.2s ease;
+}
+
+.panel.is-collapsed .panel__scroll {
+  padding: 44px 8px 16px;
+}
+
+.panel.is-collapsed .panel__body {
+  display: none;
+}
+
+/* ---------- Ein-/Ausklapp-Steuerung ---------- */
+
+.sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-bold);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  z-index: 4;
+}
+.sidebar-toggle:hover { background: #f2ebdd; color: var(--wine); }
+
+.panel__bottom-toggle-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 4px 10px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+.panel.is-collapsed .panel__bottom-toggle-wrap {
+  justify-content: center;
+  padding: 4px;
+}
+
+.round-toggle-btn {
+  pointer-events: auto;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-bold);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: var(--shadow);
+}
+.round-toggle-btn:hover { background: #f2ebdd; color: var(--wine); }
+
+.chevron-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+.panel.is-collapsed .chevron-icon { transform: rotate(180deg); }
+
+.panel__icons {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 34px;
+}
+.panel.is-collapsed .panel__icons { display: flex; }
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+}
+.icon-btn:hover { background: #f2ebdd; color: var(--wine); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+.panel__group {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px dashed var(--line);
+}
+.panel__group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.panel__group h2 {
+  margin: 0 0 10px;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wine-dark);
+}
+
+.panel__note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.field span { font-weight: 500; color: var(--ink); }
+
+.field input[type="number"] {
+  border: 1px solid var(--line-bold);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 12.5px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+.field input[type="number"]:focus-visible,
+.field input[type="range"]:focus-visible,
+.field input[type="color"]:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+.field input[type="range"] {
+  width: 100%;
+  accent-color: var(--wine);
+}
+
+.field--inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.field--checkbox input { accent-color: var(--wine); }
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 10px 0 6px;
+}
+
+.tool-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tool-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: #fff;
+  border: 1px solid var(--line-bold);
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+}
+.tool-btn svg { width: 18px; height: 18px; }
+.tool-btn:hover { background: #f2ebdd; }
+.tool-btn.is-active {
+  background: var(--wine);
+  border-color: var(--wine);
+  color: #fdf6ee;
+}
+
+input[type="color"] {
+  width: 44px;
+  height: 32px;
+  border: 1px solid var(--line-bold);
+  border-radius: 7px;
+  padding: 2px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 12px;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(50, 44, 38, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+.swatch:hover { transform: scale(1.1); }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line-bold);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  width: 100%;
+  text-align: center;
+}
+.btn:hover { background: #f2ebdd; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn:disabled:hover { background: #fff; }
+
+.btn--primary {
+  background: var(--wine);
+  border-color: var(--wine);
+  color: #fdf6ee;
+  margin-top: 4px;
+}
+.btn--primary:hover { background: var(--wine-dark); }
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.btn-row .btn { flex: 1; }
+
+.btn--file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn--toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn--toggle.is-active {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: #fff;
+}
+
+.eraser-icon {
+  width: 14px;
+  height: 10px;
+  background: currentColor;
+  opacity: 0.6;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* ---------- Raster-Bereich ---------- */
+
+.board-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(45deg, rgba(50,44,38,0.015) 0 2px, transparent 2px 10px);
+}
+
+.board-scroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+.board {
+  --cell-size: 20px;
+  --cols: 50;
+  --rows: 50;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 24px repeat(var(--cols), var(--cell-size)) 24px;
+  grid-template-rows: 16px repeat(var(--rows), var(--cell-size)) 16px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.selection-overlay {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  border: 2px dashed var(--wine);
+  background: rgba(122, 46, 58, 0.15);
+  z-index: 5;
+}
+
+.head-corner {
+  position: sticky;
+  z-index: 4;
+  background: var(--paper-raised);
+}
+.head-corner--tl { top: 0; left: 0; border-right: 1px solid var(--line-bold); border-bottom: 1px solid var(--line-bold); }
+.head-corner--tr { top: 0; right: 0; border-left: 1px solid var(--line-bold); border-bottom: 1px solid var(--line-bold); }
+.head-corner--bl { bottom: 0; left: 0; border-right: 1px solid var(--line-bold); border-top: 1px solid var(--line-bold); }
+.head-corner--br { bottom: 0; right: 0; border-left: 1px solid var(--line-bold); border-top: 1px solid var(--line-bold); }
+
+.head-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 9px;
+  color: transparent;
+  background: var(--paper-raised);
+  user-select: none;
+}
+
+.board--numbers .head-cell { color: var(--ink-soft); }
+
+.col-head--top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid var(--line-bold);
+}
+.col-head--bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  border-top: 1px solid var(--line-bold);
+}
+.row-head--left {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  border-right: 1px solid var(--line-bold);
+}
+.row-head--right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  border-left: 1px solid var(--line-bold);
+}
+
+.cell {
+  background: var(--cell-empty);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.board--tool-paint .cell {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z' fill='%23322c26' stroke='white' stroke-width='1.2' stroke-linejoin='round'/></svg>") 4 20, crosshair;
+}
+
+.board--tool-pipette .cell {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z' fill='%23322c26' stroke='white' stroke-width='1.2' stroke-linejoin='round' stroke-linecap='round'/></svg>") 5 19, crosshair;
+}
+
+.board--grid10 .cell--edge-v { border-right: 1.5px solid var(--line-bold); }
+.board--grid10 .cell--edge-h { border-bottom: 1.5px solid var(--line-bold); }
+
+.board--hide-gridlines .cell { border-color: transparent; }
+
+.cell:hover {
+  outline: 1.5px solid var(--wine);
+  outline-offset: -1.5px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Fußzeile ---------- */
+
+.app-footer {
+  padding: 3px clamp(16px, 4vw, 48px);
+  border-top: 1px solid var(--line);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: var(--paper);
+}
+
+.app-footer a {
+    color: var(--ink-soft);
+}
+
+.app-footer a:visited {
+  color: var(--ink-soft);
+}
+
+/* ---------- Responsiv ---------- */
+
+@media (max-width: 780px) {
+  .app-header__title {
+    /* Eyebrow und Titel nebeneinander werden auf schmalen Screens zu eng –
+       hier wird die feste Zeilenhöhe/negative Margin-Optik der Desktop-
+       Ausrichtung aufgehoben und stattdessen sauber untereinander gestapelt. */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .app-header__eyebrow {
+    margin-bottom: 0;
+  }
+  .app-header h1 {
+    margin: 0;
+  }
+  .layout {
+    flex-direction: column;
+    /* .panel wird unten "flex: none" und nimmt dadurch ihre natürliche
+       Inhaltshöhe an, statt sich der festen .layout-Höhe zu fügen. Passt
+       der gesamte Inhalt (Panel + Board) nicht in die verfügbare Höhe,
+       muss .layout selbst der Scroll-Container werden – sonst schneidet
+       das äußere "overflow: hidden" von body den Rest einfach ab. */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .panel {
+    width: 100%;
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .board-wrap {
+    /* Feste Mindesthöhe, damit das Raster nicht auf 0 zusammenschrumpft,
+       wenn die Seitenleiste (alle Gruppen ausgeklappt) viel Platz braucht */
+    flex: 1 0 auto;
+    min-height: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .swatch { transition: none; }
+}

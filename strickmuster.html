@@ -1,0 +1,921 @@
+<!--
+  Julia's Strickmuster Editor
+  Copyright (C) 2026 heino17
+  https://github.com/heino17/Knitting-Pattern-Editor
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="meta_title">Julia's Strickmuster Editor</title>
+<link rel="stylesheet" href="strickmuster.css">
+<script src="lang.js"></script>
+</head>
+<body>
+
+  <header class="app-header" id="appHeader">
+    <button type="button" id="headerToggle" class="header-toggle" data-i18n-aria-label="header_toggle_collapse" aria-expanded="true" aria-label="Kopfbereich einklappen">
+      <svg viewBox="0 0 24 24" class="chevron-icon chevron-icon--down" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <label class="lang-select-wrap">
+      <span class="sr-only" data-i18n="lang_select_aria">Sprache wählen</span>
+      <select id="langSelect" class="lang-select" data-i18n-aria-label="lang_select_aria" aria-label="Sprache wählen">
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="en">🇺🇸 American</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="zh_CN">🇨🇳 中文（简体）</option>
+      </select>
+    </label>
+    <div class="app-header__title">
+      <span class="app-header__eyebrow" data-i18n="eyebrow">Maschenraster</span>
+      <h1 id="appTitle" data-i18n="app_title">Julia's Strickmuster Editor</h1>
+    </div>
+    <p class="app-header__hint" data-i18n="header_hint">Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern</p>
+  </header>
+
+  <main class="layout">
+
+    <aside class="panel" aria-label="Einstellungen" data-i18n-aria-label="sidebar_aria" id="panel">
+
+      <button type="button" id="sidebarToggle" class="sidebar-toggle" data-i18n-aria-label="sidebar_toggle_collapse" aria-expanded="true" aria-label="Seitenleiste einklappen">
+        <svg viewBox="0 0 24 24" class="chevron-icon" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="panel__scroll" id="panelScroll">
+
+        <nav class="panel__icons" id="panelIcons" aria-label="Eingeklappte Seitenleiste" data-i18n-aria-label="panel_icons_aria">
+          <button type="button" class="icon-btn" data-target="group-raster" title="Raster" data-i18n-title="icon_raster_title" aria-label="Raster-Einstellungen anzeigen" data-i18n-aria-label="icon_raster_aria">
+            <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="icon-btn" data-target="group-farbe" title="Farbe" data-i18n-title="icon_farbe_title" aria-label="Farb-Einstellungen anzeigen" data-i18n-aria-label="icon_farbe_aria">
+            <svg viewBox="0 0 24 24"><path d="M12 2C7 8 4 11.5 4 15a8 8 0 0016 0c0-3.5-3-7-8-13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="icon-btn" data-target="group-muster" title="Muster" data-i18n-title="icon_muster_title" aria-label="Muster-Aktionen anzeigen" data-i18n-aria-label="icon_muster_aria">
+            <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5V4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 4v5h7V4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="icon-btn" data-target="group-ansicht" title="Ansicht" data-i18n-title="icon_ansicht_title" aria-label="Ansicht-Einstellungen anzeigen" data-i18n-aria-label="icon_ansicht_aria">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </nav>
+
+        <div class="panel__body" id="panelBody">
+
+        <section class="panel__group" id="group-raster">
+          <h2 data-i18n="group_raster_h2">Raster</h2>
+          <label class="field">
+            <span data-i18n="rows_label">Reihen (Höhe)</span>
+            <input type="number" id="rows" min="50" max="200" value="50">
+          </label>
+          <label class="field">
+            <span data-i18n="cols_label">Maschen (Breite)</span>
+            <input type="number" id="cols" min="50" max="200" value="50">
+          </label>
+          <label class="field">
+            <span><span data-i18n="cellsize_label">Zellgröße</span> <output id="cellSizeOut">20</output>&nbsp;px</span>
+            <input type="range" id="cellSize" min="10" max="36" value="20">
+          </label>
+          <button id="buildBtn" class="btn btn--primary" data-i18n="build_btn">Raster erstellen</button>
+          <p class="panel__note" data-i18n="raster_note">Achtung: Ändert das Raster, werden bereits gesetzte Farben zurückgesetzt.</p>
+        </section>
+
+        <section class="panel__group" id="group-farbe">
+          <h2 data-i18n="group_farbe_h2">Farbe</h2>
+          <label class="field field--inline">
+            <span data-i18n="current_color_label">Aktuelle Farbe</span>
+            <input type="color" id="colorPicker" value="#7a2e3a">
+          </label>
+          <div class="swatches" id="swatches" aria-label="Zuletzt verwendete Farben" data-i18n-aria-label="swatches_aria"></div>
+          <button id="eraserBtn" class="btn btn--toggle" data-active="false">
+            <span class="eraser-icon" aria-hidden="true"></span> <span data-i18n="eraser_btn">Radiergummi</span>
+          </button>
+
+          <div class="field-label" data-i18n="tool_label">Werkzeug</div>
+          <div class="tool-toggle" id="toolToggle" role="group" aria-label="Werkzeug wählen" data-i18n-aria-label="tooltoggle_aria">
+            <button type="button" class="tool-btn is-active" data-tool="paint" title="Stift (freihand malen)" data-i18n-title="tool_paint_title">
+              <svg viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              <span data-i18n="tool_paint_label">Stift</span>
+            </button>
+            <button type="button" class="tool-btn" data-tool="area" title="Bereich auswählen und füllen" data-i18n-title="tool_area_title">
+              <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2.5"/></svg>
+              <span data-i18n="tool_area_label">Bereich</span>
+            </button>
+            <button type="button" class="tool-btn" data-tool="pipette" title="Pipette (Farbe aus dem Muster aufnehmen)" data-i18n-title="tool_pipette_title">
+              <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+              <span data-i18n="tool_pipette_label">Pipette</span>
+            </button>
+          </div>
+          <p class="panel__note" data-i18n="farbe_note">Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.</p>
+        </section>
+
+        <section class="panel__group" id="group-muster">
+          <h2 data-i18n="group_muster_h2">Muster</h2>
+          <div class="btn-row">
+            <button id="undoBtn" class="btn" disabled title="Strg+Z" data-i18n-title="undo_title">↺ <span data-i18n="undo_btn">Rückgängig</span></button>
+            <button id="redoBtn" class="btn" disabled title="Strg+Umschalt+Z" data-i18n-title="redo_title">↻ <span data-i18n="redo_btn">Wiederherstellen</span></button>
+          </div>
+          <div class="btn-row">
+            <button id="clearBtn" class="btn" data-i18n="clear_btn">Alles leeren</button>
+          </div>
+          <div class="btn-row">
+            <label class="btn btn--file">
+              <span data-i18n="import_image_btn">Bild importieren</span>
+              <input type="file" id="importImageInput" accept="image/*" hidden>
+            </label>
+          </div>
+          <p class="panel__note"><span data-i18n="import_note_before">Das Bild wird auf das aktuelle Raster (</span><span id="importSizeHint">50 × 50</span><span data-i18n="import_note_after">, Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.</span></p>
+          <div class="btn-row">
+            <button id="exportJsonBtn" class="btn" data-i18n="export_json_btn">Als Datei exportieren</button>
+            <label class="btn btn--file">
+              <span data-i18n="import_json_btn">Datei importieren</span>
+              <input type="file" id="importJsonInput" accept="application/json" hidden>
+            </label>
+          </div>
+          <button id="exportPngBtn" class="btn btn--primary" data-i18n="export_png_btn">Als PNG exportieren</button>
+        </section>
+
+        <section class="panel__group" id="group-ansicht">
+          <h2 data-i18n="group_ansicht_h2">Ansicht</h2>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="showGrid10" checked>
+            <span data-i18n="grid10_label">Jede 10. Linie hervorheben</span>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="showNumbers" checked>
+            <span data-i18n="numbers_label">Zeilen-/Spaltenzahlen anzeigen</span>
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="showGridLines" checked>
+            <span data-i18n="gridlines_label">Gitterlinien anzeigen</span>
+          </label>
+          <p class="panel__note" data-i18n="ansicht_note">Einstellungen gelten auch für den PNG-Export.</p>
+        </section>
+
+        </div>
+
+      </div>
+
+      <div class="panel__bottom-toggle-wrap">
+        <button type="button" id="sidebarToggleBottom" class="round-toggle-btn" aria-label="Seitenleiste ein-/ausklappen">
+          <svg viewBox="0 0 24 24" class="chevron-icon" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+    </aside>
+
+    <section class="board-wrap" aria-label="Strickraster" data-i18n-aria-label="board_aria">
+      <div class="board-scroll" id="boardScroll">
+        <div class="board" id="board"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <span><span data-i18n="footer_before">(C) 2026</span> <a style="color: #000 !important;" target="_blank" href="https://github.com/heino17/Knitting-Pattern-Editor">heino17</a> <span data-i18n="footer_after">· strickmuster.html · lokal im Browser, keine Serververbindung nötig</span></span>
+  </footer>
+
+<script>
+(() => {
+  // --- i18n ---
+  const LANG_KEY = 'strickmuster-lang';
+  const langSelect = document.getElementById('langSelect');
+
+  function detectInitialLang() {
+    // 1. Hat der Nutzer die Sprache schon einmal manuell gewechselt? -> diese Wahl gewinnt.
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved && I18N_AVAILABLE.includes(saved)) return saved;
+
+    // 2. Sonst gilt die in lang.js festgelegte Start-Sprache.
+    if (typeof APPLICATION_STARTUP_LANGUAGE_CODE !== 'undefined' && I18N_AVAILABLE.includes(APPLICATION_STARTUP_LANGUAGE_CODE)) {
+      return APPLICATION_STARTUP_LANGUAGE_CODE;
+    }
+
+    // 3. Absoluter Notfall-Fallback, falls die Konstante fehlt oder ungültig ist.
+    return 'de';
+  }
+
+  let currentLang = detectInitialLang();
+
+  function t(key) {
+    const dict = I18N[currentLang] || I18N.de;
+    return (key in dict) ? dict[key] : (I18N.de[key] || key);
+  }
+
+  function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = t('meta_title');
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      el.title = t(el.dataset.i18nTitle);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
+      el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+    });
+
+    // Header-/Sidebar-Toggle-Aria-Labels hängen zusätzlich vom eingeklappt/ausgeklappt-Status ab,
+    // die werden separat unten in ihren jeweiligen set...Collapsed()-Funktionen aktualisiert.
+    if (typeof refreshCollapseLabels === 'function') refreshCollapseLabels();
+  }
+
+  if (langSelect) {
+    langSelect.value = currentLang;
+    langSelect.addEventListener('change', () => {
+      currentLang = I18N_AVAILABLE.includes(langSelect.value) ? langSelect.value : 'de';
+      localStorage.setItem(LANG_KEY, currentLang);
+      applyLang();
+    });
+  }
+
+  const board = document.getElementById('board');
+  const boardScroll = document.getElementById('boardScroll');
+  const rowsInput = document.getElementById('rows');
+  const colsInput = document.getElementById('cols');
+  const cellSizeInput = document.getElementById('cellSize');
+  const cellSizeOut = document.getElementById('cellSizeOut');
+  const buildBtn = document.getElementById('buildBtn');
+  const colorPicker = document.getElementById('colorPicker');
+  const eraserBtn = document.getElementById('eraserBtn');
+  const toolToggle = document.getElementById('toolToggle');
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const exportJsonBtn = document.getElementById('exportJsonBtn');
+  const importJsonInput = document.getElementById('importJsonInput');
+  const importImageInput = document.getElementById('importImageInput');
+  const importSizeHint = document.getElementById('importSizeHint');
+  const exportPngBtn = document.getElementById('exportPngBtn');
+  const showGrid10 = document.getElementById('showGrid10');
+  const showNumbers = document.getElementById('showNumbers');
+  const showGridLines = document.getElementById('showGridLines');
+  const swatchesEl = document.getElementById('swatches');
+
+  const EMPTY = '#ffffff';
+  const RECENT_KEY = 'strickmuster-recent-colors-v1';
+
+  let state = { rows: 50, cols: 50, colors: [] };
+  let cellEls = [];
+  let isPainting = false;
+  let paintValue = null; // Farbe, die während des Ziehens verwendet wird
+  let toolMode = 'paint'; // 'paint' oder 'area'
+  let isSelecting = false;
+  let selStart = null;
+  let selEnd = null;
+  let selectionOverlayEl = null;
+  const HEAD_COL_WIDTH = 24;
+  const HEAD_ROW_HEIGHT = 16;
+  let undoStack = [];
+  let redoStack = [];
+  const UNDO_LIMIT = 30;
+  let recentColors = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+  function newColorArray(rows, cols) {
+    return new Array(rows * cols).fill(EMPTY);
+  }
+
+  // --- Undo / Redo ---
+  let hasUnsavedChanges = false;
+
+  function snapshot() {
+    return { rows: state.rows, cols: state.cols, colors: state.colors.slice() };
+  }
+
+  function pushUndo() {
+    hasUnsavedChanges = true;
+    undoStack.push(snapshot());
+    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+    redoStack = []; // neue Aktion macht den bisherigen Wiederherstellen-Verlauf ungültig
+    updateUndoRedoBtnState();
+  }
+
+  function undo() {
+    if (!undoStack.length) return;
+    redoStack.push(snapshot());
+    if (redoStack.length > UNDO_LIMIT) redoStack.shift();
+    const prev = undoStack.pop();
+    buildBoard(prev.rows, prev.cols, prev.colors);
+    rowsInput.value = prev.rows;
+    colsInput.value = prev.cols;
+    updateUndoRedoBtnState();
+  }
+
+  function redo() {
+    if (!redoStack.length) return;
+    undoStack.push(snapshot());
+    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+    const next = redoStack.pop();
+    buildBoard(next.rows, next.cols, next.colors);
+    rowsInput.value = next.rows;
+    colsInput.value = next.cols;
+    updateUndoRedoBtnState();
+  }
+
+  function updateUndoRedoBtnState() {
+    undoBtn.disabled = undoStack.length === 0;
+    redoBtn.disabled = redoStack.length === 0;
+  }
+
+  function buildBoard(rows, cols, colors) {
+    state.rows = rows;
+    state.cols = cols;
+    state.colors = colors || newColorArray(rows, cols);
+    cellEls = new Array(rows * cols);
+
+    board.style.setProperty('--cols', cols);
+    board.style.setProperty('--rows', rows);
+    applyCellSize();
+    board.classList.toggle('board--grid10', showGrid10.checked);
+    board.classList.toggle('board--numbers', showNumbers.checked);
+    board.classList.toggle('board--hide-gridlines', !showGridLines.checked);
+
+    board.innerHTML = '';
+    const frag = document.createDocumentFragment();
+
+    // Obere Zeile: Ecke oben links, Spaltenköpfe, Ecke oben rechts
+    frag.appendChild(makeCorner('tl'));
+    for (let c = 0; c < cols; c++) {
+      const label = (c + 1) % 10 === 0 ? String(c + 1) : '';
+      frag.appendChild(makeHeaderCell(label, 'col-head--top'));
+    }
+    frag.appendChild(makeCorner('tr'));
+
+    // Datenzeilen: Zeilenkopf links, Zellen, Zeilenkopf rechts
+    for (let r = 0; r < rows; r++) {
+      const rowLabel = (r + 1) % 10 === 0 ? String(r + 1) : '';
+      frag.appendChild(makeHeaderCell(rowLabel, 'row-head--left'));
+      for (let c = 0; c < cols; c++) {
+        const idx = r * cols + c;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.idx = idx;
+        cell.style.background = state.colors[idx];
+        if ((c + 1) % 10 === 0) cell.classList.add('cell--edge-v');
+        if ((r + 1) % 10 === 0) cell.classList.add('cell--edge-h');
+        frag.appendChild(cell);
+        cellEls[idx] = cell;
+      }
+      frag.appendChild(makeHeaderCell(rowLabel, 'row-head--right'));
+    }
+
+    // Untere Zeile: Ecke unten links, Spaltenköpfe, Ecke unten rechts
+    frag.appendChild(makeCorner('bl'));
+    for (let c = 0; c < cols; c++) {
+      const label = (c + 1) % 10 === 0 ? String(c + 1) : '';
+      frag.appendChild(makeHeaderCell(label, 'col-head--bottom'));
+    }
+    frag.appendChild(makeCorner('br'));
+
+    board.appendChild(frag);
+
+    selectionOverlayEl = document.createElement('div');
+    selectionOverlayEl.className = 'selection-overlay';
+    board.appendChild(selectionOverlayEl);
+
+    if (importSizeHint) importSizeHint.textContent = cols + ' × ' + rows;
+  }
+
+  function makeCorner(variant) {
+    const d = document.createElement('div');
+    d.className = 'head-corner head-corner--' + variant;
+    return d;
+  }
+  function makeHeaderCell(text, cls) {
+    const d = document.createElement('div');
+    d.className = 'head-cell ' + cls;
+    d.textContent = text;
+    return d;
+  }
+
+  function applyCellSize() {
+    const size = cellSizeInput.value + 'px';
+    board.style.setProperty('--cell-size', size);
+  }
+
+  function paintCell(cell, color) {
+    const idx = Number(cell.dataset.idx);
+    state.colors[idx] = color;
+    cell.style.background = color;
+  }
+
+  function getActiveColor() {
+    return eraserBtn.dataset.active === 'true' ? EMPTY : colorPicker.value;
+  }
+
+  function addRecentColor(hex) {
+    if (hex === EMPTY) return;
+    recentColors = [hex, ...recentColors.filter(c => c !== hex)].slice(0, 12);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recentColors));
+    renderSwatches();
+  }
+
+  function renderSwatches() {
+    swatchesEl.innerHTML = '';
+    recentColors.forEach(hex => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swatch';
+      b.style.background = hex;
+      b.title = hex;
+      b.addEventListener('click', () => {
+        colorPicker.value = hex;
+        eraserBtn.dataset.active = 'false';
+        eraserBtn.classList.remove('is-active');
+      });
+      swatchesEl.appendChild(b);
+    });
+  }
+
+  function cellRC(cell) {
+    const idx = Number(cell.dataset.idx);
+    return { idx, r: Math.floor(idx / state.cols), c: idx % state.cols };
+  }
+
+  function updateSelectionOverlay(r1, c1, r2, c2) {
+    if (!selectionOverlayEl) return;
+    const size = Number(cellSizeInput.value);
+    const minR = Math.min(r1, r2), maxR = Math.max(r1, r2);
+    const minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+    selectionOverlayEl.style.display = 'block';
+    selectionOverlayEl.style.left = (HEAD_COL_WIDTH + minC * size) + 'px';
+    selectionOverlayEl.style.top = (HEAD_ROW_HEIGHT + minR * size) + 'px';
+    selectionOverlayEl.style.width = ((maxC - minC + 1) * size) + 'px';
+    selectionOverlayEl.style.height = ((maxR - minR + 1) * size) + 'px';
+  }
+
+  function hideSelectionOverlay() {
+    if (selectionOverlayEl) selectionOverlayEl.style.display = 'none';
+  }
+
+  function fillSelection(start, end, color) {
+    const cols = state.cols;
+    const minR = Math.min(start.r, end.r), maxR = Math.max(start.r, end.r);
+    const minC = Math.min(start.c, end.c), maxC = Math.max(start.c, end.c);
+    for (let r = minR; r <= maxR; r++) {
+      for (let c = minC; c <= maxC; c++) {
+        const idx = r * cols + c;
+        state.colors[idx] = color;
+        if (cellEls[idx]) cellEls[idx].style.background = color;
+      }
+    }
+  }
+
+  function setToolMode(mode) {
+    toolMode = mode;
+    toolToggle.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tool === mode));
+    board.classList.remove('board--tool-paint', 'board--tool-area', 'board--tool-pipette');
+    board.classList.add('board--tool-' + mode);
+    hideSelectionOverlay();
+  }
+
+  // --- Malen / Bereich auswählen / Pipette: Klick + Ziehen (Maus & Touch) ---
+  board.addEventListener('pointerdown', (e) => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    const { idx, r, c } = cellRC(cell);
+
+    if (toolMode === 'pipette') {
+      const picked = state.colors[idx];
+      colorPicker.value = picked;
+      if (picked !== EMPTY) addRecentColor(picked);
+      eraserBtn.dataset.active = 'false';
+      eraserBtn.classList.remove('is-active');
+      setToolMode('paint');
+      return;
+    }
+
+    paintValue = getActiveColor();
+
+    if (toolMode === 'area') {
+      pushUndo();
+      isSelecting = true;
+      selStart = { r, c };
+      selEnd = { r, c };
+      updateSelectionOverlay(r, c, r, c);
+    } else {
+      pushUndo();
+      isPainting = true;
+      paintCell(cell, paintValue);
+    }
+    board.setPointerCapture(e.pointerId);
+  });
+
+  board.addEventListener('pointermove', (e) => {
+    if (!isPainting && !isSelecting) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const cell = el && el.closest ? el.closest('.cell') : null;
+    if (!cell) return;
+
+    if (isPainting) {
+      paintCell(cell, paintValue);
+    } else if (isSelecting) {
+      const { r, c } = cellRC(cell);
+      selEnd = { r, c };
+      updateSelectionOverlay(selStart.r, selStart.c, r, c);
+    }
+  });
+
+  window.addEventListener('pointerup', () => {
+    if (isPainting && paintValue) addRecentColor(paintValue);
+    if (isSelecting) {
+      if (selStart && selEnd) {
+        fillSelection(selStart, selEnd, paintValue);
+        if (paintValue) addRecentColor(paintValue);
+      }
+      hideSelectionOverlay();
+    }
+    isPainting = false;
+    isSelecting = false;
+    paintValue = null;
+    selStart = null;
+    selEnd = null;
+  });
+
+  board.addEventListener('contextmenu', (e) => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    e.preventDefault();
+    paintCell(cell, EMPTY); // Rechtsklick = löschen
+  });
+
+  // --- Werkzeug umschalten (Stift / Bereich / Pipette) ---
+  toolToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tool-btn');
+    if (!btn) return;
+    setToolMode(btn.dataset.tool);
+  });
+
+  // --- Rückgängig / Wiederherstellen ---
+  undoBtn.addEventListener('click', undo);
+  redoBtn.addEventListener('click', redo);
+  document.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    if (inField) return;
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const key = e.key.toLowerCase();
+    if (key === 'z' && e.shiftKey) {
+      e.preventDefault();
+      redo();
+    } else if (key === 'z') {
+      e.preventDefault();
+      undo();
+    } else if (key === 'y') {
+      e.preventDefault();
+      redo();
+    }
+  });
+
+  // --- Steuerung ---
+  cellSizeInput.addEventListener('input', () => {
+    cellSizeOut.textContent = cellSizeInput.value;
+    applyCellSize();
+  });
+
+  buildBtn.addEventListener('click', () => {
+    const rows = clamp(parseInt(rowsInput.value, 10) || 50, 50, 200);
+    const cols = clamp(parseInt(colsInput.value, 10) || 50, 50, 200);
+    rowsInput.value = rows;
+    colsInput.value = cols;
+    pushUndo();
+    buildBoard(rows, cols);
+  });
+
+  eraserBtn.addEventListener('click', () => {
+    const active = eraserBtn.dataset.active === 'true';
+    eraserBtn.dataset.active = String(!active);
+    eraserBtn.classList.toggle('is-active', !active);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (!confirm(t('confirm_clear_all'))) return;
+    pushUndo();
+    buildBoard(state.rows, state.cols, newColorArray(state.rows, state.cols));
+  });
+
+  showGrid10.addEventListener('change', () => {
+    board.classList.toggle('board--grid10', showGrid10.checked);
+  });
+  showNumbers.addEventListener('change', () => {
+    board.classList.toggle('board--numbers', showNumbers.checked);
+  });
+  showGridLines.addEventListener('change', () => {
+    board.classList.toggle('board--hide-gridlines', !showGridLines.checked);
+  });
+
+  // --- Export / Import als JSON-Datei ---
+  exportJsonBtn.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'strickmuster.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    hasUnsavedChanges = false;
+  });
+
+  importJsonInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data.rows || !data.cols || !data.colors) throw new Error(t('err_invalid_format'));
+        pushUndo();
+        rowsInput.value = data.rows;
+        colsInput.value = data.cols;
+        buildBoard(data.rows, data.cols, data.colors);
+        hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
+      } catch (err) {
+        alert(t('err_file_read') + err.message);
+      }
+    };
+    reader.readAsText(file);
+    importJsonInput.value = '';
+  });
+
+  // --- Bild importieren (Foto zu Pixelfarben) ---
+  importImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => applyImageToGrid(img);
+      img.onerror = () => alert(t('err_image_load'));
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+    importImageInput.value = '';
+  });
+
+  function applyImageToGrid(img) {
+    const rows = state.rows;
+    const cols = state.cols;
+
+    // Bild zunächst auf eine moderate Arbeitsgröße bringen (schneller & der
+    // Browser glättet dabei bereits sinnvoll vor), danach exakt blockweise mitteln.
+    const maxDim = 600;
+    const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+    const workW = Math.max(1, Math.round(img.naturalWidth * scale));
+    const workH = Math.max(1, Math.round(img.naturalHeight * scale));
+
+    const workCanvas = document.createElement('canvas');
+    workCanvas.width = workW;
+    workCanvas.height = workH;
+    const wctx = workCanvas.getContext('2d');
+    wctx.imageSmoothingEnabled = true;
+    wctx.imageSmoothingQuality = 'high';
+    wctx.drawImage(img, 0, 0, workW, workH);
+    const data = wctx.getImageData(0, 0, workW, workH).data;
+
+    const newColors = new Array(rows * cols);
+    for (let r = 0; r < rows; r++) {
+      const y0 = Math.floor((r / rows) * workH);
+      const y1 = Math.max(y0 + 1, Math.floor(((r + 1) / rows) * workH));
+      for (let c = 0; c < cols; c++) {
+        const x0 = Math.floor((c / cols) * workW);
+        const x1 = Math.max(x0 + 1, Math.floor(((c + 1) / cols) * workW));
+
+        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+        for (let y = y0; y < y1; y++) {
+          for (let x = x0; x < x1; x++) {
+            const p = (y * workW + x) * 4;
+            rSum += data[p];
+            gSum += data[p + 1];
+            bSum += data[p + 2];
+            count++;
+          }
+        }
+        const rAvg = count ? Math.round(rSum / count) : 255;
+        const gAvg = count ? Math.round(gSum / count) : 255;
+        const bAvg = count ? Math.round(bSum / count) : 255;
+        newColors[r * cols + c] = rgbToHex(rAvg, gAvg, bAvg);
+      }
+    }
+    pushUndo();
+    buildBoard(rows, cols, newColors);
+  }
+
+  function rgbToHex(r, g, b) {
+    const toHex = (n) => n.toString(16).padStart(2, '0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+
+  // --- Export als PNG ---
+  exportPngBtn.addEventListener('click', () => {
+    const size = Number(cellSizeInput.value);
+    const includeNumbers = showNumbers.checked;
+
+    const fontSize = Math.max(9, Math.round(size * 0.5));
+    const marginX = includeNumbers ? Math.max(18, Math.round(size * 1.1)) : 0;
+    const marginY = includeNumbers ? Math.max(13, Math.round(size * 0.75)) : 0;
+
+    const gridW = state.cols * size;
+    const gridH = state.rows * size;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = gridW + marginX * 2;
+    canvas.height = gridH + marginY * 2;
+    const ctx = canvas.getContext('2d');
+
+    // Hintergrund
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (includeNumbers) {
+      ctx.fillStyle = '#fffdf9';
+      ctx.fillRect(0, 0, canvas.width, marginY); // oben
+      ctx.fillRect(0, marginY + gridH, canvas.width, marginY); // unten
+      ctx.fillRect(0, 0, marginX, canvas.height); // links
+      ctx.fillRect(marginX + gridW, 0, marginX, canvas.height); // rechts
+    }
+
+    // Maschenfarben
+    for (let r = 0; r < state.rows; r++) {
+      for (let c = 0; c < state.cols; c++) {
+        ctx.fillStyle = state.colors[r * state.cols + c];
+        ctx.fillRect(marginX + c * size, marginY + r * size, size, size);
+      }
+    }
+
+    // Gitterlinien (nur innerhalb des Musters, nicht im Rand)
+    if (showGridLines.checked) {
+      for (let c = 0; c <= state.cols; c++) {
+        const bold = showGrid10.checked && c % 10 === 0;
+        ctx.strokeStyle = bold ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = bold ? 2 : 1;
+        ctx.beginPath();
+        ctx.moveTo(marginX + c * size, marginY);
+        ctx.lineTo(marginX + c * size, marginY + gridH);
+        ctx.stroke();
+      }
+      for (let r = 0; r <= state.rows; r++) {
+        const bold = showGrid10.checked && r % 10 === 0;
+        ctx.strokeStyle = bold ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = bold ? 2 : 1;
+        ctx.beginPath();
+        ctx.moveTo(marginX, marginY + r * size);
+        ctx.lineTo(marginX + gridW, marginY + r * size);
+        ctx.stroke();
+      }
+    }
+
+    // Zeilen-/Spaltenzahlen auf allen 4 Seiten (nur jede 10.), wie in der Ansicht
+    if (includeNumbers) {
+      ctx.strokeStyle = '#a89c86';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(marginX, 0);
+      ctx.lineTo(marginX, canvas.height);
+      ctx.moveTo(marginX + gridW, 0);
+      ctx.lineTo(marginX + gridW, canvas.height);
+      ctx.moveTo(0, marginY);
+      ctx.lineTo(canvas.width, marginY);
+      ctx.moveTo(0, marginY + gridH);
+      ctx.lineTo(canvas.width, marginY + gridH);
+      ctx.stroke();
+
+      ctx.fillStyle = '#33302B';
+      ctx.font = fontSize + 'px "Courier New", ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let c = 0; c < state.cols; c++) {
+        if ((c + 1) % 10 !== 0) continue;
+        const x = marginX + c * size + size / 2;
+        ctx.fillText(String(c + 1), x, marginY / 2); // oben
+        ctx.fillText(String(c + 1), x, marginY + gridH + marginY / 2); // unten
+      }
+      for (let r = 0; r < state.rows; r++) {
+        if ((r + 1) % 10 !== 0) continue;
+        const y = marginY + r * size + size / 2;
+        ctx.fillText(String(r + 1), marginX / 2, y); // links
+        ctx.fillText(String(r + 1), marginX + gridW + marginX / 2, y); // rechts
+      }
+    }
+
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'strickmuster.png';
+      a.click();
+      URL.revokeObjectURL(url);
+      hasUnsavedChanges = false;
+    });
+  });
+
+  // --- Kopfbereich einklappen ---
+  const appHeader = document.getElementById('appHeader');
+  const headerToggle = document.getElementById('headerToggle');
+  const appTitle = document.getElementById('appTitle');
+  const HEADER_COLLAPSE_KEY = 'strickmuster-header-collapsed';
+
+  function setHeaderCollapsed(collapsed) {
+    appHeader.classList.toggle('is-collapsed', collapsed);
+    headerToggle.setAttribute('aria-expanded', String(!collapsed));
+    headerToggle.setAttribute('aria-label', t(collapsed ? 'header_toggle_expand' : 'header_toggle_collapse'));
+    // Eingeklappt: kurzer Titel ohne Namen. Ausgeklappt: voller Titel mit Namen.
+    // (Der Name bleibt im <title> der Seite und in "meta_title" erhalten.)
+    appTitle.textContent = t(collapsed ? 'app_title_short' : 'app_title');
+    localStorage.setItem(HEADER_COLLAPSE_KEY, collapsed ? '1' : '0');
+  }
+
+  headerToggle.addEventListener('click', () => {
+    setHeaderCollapsed(!appHeader.classList.contains('is-collapsed'));
+  });
+
+  setHeaderCollapsed(localStorage.getItem(HEADER_COLLAPSE_KEY) === '1');
+
+  // --- Seitenleiste einklappen ---
+  const panel = document.getElementById('panel');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarToggleBottom = document.getElementById('sidebarToggleBottom');
+  const panelIcons = document.getElementById('panelIcons');
+  const COLLAPSE_KEY = 'strickmuster-sidebar-collapsed';
+
+  let lastSidebarCollapsed = false;
+
+  function setSidebarCollapsed(collapsed) {
+    lastSidebarCollapsed = collapsed;
+    panel.classList.toggle('is-collapsed', collapsed);
+    const label = t(collapsed ? 'sidebar_toggle_expand' : 'sidebar_toggle_collapse');
+    sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+    sidebarToggle.setAttribute('aria-label', label);
+    sidebarToggleBottom.setAttribute('aria-expanded', String(!collapsed));
+    sidebarToggleBottom.setAttribute('aria-label', label);
+    localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
+  }
+
+  // Wird nach einem Sprachwechsel aufgerufen, damit Aria-Labels, die vom
+  // eingeklappt/ausgeklappt-Status abhängen, ebenfalls aktualisiert werden.
+  function refreshCollapseLabels() {
+    if (typeof appHeader !== 'undefined' && appHeader) {
+      setHeaderCollapsed(appHeader.classList.contains('is-collapsed'));
+    }
+    if (typeof panel !== 'undefined' && panel) {
+      setSidebarCollapsed(lastSidebarCollapsed);
+    }
+  }
+
+  sidebarToggle.addEventListener('click', () => {
+    setSidebarCollapsed(!panel.classList.contains('is-collapsed'));
+  });
+  sidebarToggleBottom.addEventListener('click', () => {
+    setSidebarCollapsed(!panel.classList.contains('is-collapsed'));
+  });
+
+  panelIcons.addEventListener('click', (e) => {
+    const btn = e.target.closest('.icon-btn');
+    if (!btn) return;
+    setSidebarCollapsed(false);
+    const target = document.getElementById(btn.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  setSidebarCollapsed(localStorage.getItem(COLLAPSE_KEY) === '1');
+
+  // --- Warnung vor Neuladen/Verlassen bei ungespeicherten Änderungen ---
+  window.addEventListener('beforeunload', (e) => {
+    if (!hasUnsavedChanges) return;
+    e.preventDefault();
+    e.returnValue = ''; // nötig, damit Chrome den Dialog anzeigt
+  });
+
+  // --- Start ---
+  applyLang();
+  renderSwatches();
+  updateUndoRedoBtnState();
+  buildBoard(50, 50);
+  setToolMode('paint');
+})();
+</script>
+</body>
+</html>

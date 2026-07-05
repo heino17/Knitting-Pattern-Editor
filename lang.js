@@ -1,0 +1,652 @@
+/*
+  Julia's Strickmuster Editor – Sprachdatei
+  Copyright (C) 2026 heino17
+  https://github.com/heino17/Knitting-Pattern-Editor
+
+  Dieses File ist bewusst als eigenständige, reine JS-Datei gehalten
+  (kein separates .json/.yml + fetch), weil fetch() bei lokal per
+  Doppelklick geöffneten HTML-Dateien (file://) in vielen Browsern aus
+  Sicherheitsgründen (CORS) blockiert wird. <script src="lang.js"> hat
+  dieses Problem nicht – bleibt also offline- und server-frei nutzbar.
+
+  Neue Sprache hinzufügen:
+  1. Neuen Eintrag nach dem Vorbild von "en" anlegen (alle Keys kopieren).
+  2. Alle Werte übersetzen.
+  3. In strickmuster.html im <select id="langSelect"> eine <option> ergänzen.
+  Fertig – der Rest (Umschalten, Speichern der Wahl) funktioniert automatisch.
+*/
+
+// ==========================================================
+// Start-Sprache
+// ==========================================================
+// Diese Sprache wird beim allerersten Öffnen verwendet (bzw. immer dann,
+// wenn im Browser noch keine eigene Sprachwahl gespeichert ist).
+// Muss einer der Codes aus I18N_AVAILABLE weiter unten sein: 'de', 'en',
+// 'ru', 'es', 'fr', 'ja', 'ko', 'zh_CN'.
+// Hat der Nutzer die Sprache schon einmal über das Dropdown gewechselt,
+// hat diese gespeicherte Wahl weiterhin Vorrang vor dieser Einstellung.
+const APPLICATION_STARTUP_LANGUAGE_CODE = "en";
+
+const I18N = {
+
+  de: {
+    meta_title: "Julia's Strickmuster Editor",
+    app_title: "Julia's Strickmuster Editor",
+    app_title_short: "🧶 Strickmuster Editor",
+    eyebrow: "Maschenraster",
+    header_hint: "Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern",
+    header_toggle_collapse: "Kopfbereich einklappen",
+    header_toggle_expand: "Kopfbereich ausklappen",
+
+    lang_select_aria: "Sprache wählen",
+
+    sidebar_aria: "Einstellungen",
+    sidebar_toggle_collapse: "Seitenleiste einklappen",
+    sidebar_toggle_expand: "Seitenleiste ausklappen",
+    panel_icons_aria: "Eingeklappte Seitenleiste",
+
+    icon_raster_title: "Raster",
+    icon_raster_aria: "Raster-Einstellungen anzeigen",
+    icon_farbe_title: "Farbe",
+    icon_farbe_aria: "Farb-Einstellungen anzeigen",
+    icon_muster_title: "Muster",
+    icon_muster_aria: "Muster-Aktionen anzeigen",
+    icon_ansicht_title: "Ansicht",
+    icon_ansicht_aria: "Ansicht-Einstellungen anzeigen",
+
+    group_raster_h2: "Raster",
+    rows_label: "Reihen (Höhe)",
+    cols_label: "Maschen (Breite)",
+    cellsize_label: "Zellgröße",
+    build_btn: "Raster erstellen",
+    raster_note: "Achtung: Ändert das Raster, werden bereits gesetzte Farben zurückgesetzt.",
+
+    group_farbe_h2: "Farbe",
+    current_color_label: "Aktuelle Farbe",
+    swatches_aria: "Zuletzt verwendete Farben",
+    eraser_btn: "Radiergummi",
+
+    tool_label: "Werkzeug",
+    tooltoggle_aria: "Werkzeug wählen",
+    tool_paint_title: "Stift (freihand malen)",
+    tool_paint_label: "Stift",
+    tool_area_title: "Bereich auswählen und füllen",
+    tool_area_label: "Bereich",
+    tool_pipette_title: "Pipette (Farbe aus dem Muster aufnehmen)",
+    tool_pipette_label: "Pipette",
+    farbe_note: "Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.",
+
+    group_muster_h2: "Muster",
+    undo_btn: "Rückgängig",
+    undo_title: "Strg+Z",
+    redo_btn: "Wiederherstellen",
+    redo_title: "Strg+Umschalt+Z",
+    clear_btn: "Alles leeren",
+    import_image_btn: "Bild importieren",
+    import_note_before: "Das Bild wird auf das aktuelle Raster (",
+    import_note_after: ", Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.",
+    export_json_btn: "Als Datei exportieren",
+    import_json_btn: "Datei importieren",
+    export_png_btn: "Als PNG exportieren",
+
+    group_ansicht_h2: "Ansicht",
+    grid10_label: "Jede 10. Linie hervorheben",
+    numbers_label: "Zeilen-/Spaltenzahlen anzeigen",
+    gridlines_label: "Gitterlinien anzeigen",
+    ansicht_note: "Einstellungen gelten auch für den PNG-Export.",
+
+    board_aria: "Strickraster",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · lokal im Browser, keine Serververbindung nötig",
+
+    confirm_clear_all: "Wirklich das gesamte Muster leeren?",
+    err_file_read: "Datei konnte nicht gelesen werden: ",
+    err_image_load: "Bild konnte nicht geladen werden.",
+    err_invalid_format: "Ungültiges Format",
+  },
+
+  en: {
+    meta_title: "Julia's Knitting Pattern Editor",
+    app_title: "Julia's Knitting Pattern Editor",
+    app_title_short: "🧶 Knitting Pattern Editor",
+    eyebrow: "Stitch grid",
+    header_hint: "Set up a grid, color stitches, save your pattern as an image or file",
+    header_toggle_collapse: "Collapse header",
+    header_toggle_expand: "Expand header",
+
+    lang_select_aria: "Choose language",
+
+    sidebar_aria: "Settings",
+    sidebar_toggle_collapse: "Collapse sidebar",
+    sidebar_toggle_expand: "Expand sidebar",
+    panel_icons_aria: "Collapsed sidebar",
+
+    icon_raster_title: "Grid",
+    icon_raster_aria: "Show grid settings",
+    icon_farbe_title: "Color",
+    icon_farbe_aria: "Show color settings",
+    icon_muster_title: "Pattern",
+    icon_muster_aria: "Show pattern actions",
+    icon_ansicht_title: "View",
+    icon_ansicht_aria: "Show view settings",
+
+    group_raster_h2: "Grid",
+    rows_label: "Rows (height)",
+    cols_label: "Stitches (width)",
+    cellsize_label: "Cell size",
+    build_btn: "Create grid",
+    raster_note: "Warning: changing the grid resets colors that have already been set.",
+
+    group_farbe_h2: "Color",
+    current_color_label: "Current color",
+    swatches_aria: "Recently used colors",
+    eraser_btn: "Eraser",
+
+    tool_label: "Tool",
+    tooltoggle_aria: "Choose tool",
+    tool_paint_title: "Pen (freehand painting)",
+    tool_paint_label: "Pen",
+    tool_area_title: "Select and fill an area",
+    tool_area_label: "Area",
+    tool_pipette_title: "Eyedropper (pick a color from the pattern)",
+    tool_pipette_label: "Eyedropper",
+    farbe_note: "In area mode: click a corner, drag out a rectangle, release to fill. With the eyedropper, click a stitch to pick up its color.",
+
+    group_muster_h2: "Pattern",
+    undo_btn: "Undo",
+    undo_title: "Ctrl+Z",
+    redo_btn: "Redo",
+    redo_title: "Ctrl+Shift+Z",
+    clear_btn: "Clear all",
+    import_image_btn: "Import image",
+    import_note_before: "The image will be stretched to fit the current grid (",
+    import_note_after: ", width × height) and converted to pixel colors.",
+    export_json_btn: "Export as file",
+    import_json_btn: "Import file",
+    export_png_btn: "Export as PNG",
+
+    group_ansicht_h2: "View",
+    grid10_label: "Highlight every 10th line",
+    numbers_label: "Show row/column numbers",
+    gridlines_label: "Show grid lines",
+    ansicht_note: "Settings also apply to the PNG export.",
+
+    board_aria: "Knitting grid",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · runs locally in the browser, no server connection needed",
+
+    confirm_clear_all: "Really clear the entire pattern?",
+    err_file_read: "Could not read file: ",
+    err_image_load: "Could not load image.",
+    err_invalid_format: "Invalid format",
+  },
+
+  ru: {
+    meta_title: "Редактор схем для вязания Юлии",
+    app_title: "Редактор схем для вязания Юлии",
+    app_title_short: "🧶 Редактор схем для вязания",
+    eyebrow: "Сетка петель",
+    header_hint: "Создайте сетку, закрасьте петли, сохраните узор как изображение или файл",
+    header_toggle_collapse: "Свернуть заголовок",
+    header_toggle_expand: "Развернуть заголовок",
+
+    lang_select_aria: "Выбор языка",
+
+    sidebar_aria: "Настройки",
+    sidebar_toggle_collapse: "Свернуть боковую панель",
+    sidebar_toggle_expand: "Развернуть боковую панель",
+    panel_icons_aria: "Свёрнутая боковая панель",
+
+    icon_raster_title: "Сетка",
+    icon_raster_aria: "Показать настройки сетки",
+    icon_farbe_title: "Цвет",
+    icon_farbe_aria: "Показать настройки цвета",
+    icon_muster_title: "Узор",
+    icon_muster_aria: "Показать действия с узором",
+    icon_ansicht_title: "Вид",
+    icon_ansicht_aria: "Показать настройки вида",
+
+    group_raster_h2: "Сетка",
+    rows_label: "Ряды (высота)",
+    cols_label: "Петли (ширина)",
+    cellsize_label: "Размер клетки",
+    build_btn: "Создать сетку",
+    raster_note: "Внимание: изменение сетки сбрасывает уже заданные цвета.",
+
+    group_farbe_h2: "Цвет",
+    current_color_label: "Текущий цвет",
+    swatches_aria: "Последние использованные цвета",
+    eraser_btn: "Ластик",
+
+    tool_label: "Инструмент",
+    tooltoggle_aria: "Выбор инструмента",
+    tool_paint_title: "Карандаш (рисование от руки)",
+    tool_paint_label: "Карандаш",
+    tool_area_title: "Выбрать и заполнить область",
+    tool_area_label: "Область",
+    tool_pipette_title: "Пипетка (взять цвет из узора)",
+    tool_pipette_label: "Пипетка",
+    farbe_note: "В режиме области: щёлкните по углу, растяните прямоугольник, отпустите для заполнения. Пипеткой щёлкните по клетке, чтобы взять её цвет.",
+
+    group_muster_h2: "Узор",
+    undo_btn: "Отменить",
+    undo_title: "Ctrl+Z",
+    redo_btn: "Повторить",
+    redo_title: "Ctrl+Shift+Z",
+    clear_btn: "Очистить всё",
+    import_image_btn: "Импорт изображения",
+    import_note_before: "Изображение будет растянуто на текущую сетку (",
+    import_note_after: ", ширина × высота) и преобразовано в цвета пикселей.",
+    export_json_btn: "Экспортировать как файл",
+    import_json_btn: "Импортировать файл",
+    export_png_btn: "Экспортировать как PNG",
+
+    group_ansicht_h2: "Вид",
+    grid10_label: "Выделять каждую 10-ю линию",
+    numbers_label: "Показывать номера рядов/столбцов",
+    gridlines_label: "Показывать линии сетки",
+    ansicht_note: "Настройки также применяются при экспорте в PNG.",
+
+    board_aria: "Сетка для вязания",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · работает локально в браузере, подключение к серверу не требуется",
+
+    confirm_clear_all: "Действительно очистить весь узор?",
+    err_file_read: "Не удалось прочитать файл: ",
+    err_image_load: "Не удалось загрузить изображение.",
+    err_invalid_format: "Неверный формат",
+  },
+
+  es: {
+    meta_title: "Editor de patrones de punto de Julia",
+    app_title: "Editor de patrones de punto de Julia",
+    app_title_short: "🧶 Editor de patrones de punto",
+    eyebrow: "Cuadrícula de puntos",
+    header_hint: "Crea una cuadrícula, colorea los puntos, guarda tu patrón como imagen o archivo",
+    header_toggle_collapse: "Contraer encabezado",
+    header_toggle_expand: "Expandir encabezado",
+
+    lang_select_aria: "Elegir idioma",
+
+    sidebar_aria: "Ajustes",
+    sidebar_toggle_collapse: "Contraer barra lateral",
+    sidebar_toggle_expand: "Expandir barra lateral",
+    panel_icons_aria: "Barra lateral contraída",
+
+    icon_raster_title: "Cuadrícula",
+    icon_raster_aria: "Mostrar ajustes de cuadrícula",
+    icon_farbe_title: "Color",
+    icon_farbe_aria: "Mostrar ajustes de color",
+    icon_muster_title: "Patrón",
+    icon_muster_aria: "Mostrar acciones del patrón",
+    icon_ansicht_title: "Vista",
+    icon_ansicht_aria: "Mostrar ajustes de vista",
+
+    group_raster_h2: "Cuadrícula",
+    rows_label: "Filas (alto)",
+    cols_label: "Puntos (ancho)",
+    cellsize_label: "Tamaño de celda",
+    build_btn: "Crear cuadrícula",
+    raster_note: "Atención: cambiar la cuadrícula reinicia los colores ya establecidos.",
+
+    group_farbe_h2: "Color",
+    current_color_label: "Color actual",
+    swatches_aria: "Colores usados recientemente",
+    eraser_btn: "Borrador",
+
+    tool_label: "Herramienta",
+    tooltoggle_aria: "Elegir herramienta",
+    tool_paint_title: "Lápiz (pintura a mano libre)",
+    tool_paint_label: "Lápiz",
+    tool_area_title: "Seleccionar y rellenar un área",
+    tool_area_label: "Área",
+    tool_pipette_title: "Cuentagotas (tomar un color del patrón)",
+    tool_pipette_label: "Cuentagotas",
+    farbe_note: "En modo área: haz clic en una esquina, arrastra un rectángulo y suelta para rellenar. Con el cuentagotas, haz clic en una celda para tomar su color.",
+
+    group_muster_h2: "Patrón",
+    undo_btn: "Deshacer",
+    undo_title: "Ctrl+Z",
+    redo_btn: "Rehacer",
+    redo_title: "Ctrl+Mayús+Z",
+    clear_btn: "Borrar todo",
+    import_image_btn: "Importar imagen",
+    import_note_before: "La imagen se ajustará a la cuadrícula actual (",
+    import_note_after: ", ancho × alto) y se convertirá en colores de píxeles.",
+    export_json_btn: "Exportar como archivo",
+    import_json_btn: "Importar archivo",
+    export_png_btn: "Exportar como PNG",
+
+    group_ansicht_h2: "Vista",
+    grid10_label: "Resaltar cada 10.ª línea",
+    numbers_label: "Mostrar números de fila/columna",
+    gridlines_label: "Mostrar líneas de la cuadrícula",
+    ansicht_note: "Los ajustes también se aplican a la exportación PNG.",
+
+    board_aria: "Cuadrícula de punto",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · funciona localmente en el navegador, no se necesita conexión a un servidor",
+
+    confirm_clear_all: "¿Seguro que quieres borrar todo el patrón?",
+    err_file_read: "No se pudo leer el archivo: ",
+    err_image_load: "No se pudo cargar la imagen.",
+    err_invalid_format: "Formato no válido",
+  },
+
+  fr: {
+    meta_title: "Éditeur de grille de tricot de Julia",
+    app_title: "Éditeur de grille de tricot de Julia",
+    app_title_short: "🧶 Éditeur de grille de tricot",
+    eyebrow: "Grille de mailles",
+    header_hint: "Créez une grille, coloriez les mailles, enregistrez votre motif en image ou en fichier",
+    header_toggle_collapse: "Réduire l'en-tête",
+    header_toggle_expand: "Développer l'en-tête",
+
+    lang_select_aria: "Choisir la langue",
+
+    sidebar_aria: "Paramètres",
+    sidebar_toggle_collapse: "Réduire la barre latérale",
+    sidebar_toggle_expand: "Développer la barre latérale",
+    panel_icons_aria: "Barre latérale réduite",
+
+    icon_raster_title: "Grille",
+    icon_raster_aria: "Afficher les paramètres de la grille",
+    icon_farbe_title: "Couleur",
+    icon_farbe_aria: "Afficher les paramètres de couleur",
+    icon_muster_title: "Motif",
+    icon_muster_aria: "Afficher les actions du motif",
+    icon_ansicht_title: "Affichage",
+    icon_ansicht_aria: "Afficher les paramètres d'affichage",
+
+    group_raster_h2: "Grille",
+    rows_label: "Rangs (hauteur)",
+    cols_label: "Mailles (largeur)",
+    cellsize_label: "Taille des cases",
+    build_btn: "Créer la grille",
+    raster_note: "Attention : modifier la grille réinitialise les couleurs déjà définies.",
+
+    group_farbe_h2: "Couleur",
+    current_color_label: "Couleur actuelle",
+    swatches_aria: "Couleurs récemment utilisées",
+    eraser_btn: "Gomme",
+
+    tool_label: "Outil",
+    tooltoggle_aria: "Choisir l'outil",
+    tool_paint_title: "Crayon (dessin à main levée)",
+    tool_paint_label: "Crayon",
+    tool_area_title: "Sélectionner et remplir une zone",
+    tool_area_label: "Zone",
+    tool_pipette_title: "Pipette (prélever une couleur du motif)",
+    tool_pipette_label: "Pipette",
+    farbe_note: "En mode zone : cliquez sur un coin, tracez un rectangle, relâchez pour remplir. Avec la pipette, cliquez sur une case pour en récupérer la couleur.",
+
+    group_muster_h2: "Motif",
+    undo_btn: "Annuler",
+    undo_title: "Ctrl+Z",
+    redo_btn: "Rétablir",
+    redo_title: "Ctrl+Maj+Z",
+    clear_btn: "Tout effacer",
+    import_image_btn: "Importer une image",
+    import_note_before: "L'image sera adaptée à la grille actuelle (",
+    import_note_after: ", largeur × hauteur) et convertie en couleurs de pixels.",
+    export_json_btn: "Exporter en fichier",
+    import_json_btn: "Importer un fichier",
+    export_png_btn: "Exporter en PNG",
+
+    group_ansicht_h2: "Affichage",
+    grid10_label: "Mettre en évidence chaque 10e ligne",
+    numbers_label: "Afficher les numéros de rangs/mailles",
+    gridlines_label: "Afficher les lignes de la grille",
+    ansicht_note: "Les paramètres s'appliquent aussi à l'export PNG.",
+
+    board_aria: "Grille de tricot",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · fonctionne localement dans le navigateur, aucune connexion serveur nécessaire",
+
+    confirm_clear_all: "Vraiment effacer tout le motif ?",
+    err_file_read: "Impossible de lire le fichier : ",
+    err_image_load: "Impossible de charger l'image.",
+    err_invalid_format: "Format invalide",
+  },
+
+  ja: {
+    meta_title: "ジュリアの編み図エディター",
+    app_title: "ジュリアの編み図エディター",
+    app_title_short: "🧶 編み図エディター",
+    eyebrow: "編み目グリッド",
+    header_hint: "グリッドを作成し、編み目に色を付けて、画像やファイルとして保存しましょう",
+    header_toggle_collapse: "ヘッダーを折りたたむ",
+    header_toggle_expand: "ヘッダーを展開する",
+
+    lang_select_aria: "言語を選択",
+
+    sidebar_aria: "設定",
+    sidebar_toggle_collapse: "サイドバーを折りたたむ",
+    sidebar_toggle_expand: "サイドバーを展開する",
+    panel_icons_aria: "折りたたまれたサイドバー",
+
+    icon_raster_title: "グリッド",
+    icon_raster_aria: "グリッド設定を表示",
+    icon_farbe_title: "色",
+    icon_farbe_aria: "色の設定を表示",
+    icon_muster_title: "パターン",
+    icon_muster_aria: "パターン操作を表示",
+    icon_ansicht_title: "表示",
+    icon_ansicht_aria: "表示設定を表示",
+
+    group_raster_h2: "グリッド",
+    rows_label: "段数(高さ)",
+    cols_label: "目数(幅)",
+    cellsize_label: "セルサイズ",
+    build_btn: "グリッドを作成",
+    raster_note: "注意: グリッドを変更すると、設定済みの色はリセットされます。",
+
+    group_farbe_h2: "色",
+    current_color_label: "現在の色",
+    swatches_aria: "最近使った色",
+    eraser_btn: "消しゴム",
+
+    tool_label: "ツール",
+    tooltoggle_aria: "ツールを選択",
+    tool_paint_title: "ペン(フリーハンドで塗る)",
+    tool_paint_label: "ペン",
+    tool_area_title: "範囲を選択して塗りつぶす",
+    tool_area_label: "範囲",
+    tool_pipette_title: "スポイト(パターンから色を取得)",
+    tool_pipette_label: "スポイト",
+    farbe_note: "範囲モード:角をクリックして矩形をドラッグし、離すと塗りつぶされます。スポイトでは、セルをクリックしてその色を取得します。",
+
+    group_muster_h2: "パターン",
+    undo_btn: "元に戻す",
+    undo_title: "Ctrl+Z",
+    redo_btn: "やり直す",
+    redo_title: "Ctrl+Shift+Z",
+    clear_btn: "すべて消去",
+    import_image_btn: "画像を読み込む",
+    import_note_before: "画像は現在のグリッド(",
+    import_note_after: "、幅×高さ)に合わせて引き伸ばされ、ピクセルの色に変換されます。",
+    export_json_btn: "ファイルとして書き出す",
+    import_json_btn: "ファイルを読み込む",
+    export_png_btn: "PNGとして書き出す",
+
+    group_ansicht_h2: "表示",
+    grid10_label: "10本ごとの線を強調表示",
+    numbers_label: "行/列番号を表示",
+    gridlines_label: "グリッド線を表示",
+    ansicht_note: "設定はPNG書き出し時にも適用されます。",
+
+    board_aria: "編み物グリッド",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · ブラウザ上でローカルに動作し、サーバー接続は不要です",
+
+    confirm_clear_all: "本当にパターン全体を消去しますか?",
+    err_file_read: "ファイルを読み込めませんでした: ",
+    err_image_load: "画像を読み込めませんでした。",
+    err_invalid_format: "無効な形式です",
+  },
+
+  ko: {
+    meta_title: "줄리아의 뜨개질 도안 편집기",
+    app_title: "줄리아의 뜨개질 도안 편집기",
+    app_title_short: "🧶 뜨개질 도안 편집기",
+    eyebrow: "코 그리드",
+    header_hint: "그리드를 만들고 코에 색을 입혀 패턴을 이미지나 파일로 저장하세요",
+    header_toggle_collapse: "헤더 접기",
+    header_toggle_expand: "헤더 펼치기",
+
+    lang_select_aria: "언어 선택",
+
+    sidebar_aria: "설정",
+    sidebar_toggle_collapse: "사이드바 접기",
+    sidebar_toggle_expand: "사이드바 펼치기",
+    panel_icons_aria: "접힌 사이드바",
+
+    icon_raster_title: "그리드",
+    icon_raster_aria: "그리드 설정 표시",
+    icon_farbe_title: "색상",
+    icon_farbe_aria: "색상 설정 표시",
+    icon_muster_title: "패턴",
+    icon_muster_aria: "패턴 작업 표시",
+    icon_ansicht_title: "보기",
+    icon_ansicht_aria: "보기 설정 표시",
+
+    group_raster_h2: "그리드",
+    rows_label: "단(높이)",
+    cols_label: "코(너비)",
+    cellsize_label: "셀 크기",
+    build_btn: "그리드 만들기",
+    raster_note: "주의: 그리드를 변경하면 이미 설정된 색상이 초기화됩니다.",
+
+    group_farbe_h2: "색상",
+    current_color_label: "현재 색상",
+    swatches_aria: "최근 사용한 색상",
+    eraser_btn: "지우개",
+
+    tool_label: "도구",
+    tooltoggle_aria: "도구 선택",
+    tool_paint_title: "펜(자유롭게 그리기)",
+    tool_paint_label: "펜",
+    tool_area_title: "영역을 선택하고 채우기",
+    tool_area_label: "영역",
+    tool_pipette_title: "스포이드(패턴에서 색상 추출)",
+    tool_pipette_label: "스포이드",
+    farbe_note: "영역 모드: 모서리를 클릭하고 사각형을 드래그한 뒤 놓으면 채워집니다. 스포이드는 셀을 클릭해 색상을 가져옵니다.",
+
+    group_muster_h2: "패턴",
+    undo_btn: "실행 취소",
+    undo_title: "Ctrl+Z",
+    redo_btn: "다시 실행",
+    redo_title: "Ctrl+Shift+Z",
+    clear_btn: "전체 지우기",
+    import_image_btn: "이미지 가져오기",
+    import_note_before: "이미지는 현재 그리드(",
+    import_note_after: ", 너비 × 높이)에 맞춰 늘어나고 픽셀 색상으로 변환됩니다.",
+    export_json_btn: "파일로 내보내기",
+    import_json_btn: "파일 가져오기",
+    export_png_btn: "PNG로 내보내기",
+
+    group_ansicht_h2: "보기",
+    grid10_label: "10번째 줄마다 강조 표시",
+    numbers_label: "행/열 번호 표시",
+    gridlines_label: "그리드 선 표시",
+    ansicht_note: "설정은 PNG 내보내기에도 적용됩니다.",
+
+    board_aria: "뜨개질 그리드",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · 브라우저에서 로컬로 실행되며 서버 연결이 필요하지 않습니다",
+
+    confirm_clear_all: "정말 전체 패턴을 지우시겠습니까?",
+    err_file_read: "파일을 읽을 수 없습니다: ",
+    err_image_load: "이미지를 불러올 수 없습니다.",
+    err_invalid_format: "잘못된 형식입니다",
+  },
+
+  zh_CN: {
+    meta_title: "Julia 的编织图案编辑器",
+    app_title: "Julia 的编织图案编辑器",
+    app_title_short: "🧶 编织图案编辑器",
+    eyebrow: "针目网格",
+    header_hint: "创建网格,为针目上色,将图案保存为图片或文件",
+    header_toggle_collapse: "收起页眉",
+    header_toggle_expand: "展开页眉",
+
+    lang_select_aria: "选择语言",
+
+    sidebar_aria: "设置",
+    sidebar_toggle_collapse: "收起侧边栏",
+    sidebar_toggle_expand: "展开侧边栏",
+    panel_icons_aria: "已收起的侧边栏",
+
+    icon_raster_title: "网格",
+    icon_raster_aria: "显示网格设置",
+    icon_farbe_title: "颜色",
+    icon_farbe_aria: "显示颜色设置",
+    icon_muster_title: "图案",
+    icon_muster_aria: "显示图案操作",
+    icon_ansicht_title: "视图",
+    icon_ansicht_aria: "显示视图设置",
+
+    group_raster_h2: "网格",
+    rows_label: "行数(高度)",
+    cols_label: "针数(宽度)",
+    cellsize_label: "格子大小",
+    build_btn: "创建网格",
+    raster_note: "注意:更改网格会重置已设置的颜色。",
+
+    group_farbe_h2: "颜色",
+    current_color_label: "当前颜色",
+    swatches_aria: "最近使用的颜色",
+    eraser_btn: "橡皮擦",
+
+    tool_label: "工具",
+    tooltoggle_aria: "选择工具",
+    tool_paint_title: "画笔(自由绘制)",
+    tool_paint_label: "画笔",
+    tool_area_title: "选择并填充区域",
+    tool_area_label: "区域",
+    tool_pipette_title: "吸管(从图案中取色)",
+    tool_pipette_label: "吸管",
+    farbe_note: "区域模式:点击一个角,拖出矩形,松开即可填充。使用吸管点击格子即可获取该颜色。",
+
+    group_muster_h2: "图案",
+    undo_btn: "撤销",
+    undo_title: "Ctrl+Z",
+    redo_btn: "重做",
+    redo_title: "Ctrl+Shift+Z",
+    clear_btn: "清空全部",
+    import_image_btn: "导入图片",
+    import_note_before: "图片将被拉伸以适应当前网格(",
+    import_note_after: ",宽×高),并转换为像素颜色。",
+    export_json_btn: "导出为文件",
+    import_json_btn: "导入文件",
+    export_png_btn: "导出为PNG",
+
+    group_ansicht_h2: "视图",
+    grid10_label: "每10条线高亮显示",
+    numbers_label: "显示行/列编号",
+    gridlines_label: "显示网格线",
+    ansicht_note: "设置同样适用于PNG导出。",
+
+    board_aria: "编织网格",
+
+    footer_before: "(C) 2026",
+    footer_after: "· strickmuster.html · 在浏览器中本地运行,无需服务器连接",
+
+    confirm_clear_all: "确定要清空整个图案吗?",
+    err_file_read: "无法读取文件: ",
+    err_image_load: "无法加载图片。",
+    err_invalid_format: "格式无效",
+  },
+
+};
+
+// Sprachen, die aktuell in der Auswahl auftauchen (siehe select#langSelect).
+// Sobald weitere Sprachen oben ergänzt sind, hier + im <select> freischalten.
+const I18N_AVAILABLE = ['de', 'en', 'ru', 'es', 'fr', 'ja', 'ko', 'zh_CN'];
