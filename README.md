@@ -1,4 +1,4 @@
-# 🇩🇪 Julia's Strickmuster Editor
+# 🇩🇪 Strickmuster Editor
 
 Ein einfacher, browserbasierter Editor zum Entwerfen von Strickmustern (Karo-/Maschenraster) – läuft komplett offline, ohne Server, ohne Installation. Einfach `strickmuster.html` im Browser öffnen und loslegen.  
 
@@ -28,6 +28,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Passende Mauszeiger für Stift und Pipette  
 - Radiergummi zum gezielten Löschen einzelner Maschen oder Bereiche  
 - Zuletzt verwendete Farben als Schnellzugriff  
+- **Farbe austauschen**: eine bestimmte Farbe im gesamten Muster gegen eine andere ersetzen (oder komplett löschen), inkl. Pipette zur Auswahl der alten Farbe direkt im Raster  
 
 **Bild-Import**
 - Foto importieren, wird automatisch auf das aktuelle Raster gestreckt und in Pixelfarben umgesetzt (echtes Downsampling per Blockmittelung)  
@@ -63,7 +64,7 @@ Copyright (C) 2026 heino17 https://github.com/heino17/Knitting-Pattern-Editor
 ---
 
 
-# 🇺🇸 Julia's Knitting Pattern Editor
+# 🇺🇸 Knitting Pattern Editor
 
 A simple, browser‑based editor for designing knitting patterns (grid/stitch charts) – runs completely offline, with no server and no installation required. Just open `strickmuster.html` in your browser and start working.  
 
@@ -93,6 +94,7 @@ The default language can be set in the [lang.js](lang.js) file
 - Matching mouse cursors for pen and eyedropper  
 - Eraser for targeted removal of individual stitches or areas  
 - Recently used colors for quick access  
+- **Replace color**: swap one specific color throughout the whole pattern for another (or clear it entirely), with an eyedropper to pick the old color directly from the grid  
 
 ### **Image Import**
 - Import a photo; it is automatically stretched to the current grid and converted into pixel colors (true downsampling via block averaging)

@@ -123,6 +123,27 @@
             </button>
           </div>
           <p class="panel__note" data-i18n="farbe_note">Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.</p>
+
+          <div class="field-label" data-i18n="replace_label">Farbe im Muster austauschen</div>
+          <div class="replace-row">
+            <label class="field field--inline replace-field">
+              <span data-i18n="replace_old_label">Alte Farbe</span>
+              <input type="color" id="replaceOldColor" value="#7a2e3a">
+            </label>
+            <button type="button" id="pickOldColorBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="replace_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="replace_pick_title">
+              <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <label class="field field--inline replace-field">
+            <span data-i18n="replace_new_label">Neue Farbe</span>
+            <input type="color" id="replaceNewColor" value="#ffffff">
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="replaceWithEraser">
+            <span data-i18n="replace_eraser_label">Neue Farbe = Radiergummi (leer)</span>
+          </label>
+          <button id="replaceColorBtn" class="btn" data-i18n="replace_btn">Farbe austauschen</button>
+          <p class="panel__note" data-i18n="replace_note">Ersetzt im gesamten Raster jede Masche mit der „Alten Farbe“ durch die „Neue Farbe“ (oder leert sie, wenn „Radiergummi“ aktiviert ist).</p>
         </section>
 
         <section class="panel__group" id="group-muster">
@@ -272,6 +293,11 @@
   const showNumbers = document.getElementById('showNumbers');
   const showGridLines = document.getElementById('showGridLines');
   const swatchesEl = document.getElementById('swatches');
+  const replaceOldColor = document.getElementById('replaceOldColor');
+  const replaceNewColor = document.getElementById('replaceNewColor');
+  const replaceWithEraser = document.getElementById('replaceWithEraser');
+  const pickOldColorBtn = document.getElementById('pickOldColorBtn');
+  const replaceColorBtn = document.getElementById('replaceColorBtn');
 
   const EMPTY = '#ffffff';
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
@@ -285,6 +311,7 @@
   let selStart = null;
   let selEnd = null;
   let selectionOverlayEl = null;
+  let pickingOldColor = false; // true, während per Klick im Raster die "Alte Farbe" für den Farbtausch aufgenommen wird
   const HEAD_COL_WIDTH = 24;
   const HEAD_ROW_HEIGHT = 16;
   let undoStack = [];
@@ -486,10 +513,37 @@
 
   function setToolMode(mode) {
     toolMode = mode;
+    if (pickingOldColor) {
+      pickingOldColor = false;
+      pickOldColorBtn.classList.remove('is-active');
+    }
     toolToggle.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tool === mode));
     board.classList.remove('board--tool-paint', 'board--tool-area', 'board--tool-pipette');
     board.classList.add('board--tool-' + mode);
     hideSelectionOverlay();
+  }
+
+  // --- Farbe im gesamten Muster austauschen ---
+  function replaceColor(oldColor, newColor) {
+    if (!state.colors.length) return;
+    const oldHex = oldColor.toLowerCase();
+    const newHex = newColor.toLowerCase();
+    if (oldHex === newHex) return;
+
+    const hasMatch = state.colors.some(c => c.toLowerCase() === oldHex);
+    if (!hasMatch) {
+      alert(t('replace_none_found'));
+      return;
+    }
+
+    pushUndo();
+    for (let idx = 0; idx < state.colors.length; idx++) {
+      if (state.colors[idx].toLowerCase() === oldHex) {
+        state.colors[idx] = newColor;
+        if (cellEls[idx]) cellEls[idx].style.background = newColor;
+      }
+    }
+    if (newColor !== EMPTY) addRecentColor(newColor);
   }
 
   // --- Malen / Bereich auswählen / Pipette: Klick + Ziehen (Maus & Touch) ---
@@ -497,6 +551,14 @@
     const cell = e.target.closest('.cell');
     if (!cell) return;
     const { idx, r, c } = cellRC(cell);
+
+    if (pickingOldColor) {
+      replaceOldColor.value = state.colors[idx];
+      pickingOldColor = false;
+      pickOldColorBtn.classList.remove('is-active');
+      board.classList.toggle('board--tool-pipette', toolMode === 'pipette');
+      return;
+    }
 
     if (toolMode === 'pipette') {
       const picked = state.colors[idx];
@@ -567,6 +629,28 @@
     const btn = e.target.closest('.tool-btn');
     if (!btn) return;
     setToolMode(btn.dataset.tool);
+  });
+
+  // --- Farbe im gesamten Muster austauschen: Bedienung ---
+  pickOldColorBtn.addEventListener('click', () => {
+    pickingOldColor = !pickingOldColor;
+    pickOldColorBtn.classList.toggle('is-active', pickingOldColor);
+    if (pickingOldColor) {
+      board.classList.add('board--tool-pipette');
+    } else {
+      board.classList.toggle('board--tool-pipette', toolMode === 'pipette');
+    }
+  });
+
+  replaceWithEraser.addEventListener('change', () => {
+    replaceNewColor.disabled = replaceWithEraser.checked;
+  });
+  replaceNewColor.disabled = replaceWithEraser.checked;
+
+  replaceColorBtn.addEventListener('click', () => {
+    const oldColor = replaceOldColor.value;
+    const newColor = replaceWithEraser.checked ? EMPTY : replaceNewColor.value;
+    replaceColor(oldColor, newColor);
   });
 
   // --- Rückgängig / Wiederherstellen ---
