@@ -1,10 +1,10 @@
-# 🇩🇪 Strickmuster Editor
+# 🇩🇪 Julia's Strickmuster-Editor
 
 Ein einfacher, browserbasierter Editor zum Entwerfen von Strickmustern (Karo-/Maschenraster) – läuft komplett offline, ohne Server, ohne Installation. Einfach `strickmuster.html` im Browser öffnen und loslegen.  
 
 Entstanden für den praktischen Einsatz beim Entwerfen von Strickmustern: Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern.  
 
-**8 Sprachen: 🇺🇸 US, 🇩🇪 DE, 🇷🇺 RU, 🇪🇸 ES, 🇫🇷 FR, 🇯🇵 JP, 🇰🇷 KR, 🇨🇳 zh-CN - Schalter in der Menüleiste**  
+**8 Sprachen: 🇩🇪 DE, 🇺🇸 US, 🇷🇺 RU, 🇪🇸 ES, 🇫🇷 FR, 🇯🇵 JP, 🇰🇷 KR, 🇨🇳 zh-CN - Schalter in der Menüleiste**  
 Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden  
 
 ## Nutzung
@@ -41,6 +41,25 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Export/Import als JSON-Datei, um Muster zu sichern oder weiterzugeben  
 - Warnhinweis beim versehentlichen Neuladen oder Verlassen der Seite, solange ungespeicherte Änderungen vorliegen  
 
+**Notizzettel**
+- Frei platzierbare, gelbe Klebezettel auf dem Raster, mit editierbarem Text – unabhängig vom Muster-System  
+- Neuer Toolbar-Button 📝 im Header (in beiden Header-Zuständen sichtbar) legt einen neuen Zettel in der Mitte des sichtbaren Bereichs an und springt direkt in den Text  
+- **Verschieben**: am oberen Streifen (Ziehgriff) anfassen, damit Klicks in den Text nicht versehentlich als Drag zählen  
+- **Text**: direkt reinklicken und tippen  
+- **Größe ändern**: Eck-Griff unten rechts ziehen, Zettel wächst/schrumpft von der Mitte aus  
+- **Löschen**: kleiner "×"-Knopf am Griff, oder Mehrfachauswahl (Shift-Klick auf den Griff mehrerer Zettel) + Entf-Taste  
+- Vollständig in Undo/Redo integriert (Verschieben, Resize, Text, Löschen, Styling zählen jeweils als ein Schritt; Text und Styling erst beim Verlassen des Feldes/Reglers, nicht bei jedem Tastendruck)  
+- **Styling pro Zettel** (🎨-Knopf öffnet ein Popover): Hintergrundfarbe (Rahmenton wird automatisch als dunklerer Farbton abgeleitet), Textfarbe, Schriftgröße (10–36px); Änderungen wirken sofort live  
+- Position, Größe, Text und Styling jedes Zettels werden mit in die `.json` gespeichert; ältere Muster ohne Notizen laden weiterhin problemlos (Defaults: gelb `#fff6a8`, bräunlicher Text `#5c4a1e`, 11px)  
+
+**Farbtabelle (dauerhafte 7x7-Palette)**
+- Eigener, dauerhafter Farbspeicher – getrennt von der flüchtigen "Zuletzt verwendete Farben"-Liste  
+- Sitzt in der Sidebar als eigene Gruppe ("Farbtabelle") und zusätzlich als kompakter Streifen im Header  
+- **Befüllen**: Pipette-Knopf "Aus Raster aufnehmen" + Klick auf eine Masche, oder manuell per Farbwähler + "Zur Farbtabelle hinzufügen"; wächst dynamisch bis maximal 49 Farben  
+- **Nutzen**: Klick auf eine Farbe aktiviert sie sofort im Stift; kleines "×" (beim Hover) entfernt eine Farbe aus der Sidebar-Tabelle  
+- **Speichern/Laden**: eigene `Farbtabelle.json` exportier- und importierbar (unabhängig vom Muster), zusätzlich automatische Sicherung im Browser (localStorage)  
+- Bewusst **nicht** Teil von Undo/Redo oder der Muster-`.json` – bleibt musterunabhängig über mehrere Muster hinweg erhalten  
+
 **Bedienoberfläche**
 - Sprachwahl-Dropdown im Kopfbereich  
 - Ein- und ausklappbare Seitenleiste sowie Kopfbereich für mehr Platz auf kleinen Bildschirmen  
@@ -64,13 +83,13 @@ Copyright (C) 2026 heino17 https://github.com/heino17/Knitting-Pattern-Editor
 ---
 
 
-# 🇺🇸 Knitting Pattern Editor
+# 🇺🇸 Julia's Knitting Pattern Editor
 
 A simple, browser‑based editor for designing knitting patterns (grid/stitch charts) – runs completely offline, with no server and no installation required. Just open `strickmuster.html` in your browser and start working.  
 
 Created for practical use when designing knitting patterns: set up a grid, color stitches, and save your pattern as an image or file.  
 
-**8 languages: 🇺🇸 US, 🇩🇪 DE, 🇷🇺 RU, 🇪🇸 ES, 🇫🇷 FR, 🇯🇵 JP, 🇰🇷 KR, 🇨🇳 zh-CN - Switch in menu bar**  
+**8 languages: 🇩🇪 DE, 🇺🇸 US, 🇷🇺 RU, 🇪🇸 ES, 🇫🇷 FR, 🇯🇵 JP, 🇰🇷 KR, 🇨🇳 zh-CN - Switch in menu bar**  
 The default language can be set in the [lang.js](lang.js) file  
 
 ## **Usage**
@@ -106,6 +125,25 @@ The default language can be set in the [lang.js](lang.js) file
 - Export as PNG image (including row/column numbers and grid lines, depending on view settings)  
 - Export/import as JSON file to save or share patterns  
 - Warning when accidentally reloading or leaving the page while unsaved changes exist  
+
+### **Sticky Notes**
+- Freely placeable, yellow sticky notes on the grid, with editable text – independent of the pattern system  
+- New 📝 toolbar button in the header (visible in both header states) creates a new note in the center of the visible area and jumps straight into the text  
+- **Move**: grab the strip at the top (drag handle), so clicks in the text aren't accidentally counted as a drag  
+- **Text**: click directly into it and type  
+- **Resize**: drag the corner handle at the bottom right, the note grows/shrinks from its center  
+- **Delete**: small "×" button on the handle, or multi-select (Shift-click the handle of several notes) + Delete key  
+- Fully integrated into undo/redo (move, resize, text, delete, and styling each count as one step; text and styling are only committed when leaving the field/slider, not on every keystroke)  
+- **Per-note styling** (🎨 button opens a popover): background color (border tone is automatically derived as a darker shade), text color, font size (10–36px); changes apply live immediately  
+- Position, size, text, and styling of each note are saved in the `.json` file; older patterns without notes continue to load without issues (defaults: yellow `#fff6a8`, brownish text `#5c4a1e`, 11px)  
+
+### **Color Table (persistent 7x7-slot palette)**
+- A dedicated, persistent color store – separate from the transient "recently used colors" list  
+- Sits in the sidebar as its own group ("Color Table") and additionally as a compact strip in the header  
+- **Filling it**: eyedropper button "Pick from grid" + click a stitch, or manually via the color picker + "Add to color table"; grows dynamically up to a maximum of 49 colors  
+- **Using it**: clicking a color in the sidebar palette or header strip activates it immediately in the pen tool; a small "×" (shown on hover) removes a single color from the sidebar table  
+- **Save/Load**: a dedicated `Farbtabelle.json` file can be exported and imported (independent of the pattern), and the palette is also automatically preserved in the browser (localStorage)  
+- Deliberately **not** part of undo/redo or the pattern `.json` – it's a pattern-independent, personal collection that stays consistent across multiple patterns  
 
 ### **User Interface**
 - Language selection dropdown in header  

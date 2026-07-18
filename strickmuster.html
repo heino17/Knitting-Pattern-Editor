@@ -31,6 +31,13 @@
     <button type="button" id="headerToggle" class="header-toggle" data-i18n-aria-label="header_toggle_collapse" aria-expanded="true" aria-label="Kopfbereich einklappen">
       <svg viewBox="0 0 24 24" class="chevron-icon chevron-icon--down" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
+    <button type="button" id="addNoteBtn" class="header-note-btn" title="Neue Notiz erstellen" data-i18n-title="note_add_title" aria-label="Neue Notiz erstellen" data-i18n-aria-label="note_add_title">
+      <span aria-hidden="true">📝</span>
+    </button>
+    <div class="page-zoom" id="pageZoom" role="group" aria-label="Seiten-Zoom" data-i18n-aria-label="page_zoom_aria">
+      <button type="button" id="pageZoomOutBtn" class="page-zoom__btn" title="Verkleinern" data-i18n-title="page_zoom_out_title" aria-label="Seite verkleinern" data-i18n-aria-label="page_zoom_out_title">−</button>
+      <button type="button" id="pageZoomInBtn" class="page-zoom__btn" title="Vergrößern" data-i18n-title="page_zoom_in_title" aria-label="Seite vergrößern" data-i18n-aria-label="page_zoom_in_title">+</button>
+    </div>
     <label class="lang-select-wrap">
       <span class="sr-only" data-i18n="lang_select_aria">Sprache wählen</span>
       <select id="langSelect" class="lang-select" data-i18n-aria-label="lang_select_aria" aria-label="Sprache wählen">
@@ -49,6 +56,7 @@
       <h1 id="appTitle" data-i18n="app_title">Julia's Strickmuster Editor</h1>
     </div>
     <p class="app-header__hint" data-i18n="header_hint">Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern</p>
+    <div class="header-palette" id="headerPalette" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
   </header>
 
   <main class="layout">
@@ -67,6 +75,9 @@
           </button>
           <button type="button" class="icon-btn" data-target="group-farbe" title="Farbe" data-i18n-title="icon_farbe_title" aria-label="Farb-Einstellungen anzeigen" data-i18n-aria-label="icon_farbe_aria">
             <svg viewBox="0 0 24 24"><path d="M12 2C7 8 4 11.5 4 15a8 8 0 0016 0c0-3.5-3-7-8-13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="icon-btn" data-target="group-farbtabelle" title="Farbtabelle" data-i18n-title="icon_farbtabelle_title" aria-label="Farbtabelle anzeigen" data-i18n-aria-label="icon_farbtabelle_aria">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="3" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="3" width="5" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="9.5" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="9.5" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="9.5" width="5" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
           <button type="button" class="icon-btn" data-target="group-muster" title="Muster" data-i18n-title="icon_muster_title" aria-label="Muster-Aktionen anzeigen" data-i18n-aria-label="icon_muster_aria">
             <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5V4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 4v5h7V4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
@@ -144,6 +155,35 @@
           </label>
           <button id="replaceColorBtn" class="btn" data-i18n="replace_btn">Farbe austauschen</button>
           <p class="panel__note" data-i18n="replace_note">Ersetzt im gesamten Raster jede Masche mit der „Alten Farbe“ durch die „Neue Farbe“ (oder leert sie, wenn „Radiergummi“ aktiviert ist).</p>
+        </section>
+
+        <section class="panel__group" id="group-farbtabelle">
+          <h2 data-i18n="group_farbtabelle_h2">Farbtabelle</h2>
+          <p class="panel__note" data-i18n="palette_intro_note">Feste, dauerhafte Farbsammlung (bis zu 49 Farben) - unabhängig von "Zuletzt verwendet". Wird mit in eine eigene Datei gespeichert.</p>
+
+          <div class="replace-row">
+            <label class="field field--inline replace-field">
+              <span data-i18n="palette_add_color_label">Neue Farbe</span>
+              <input type="color" id="paletteNewColor" value="#7a2e3a">
+            </label>
+            <button type="button" id="palettePickBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="palette_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="palette_pick_title">
+              <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <button type="button" id="paletteAddBtn" class="btn" data-i18n="palette_add_btn">Zur Farbtabelle hinzufügen</button>
+
+          <div class="field-label" id="paletteCountLabel">Farbtabelle (0 / 49)</div>
+          <div class="palette-grid" id="paletteGrid" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
+          <p class="panel__note" data-i18n="palette_usage_note">Klick auf eine Farbe aktiviert sie im Stift. Klick auf das "×" entfernt sie aus der Tabelle.</p>
+
+          <div class="btn-row">
+            <button type="button" id="paletteExportBtn" class="btn" data-i18n="palette_export_btn">Farbtabelle speichern</button>
+            <label class="btn btn--file">
+              <span data-i18n="palette_import_btn">Farbtabelle laden</span>
+              <input type="file" id="paletteImportInput" accept="application/json" hidden>
+            </label>
+          </div>
+          <button type="button" id="paletteClearBtn" class="btn" data-i18n="palette_clear_btn">Farbtabelle leeren</button>
         </section>
 
         <section class="panel__group" id="group-muster">
@@ -260,6 +300,10 @@
     // Header-/Sidebar-Toggle-Aria-Labels hängen zusätzlich vom eingeklappt/ausgeklappt-Status ab,
     // die werden separat unten in ihren jeweiligen set...Collapsed()-Funktionen aktualisiert.
     if (typeof refreshCollapseLabels === 'function') refreshCollapseLabels();
+
+    // Farbtabelle enthält dynamisch erzeugte Texte (Zähler, Lösch-Titel, Leer-Hinweis),
+    // die von den obigen data-i18n-Selektoren nicht erfasst werden.
+    if (typeof renderPalette === 'function') renderPalette();
   }
 
   if (langSelect) {
@@ -269,6 +313,43 @@
       localStorage.setItem(LANG_KEY, currentLang);
       applyLang();
     });
+  }
+
+  // --- Seiten-Zoom (wie Strg +/- im Browser, aber nur für diese Seite) ---
+  const PAGE_ZOOM_KEY = 'strickmuster-page-zoom';
+  const PAGE_ZOOM_STEPS = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3];
+  const PAGE_ZOOM_DEFAULT_INDEX = 3; // entspricht 1.0 / 100%
+  const pageZoomOutBtn = document.getElementById('pageZoomOutBtn');
+  const pageZoomInBtn = document.getElementById('pageZoomInBtn');
+
+  function loadPageZoomIndex() {
+    const saved = parseInt(localStorage.getItem(PAGE_ZOOM_KEY), 10);
+    if (Number.isInteger(saved) && saved >= 0 && saved < PAGE_ZOOM_STEPS.length) return saved;
+    return PAGE_ZOOM_DEFAULT_INDEX;
+  }
+
+  let pageZoomIndex = loadPageZoomIndex();
+
+  function applyPageZoom() {
+    document.documentElement.style.zoom = PAGE_ZOOM_STEPS[pageZoomIndex];
+    if (pageZoomOutBtn) pageZoomOutBtn.disabled = pageZoomIndex === 0;
+    if (pageZoomInBtn) pageZoomInBtn.disabled = pageZoomIndex === PAGE_ZOOM_STEPS.length - 1;
+  }
+
+  if (pageZoomOutBtn && pageZoomInBtn) {
+    pageZoomOutBtn.addEventListener('click', () => {
+      if (pageZoomIndex === 0) return;
+      pageZoomIndex -= 1;
+      localStorage.setItem(PAGE_ZOOM_KEY, String(pageZoomIndex));
+      applyPageZoom();
+    });
+    pageZoomInBtn.addEventListener('click', () => {
+      if (pageZoomIndex === PAGE_ZOOM_STEPS.length - 1) return;
+      pageZoomIndex += 1;
+      localStorage.setItem(PAGE_ZOOM_KEY, String(pageZoomIndex));
+      applyPageZoom();
+    });
+    applyPageZoom();
   }
 
   const board = document.getElementById('board');
@@ -298,11 +379,23 @@
   const replaceWithEraser = document.getElementById('replaceWithEraser');
   const pickOldColorBtn = document.getElementById('pickOldColorBtn');
   const replaceColorBtn = document.getElementById('replaceColorBtn');
+  const addNoteBtn = document.getElementById('addNoteBtn');
+  const paletteNewColor = document.getElementById('paletteNewColor');
+  const palettePickBtn = document.getElementById('palettePickBtn');
+  const paletteAddBtn = document.getElementById('paletteAddBtn');
+  const paletteCountLabel = document.getElementById('paletteCountLabel');
+  const paletteGrid = document.getElementById('paletteGrid');
+  const paletteExportBtn = document.getElementById('paletteExportBtn');
+  const paletteImportInput = document.getElementById('paletteImportInput');
+  const paletteClearBtn = document.getElementById('paletteClearBtn');
+  const headerPalette = document.getElementById('headerPalette');
 
   const EMPTY = '#ffffff';
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
+  const PALETTE_KEY = 'strickmuster-farbtabelle-v1';
+  const PALETTE_MAX = 49; // 7 x 7 Raster in der Sidebar
 
-  let state = { rows: 50, cols: 50, colors: [] };
+  let state = { rows: 50, cols: 50, colors: [], notes: [] };
   let cellEls = [];
   let isPainting = false;
   let paintValue = null; // Farbe, die während des Ziehens verwendet wird
@@ -318,6 +411,22 @@
   let redoStack = [];
   const UNDO_LIMIT = 30;
   let recentColors = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+  let paletteColors = loadPaletteFromStorage();
+  let pickingPaletteColor = false; // true, während per Klick im Raster eine Farbe für die Farbtabelle aufgenommen wird
+
+  function loadPaletteFromStorage() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(PALETTE_KEY) || '[]');
+      if (!Array.isArray(raw)) return [];
+      return raw.filter(c => typeof c === 'string').slice(0, PALETTE_MAX);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function savePaletteToStorage() {
+    localStorage.setItem(PALETTE_KEY, JSON.stringify(paletteColors));
+  }
 
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
@@ -329,7 +438,7 @@
   let hasUnsavedChanges = false;
 
   function snapshot() {
-    return { rows: state.rows, cols: state.cols, colors: state.colors.slice() };
+    return { rows: state.rows, cols: state.cols, colors: state.colors.slice(), notes: state.notes.map(n => ({ ...n })) };
   }
 
   function pushUndo() {
@@ -345,7 +454,7 @@
     redoStack.push(snapshot());
     if (redoStack.length > UNDO_LIMIT) redoStack.shift();
     const prev = undoStack.pop();
-    buildBoard(prev.rows, prev.cols, prev.colors);
+    buildBoard(prev.rows, prev.cols, prev.colors, prev.notes);
     rowsInput.value = prev.rows;
     colsInput.value = prev.cols;
     updateUndoRedoBtnState();
@@ -356,7 +465,7 @@
     undoStack.push(snapshot());
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     const next = redoStack.pop();
-    buildBoard(next.rows, next.cols, next.colors);
+    buildBoard(next.rows, next.cols, next.colors, next.notes);
     rowsInput.value = next.rows;
     colsInput.value = next.cols;
     updateUndoRedoBtnState();
@@ -367,10 +476,15 @@
     redoBtn.disabled = redoStack.length === 0;
   }
 
-  function buildBoard(rows, cols, colors) {
+  function buildBoard(rows, cols, colors, notes) {
     state.rows = rows;
     state.cols = cols;
     state.colors = colors || newColorArray(rows, cols);
+    // notes nur ersetzen, wenn explizit übergeben (z.B. bei Undo/Redo/Import) -
+    // beim reinen Raster-Größe-ändern (buildBtn) bleiben bestehende Notizen sonst erhalten,
+    // dort wird "notes" nicht mitgegeben, daher expliziter Parameter-Check:
+    if (notes !== undefined) state.notes = notes;
+    else if (!state.notes) state.notes = [];
     cellEls = new Array(rows * cols);
 
     board.style.setProperty('--cols', cols);
@@ -424,6 +538,8 @@
     board.appendChild(selectionOverlayEl);
 
     if (importSizeHint) importSizeHint.textContent = cols + ' × ' + rows;
+
+    renderNotes();
   }
 
   function makeCorner(variant) {
@@ -438,9 +554,35 @@
     return d;
   }
 
+  let lastCellSize = Number(cellSizeInput.value); // Referenzwert, um Notizzettel beim Zoomen proportional mitzuskalieren
+
   function applyCellSize() {
     const size = cellSizeInput.value + 'px';
     board.style.setProperty('--cell-size', size);
+
+    const newSize = Number(cellSizeInput.value);
+    if (newSize !== lastCellSize && lastCellSize > 0) {
+      scaleNotes(newSize / lastCellSize);
+    }
+    lastCellSize = newSize;
+  }
+
+  // Skaliert Position, Boxgröße UND Schriftgröße aller Notizzettel gemeinsam
+  // um denselben Faktor, damit sie beim Zoomen des Rasters (Zellgröße ändern)
+  // an ihrem relativen Platz bleiben UND ihre Zellenzahl (z.B. "10x10 Zellen")
+  // beibehalten - wie aus einem Guss, analog zum Gartenplaner. Die Schrift
+  // bleibt dabei immer im selben Verhältnis zur Box, statt an einer eigenen
+  // min/max-Pixelgrenze festzuhängen.
+  function scaleNotes(factor) {
+    if (!state.notes.length || factor === 1) return;
+    state.notes.forEach(n => {
+      n.x *= factor;
+      n.y *= factor;
+      n.w = Math.max(1, n.w * factor);
+      n.h = Math.max(1, n.h * factor);
+      n.fontSize = Math.max(1, n.fontSize * factor);
+    });
+    renderNotes();
   }
 
   function paintCell(cell, color) {
@@ -477,6 +619,130 @@
     });
   }
 
+  // --- Farbtabelle: dauerhafte, separat speicherbare Palette (bis zu 50 Farben) ---
+
+  function activatePaletteColor(hex) {
+    colorPicker.value = hex;
+    eraserBtn.dataset.active = 'false';
+    eraserBtn.classList.remove('is-active');
+    if (toolMode !== 'paint') setToolMode('paint');
+  }
+
+  function addToPalette(hex) {
+    if (!hex || hex === EMPTY) return;
+    const normalized = hex.toLowerCase();
+    if (paletteColors.some(c => c.toLowerCase() === normalized)) return; // schon enthalten
+    if (paletteColors.length >= PALETTE_MAX) {
+      alert(t('palette_full_msg'));
+      return;
+    }
+    paletteColors.push(hex);
+    savePaletteToStorage();
+    renderPalette();
+  }
+
+  function removeFromPalette(hex) {
+    paletteColors = paletteColors.filter(c => c !== hex);
+    savePaletteToStorage();
+    renderPalette();
+  }
+
+  function makePaletteSwatch(hex, forHeader) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'palette-swatch';
+    b.style.background = hex;
+    b.title = hex;
+    b.classList.toggle('is-active', !forHeader && colorPicker.value.toLowerCase() === hex.toLowerCase() && eraserBtn.dataset.active !== 'true');
+    b.addEventListener('click', () => activatePaletteColor(hex));
+
+    if (!forHeader) {
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'palette-swatch__del';
+      del.setAttribute('aria-label', t('palette_remove_title'));
+      del.title = t('palette_remove_title');
+      del.textContent = '×';
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeFromPalette(hex);
+      });
+      b.appendChild(del);
+    }
+    return b;
+  }
+
+  function renderPalette() {
+    paletteGrid.innerHTML = '';
+    if (!paletteColors.length) {
+      const hint = document.createElement('p');
+      hint.className = 'palette-empty-hint';
+      hint.textContent = t('palette_empty_hint');
+      paletteGrid.appendChild(hint);
+    } else {
+      paletteColors.forEach(hex => paletteGrid.appendChild(makePaletteSwatch(hex, false)));
+    }
+    paletteCountLabel.textContent = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_MAX + ')';
+
+    headerPalette.innerHTML = '';
+    paletteColors.forEach(hex => headerPalette.appendChild(makePaletteSwatch(hex, true)));
+  }
+
+  paletteAddBtn.addEventListener('click', () => addToPalette(paletteNewColor.value));
+
+  palettePickBtn.addEventListener('click', () => {
+    pickingPaletteColor = !pickingPaletteColor;
+    palettePickBtn.classList.toggle('is-active', pickingPaletteColor);
+    if (pickingPaletteColor) {
+      board.classList.add('board--tool-pipette');
+    } else {
+      board.classList.toggle('board--tool-pipette', toolMode === 'pipette');
+    }
+  });
+
+  paletteClearBtn.addEventListener('click', () => {
+    if (!paletteColors.length) return;
+    if (!confirm(t('palette_confirm_clear'))) return;
+    paletteColors = [];
+    savePaletteToStorage();
+    renderPalette();
+  });
+
+  // Merkt sich den zuletzt geladenen Farbtabelle-Dateinamen, analog zum
+  // Muster-Dateinamen oben.
+  let lastPaletteFileName = 'Farbtabelle.json';
+
+  paletteExportBtn.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ colors: paletteColors }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = lastPaletteFileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  paletteImportInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const colors = Array.isArray(data) ? data : data.colors; // beide Formen tolerieren
+        if (!Array.isArray(colors)) throw new Error(t('err_invalid_format'));
+        paletteColors = colors.filter(c => typeof c === 'string').slice(0, PALETTE_MAX);
+        savePaletteToStorage();
+        renderPalette();
+        lastPaletteFileName = file.name || lastPaletteFileName;
+      } catch (err) {
+        alert(t('err_file_read') + err.message);
+      }
+    };
+    reader.readAsText(file);
+    paletteImportInput.value = '';
+  });
+
   function cellRC(cell) {
     const idx = Number(cell.dataset.idx);
     return { idx, r: Math.floor(idx / state.cols), c: idx % state.cols };
@@ -511,11 +777,417 @@
     }
   }
 
+  // --- Notizzettel ---
+  const NOTE_DEFAULT_BG = '#fff6a8';
+  const NOTE_DEFAULT_TEXT = '#5c4a1e';
+  const NOTE_DEFAULT_FONTSIZE = 11;
+  const NOTE_DEFAULT_W = 140;
+  const NOTE_DEFAULT_H = 110;
+  const NOTE_MIN_W = 70;
+  const NOTE_MIN_H = 56;
+  // Gültiger Schriftgrößen-Bereich für die manuelle Wahl im Styling-Popover
+  // (10-36px, wie der Zellgrößen-Regler) - die Schriftgröße wird NICHT mehr
+  // automatisch mit dem Zoom skaliert, sie bleibt bewusst konstant, sobald
+  // sie einmal eingestellt wurde (siehe scaleNotes()).
+  const NOTE_FONTSIZE_MIN = 10;
+  const NOTE_FONTSIZE_MAX = 36;
+  let noteIdCounter = 1;
+  let notesLayerEl = null;
+  let selectedNoteIds = new Set(); // per Marquee mit ausgewählte Zettel
+  let openNoteStylePopoverId = null;
+
+  function normalizeNotes(notes) {
+    // Ältere Muster ohne "notes"-Feld bzw. ohne die neuen Stil-Felder laden weiterhin problemlos.
+    if (!Array.isArray(notes)) return [];
+    return notes.map(n => ({
+      id: n.id || ('note' + (noteIdCounter++)),
+      x: Number.isFinite(n.x) ? n.x : 40,
+      y: Number.isFinite(n.y) ? n.y : 40,
+      w: Number.isFinite(n.w) ? n.w : NOTE_DEFAULT_W,
+      h: Number.isFinite(n.h) ? n.h : NOTE_DEFAULT_H,
+      text: typeof n.text === 'string' ? n.text : '',
+      bg: n.bg || NOTE_DEFAULT_BG,
+      textColor: n.textColor || NOTE_DEFAULT_TEXT,
+      fontSize: Number.isFinite(n.fontSize) ? n.fontSize : NOTE_DEFAULT_FONTSIZE
+    }));
+  }
+
+  function darkenColor(hex, amount) {
+    const c = hex.replace('#', '');
+    const num = parseInt(c.length === 3 ? c.split('').map(ch => ch + ch).join('') : c, 16);
+    let r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
+    r = Math.max(0, Math.round(r * (1 - amount)));
+    g = Math.max(0, Math.round(g * (1 - amount)));
+    b = Math.max(0, Math.round(b * (1 - amount)));
+    return rgbToHex(r, g, b);
+  }
+
+  function ensureNotesLayer() {
+    if (notesLayerEl && notesLayerEl.isConnected) return notesLayerEl;
+    notesLayerEl = document.createElement('div');
+    notesLayerEl.className = 'notes-layer';
+    board.appendChild(notesLayerEl);
+    return notesLayerEl;
+  }
+
+  function renderNotes() {
+    const layer = ensureNotesLayer();
+    layer.innerHTML = '';
+    state.notes.forEach(note => {
+      layer.appendChild(makeNoteEl(note));
+    });
+  }
+
+  function makeNoteEl(note) {
+    const el = document.createElement('div');
+    el.className = 'sticky-note';
+    el.dataset.noteId = note.id;
+    el.style.left = note.x + 'px';
+    el.style.top = note.y + 'px';
+    el.style.width = note.w + 'px';
+    el.style.height = note.h + 'px';
+    el.style.background = note.bg;
+    el.style.borderColor = darkenColor(note.bg, 0.22);
+    el.classList.toggle('is-selected', selectedNoteIds.has(note.id));
+
+    const handle = document.createElement('div');
+    handle.className = 'sticky-note__handle';
+    handle.title = t('note_drag_title');
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'sticky-note__del';
+    delBtn.setAttribute('aria-label', t('note_delete_title'));
+    delBtn.title = t('note_delete_title');
+    delBtn.textContent = '×';
+
+    const styleBtn = document.createElement('button');
+    styleBtn.type = 'button';
+    styleBtn.className = 'sticky-note__style-btn';
+    styleBtn.setAttribute('aria-label', t('note_style_title'));
+    styleBtn.title = t('note_style_title');
+    styleBtn.textContent = '🎨';
+
+    handle.appendChild(styleBtn);
+    handle.appendChild(delBtn);
+    el.appendChild(handle);
+
+    // Echtes <textarea> statt contenteditable-<div>: .value ist bei einer
+    // textarea immer ein reiner String mit echten "\n"-Zeichen, der Browser
+    // kann dort - anders als bei contenteditable - keine eigene <div>/<br>-
+    // Struktur hineinmogeln, die Zeilenumbrüche beim Auslesen verschluckt.
+    // Genau dieses robustere Muster nutzt auch der Gartenplaner-Zettel.
+    const text = document.createElement('textarea');
+    text.className = 'sticky-note__text';
+    text.spellcheck = false;
+    text.style.color = note.textColor;
+    text.style.fontSize = note.fontSize + 'px';
+    text.value = note.text;
+    el.appendChild(text);
+
+    const resize = document.createElement('div');
+    resize.className = 'sticky-note__resize';
+    resize.title = t('note_resize_title');
+    el.appendChild(resize);
+
+    if (openNoteStylePopoverId === note.id) {
+      el.appendChild(makeNoteStylePopover(note));
+    }
+
+    // --- Auswahl + Verschieben (am Griff anfassen) ---
+    handle.addEventListener('pointerdown', (e) => {
+      if (e.target === delBtn || e.target === styleBtn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.shiftKey) {
+        // Shift-Klick: Zettel der Mehrfachauswahl hinzufügen/entfernen, kein Drag starten.
+        if (selectedNoteIds.has(note.id)) selectedNoteIds.delete(note.id);
+        else selectedNoteIds.add(note.id);
+        renderNotes();
+        return;
+      }
+      if (!selectedNoteIds.has(note.id)) {
+        selectedNoteIds = new Set([note.id]);
+        renderNotes();
+      }
+      startNoteDrag(note.id, e);
+    });
+
+    // --- Text bearbeiten ---
+    text.addEventListener('pointerdown', (e) => e.stopPropagation());
+    let textBeforeEdit = note.text;
+    text.addEventListener('focus', () => { textBeforeEdit = note.text; });
+    text.addEventListener('input', () => {
+      const n = state.notes.find(x => x.id === note.id);
+      if (n) n.text = text.value;
+    });
+    text.addEventListener('blur', () => {
+      const n = state.notes.find(x => x.id === note.id);
+      if (n && n.text !== textBeforeEdit) {
+        pushUndoNoteChange(note.id, { text: textBeforeEdit }, { text: n.text });
+      }
+    });
+
+    // --- Löschen ---
+    delBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteNotes([note.id]);
+    });
+
+    // --- Styling-Popover öffnen/schließen ---
+    styleBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+    styleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openNoteStylePopoverId = (openNoteStylePopoverId === note.id) ? null : note.id;
+      renderNotes();
+    });
+
+    // --- Größe ändern (Eck-Griff unten rechts, wächst von der Mitte aus) ---
+    resize.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      startNoteResize(note.id, e);
+    });
+
+    return el;
+  }
+
+  function makeNoteStylePopover(note) {
+    const pop = document.createElement('div');
+    pop.className = 'sticky-note__popover';
+    pop.addEventListener('pointerdown', (e) => e.stopPropagation());
+    pop.addEventListener('click', (e) => e.stopPropagation());
+
+    const bgRow = document.createElement('label');
+    bgRow.className = 'sticky-note__popover-row';
+    const bgSpan = document.createElement('span');
+    bgSpan.textContent = t('note_bg_label');
+    const bgInput = document.createElement('input');
+    bgInput.type = 'color';
+    bgInput.value = note.bg;
+    bgRow.appendChild(bgSpan);
+    bgRow.appendChild(bgInput);
+
+    const textRow = document.createElement('label');
+    textRow.className = 'sticky-note__popover-row';
+    const textSpan = document.createElement('span');
+    textSpan.textContent = t('note_textcolor_label');
+    const textInput = document.createElement('input');
+    textInput.type = 'color';
+    textInput.value = note.textColor;
+    textRow.appendChild(textSpan);
+    textRow.appendChild(textInput);
+
+    const sizeRow = document.createElement('label');
+    sizeRow.className = 'sticky-note__popover-row';
+    const sizeSpan = document.createElement('span');
+    const displayedFontSize = Math.round(note.fontSize);
+    sizeSpan.textContent = t('note_fontsize_label') + ' ' + displayedFontSize + 'px';
+    const sizeInput = document.createElement('input');
+    sizeInput.type = 'range';
+    sizeInput.min = String(NOTE_FONTSIZE_MIN);
+    sizeInput.max = String(NOTE_FONTSIZE_MAX);
+    sizeInput.value = String(displayedFontSize);
+    sizeRow.appendChild(sizeSpan);
+    sizeRow.appendChild(sizeInput);
+
+    let styleBefore = null;
+    function captureBefore() {
+      if (styleBefore) return;
+      const n = state.notes.find(x => x.id === note.id);
+      styleBefore = { bg: n.bg, textColor: n.textColor, fontSize: n.fontSize };
+    }
+    function applyLive() {
+      const n = state.notes.find(x => x.id === note.id);
+      if (!n) return;
+      n.bg = bgInput.value;
+      n.textColor = textInput.value;
+      n.fontSize = clamp(parseInt(sizeInput.value, 10) || NOTE_DEFAULT_FONTSIZE, NOTE_FONTSIZE_MIN, NOTE_FONTSIZE_MAX);
+      const el = notesLayerEl.querySelector('.sticky-note[data-note-id="' + note.id + '"]');
+      if (el) {
+        el.style.background = n.bg;
+        el.style.borderColor = darkenColor(n.bg, 0.22);
+        const textEl = el.querySelector('.sticky-note__text');
+        if (textEl) {
+          textEl.style.color = n.textColor;
+          textEl.style.fontSize = n.fontSize + 'px';
+        }
+      }
+      sizeSpan.textContent = t('note_fontsize_label') + ' ' + n.fontSize + 'px';
+    }
+    function commitAfter() {
+      if (!styleBefore) return;
+      const n = state.notes.find(x => x.id === note.id);
+      pushUndoNoteChange(note.id, styleBefore, { bg: n.bg, textColor: n.textColor, fontSize: n.fontSize });
+      styleBefore = null;
+    }
+
+    [bgInput, textInput, sizeInput].forEach(input => {
+      input.addEventListener('pointerdown', captureBefore);
+      input.addEventListener('input', applyLive);
+      input.addEventListener('change', commitAfter);
+    });
+
+    pop.appendChild(bgRow);
+    pop.appendChild(textRow);
+    pop.appendChild(sizeRow);
+    return pop;
+  }
+
+  function closeNoteStylePopover() {
+    if (openNoteStylePopoverId === null) return;
+    openNoteStylePopoverId = null;
+    renderNotes();
+  }
+
+  document.addEventListener('click', (e) => {
+    if (openNoteStylePopoverId === null) return;
+    if (e.target.closest('.sticky-note__popover') || e.target.closest('.sticky-note__style-btn')) return;
+    closeNoteStylePopover();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openNoteStylePopoverId !== null) closeNoteStylePopover();
+  });
+
+  // Undo/Redo-Hilfsfunktion für einzelne Notiz-Feldänderungen (Text, Styling),
+  // damit nicht bereits vor jedem Tastendruck/Regler-Schritt ein Undo-Schritt entsteht.
+  function pushUndoNoteChange(noteId, beforePatch, afterPatch) {
+    const before = snapshot();
+    before.notes = before.notes.map(n => n.id === noteId ? { ...n, ...beforePatch } : n);
+    hasUnsavedChanges = true;
+    undoStack.push(before);
+    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+    redoStack = [];
+    updateUndoRedoBtnState();
+  }
+
+  function getBoardRelativePoint(e) {
+    const rect = board.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  function startNoteDrag(noteId, downEvent) {
+    const note = state.notes.find(n => n.id === noteId);
+    if (!note) return;
+    pushUndo();
+    const startPoint = getBoardRelativePoint(downEvent);
+
+    // Wenn der Zettel Teil einer Mehrfachauswahl ist, alle ausgewählten mitbewegen.
+    const idsToMove = selectedNoteIds.has(noteId) && selectedNoteIds.size > 1
+      ? Array.from(selectedNoteIds)
+      : [noteId];
+    const startPositions = idsToMove.map(id => {
+      const n = state.notes.find(x => x.id === id);
+      return { id, x: n.x, y: n.y };
+    });
+
+    function onMove(e) {
+      const p = getBoardRelativePoint(e);
+      const dx = p.x - startPoint.x;
+      const dy = p.y - startPoint.y;
+      startPositions.forEach(sp => {
+        const n = state.notes.find(x => x.id === sp.id);
+        if (!n) return;
+        n.x = Math.max(0, sp.x + dx);
+        n.y = Math.max(0, sp.y + dy);
+        const el = notesLayerEl && notesLayerEl.querySelector('.sticky-note[data-note-id="' + sp.id + '"]');
+        if (el) { el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; }
+      });
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
+
+  function startNoteResize(noteId, downEvent) {
+    const note = state.notes.find(n => n.id === noteId);
+    if (!note) return;
+    pushUndo();
+    const startPoint = getBoardRelativePoint(downEvent);
+    const startW = note.w, startH = note.h, startX = note.x, startY = note.y;
+    const centerX = startX + startW / 2, centerY = startY + startH / 2;
+
+    function onMove(e) {
+      const p = getBoardRelativePoint(e);
+      const dx = (p.x - startPoint.x) * 2; // wächst/schrumpft von der Mitte aus -> doppelte Wirkung
+      const dy = (p.y - startPoint.y) * 2;
+      const newW = Math.max(NOTE_MIN_W, startW + dx);
+      const newH = Math.max(NOTE_MIN_H, startH + dy);
+      note.w = newW;
+      note.h = newH;
+      note.x = centerX - newW / 2;
+      note.y = centerY - newH / 2;
+      const el = notesLayerEl && notesLayerEl.querySelector('.sticky-note[data-note-id="' + noteId + '"]');
+      if (el) {
+        el.style.width = note.w + 'px';
+        el.style.height = note.h + 'px';
+        el.style.left = note.x + 'px';
+        el.style.top = note.y + 'px';
+      }
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
+
+  function deleteNotes(ids) {
+    if (!ids.length) return;
+    pushUndo();
+    const idSet = new Set(ids);
+    state.notes = state.notes.filter(n => !idSet.has(n.id));
+    ids.forEach(id => selectedNoteIds.delete(id));
+    if (openNoteStylePopoverId && idSet.has(openNoteStylePopoverId)) openNoteStylePopoverId = null;
+    renderNotes();
+  }
+
+  function addNoteAtCenter() {
+    const scrollEl = boardScroll;
+    const rect = board.getBoundingClientRect();
+    const scrollRect = scrollEl.getBoundingClientRect();
+    // Mitte des aktuell sichtbaren Bereichs, relativ zum Board (funktioniert auch bei gescrolltem Raster).
+    const visibleCenterX = clamp(scrollRect.left + scrollRect.width / 2, rect.left, rect.right) - rect.left;
+    const visibleCenterY = clamp(scrollRect.top + scrollRect.height / 2, rect.top, rect.bottom) - rect.top;
+
+    pushUndo();
+    const note = {
+      id: 'note' + (noteIdCounter++) + '_' + Date.now(),
+      x: Math.max(0, visibleCenterX - NOTE_DEFAULT_W / 2),
+      y: Math.max(0, visibleCenterY - NOTE_DEFAULT_H / 2),
+      w: NOTE_DEFAULT_W,
+      h: NOTE_DEFAULT_H,
+      text: '',
+      bg: NOTE_DEFAULT_BG,
+      textColor: NOTE_DEFAULT_TEXT,
+      fontSize: NOTE_DEFAULT_FONTSIZE
+    };
+    state.notes.push(note);
+    renderNotes();
+
+    // Direkt in den Text springen (neue Notiz ist leer, einfaches focus() genügt).
+    requestAnimationFrame(() => {
+      const el = notesLayerEl.querySelector('.sticky-note[data-note-id="' + note.id + '"] .sticky-note__text');
+      if (el) el.focus();
+    });
+  }
+
+  addNoteBtn.addEventListener('click', addNoteAtCenter);
+
   function setToolMode(mode) {
     toolMode = mode;
     if (pickingOldColor) {
       pickingOldColor = false;
       pickOldColorBtn.classList.remove('is-active');
+    }
+    if (pickingPaletteColor) {
+      pickingPaletteColor = false;
+      palettePickBtn.classList.remove('is-active');
     }
     toolToggle.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tool === mode));
     board.classList.remove('board--tool-paint', 'board--tool-area', 'board--tool-pipette');
@@ -557,6 +1229,15 @@
       pickingOldColor = false;
       pickOldColorBtn.classList.remove('is-active');
       board.classList.toggle('board--tool-pipette', toolMode === 'pipette');
+      return;
+    }
+
+    if (pickingPaletteColor) {
+      const picked = state.colors[idx];
+      if (picked !== EMPTY) {
+        paletteNewColor.value = picked;
+        addToPalette(picked);
+      }
       return;
     }
 
@@ -658,8 +1339,13 @@
   redoBtn.addEventListener('click', redo);
   document.addEventListener('keydown', (e) => {
     const active = document.activeElement;
-    const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
     if (inField) return;
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNoteIds.size > 0) {
+      e.preventDefault();
+      deleteNotes(Array.from(selectedNoteIds));
+      return;
+    }
     if (!(e.ctrlKey || e.metaKey)) return;
     const key = e.key.toLowerCase();
     if (key === 'z' && e.shiftKey) {
@@ -671,6 +1357,15 @@
     } else if (key === 'y') {
       e.preventDefault();
       redo();
+    }
+  });
+
+  // Klick auf freie Fläche (nicht auf einen Zettel) hebt die Notiz-Auswahl auf.
+  board.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.sticky-note')) return;
+    if (selectedNoteIds.size > 0) {
+      selectedNoteIds = new Set();
+      renderNotes();
     }
   });
 
@@ -712,12 +1407,28 @@
   });
 
   // --- Export / Import als JSON-Datei ---
+  // Merkt sich den zuletzt geladenen Dateinamen, damit "Speichern" densel-
+  // ben Namen als Download-Vorschlag anbietet, statt immer auf den festen
+  // Standardnamen zurückzufallen. Ohne vorheriges Laden bleibt es beim
+  // bisherigen Standardnamen.
+  let lastPatternFileName = 'strickmuster.json';
+
+  // Leitet aus dem zuletzt geladenen Muster-Dateinamen einen PNG-Namen ab,
+  // z.B. "rosette_100x100.json" -> "strickmuster_rosette_100x100.png".
+  // Ohne vorheriges Laden (Standardname strickmuster.json) bleibt es beim
+  // bisherigen "strickmuster.png", ohne doppeltes Präfix.
+  function derivePngFileName() {
+    const base = lastPatternFileName.replace(/\.json$/i, '');
+    if (/^strickmuster([_-]|$)/i.test(base)) return base + '.png';
+    return 'strickmuster_' + base + '.png';
+  }
+
   exportJsonBtn.addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'strickmuster.json';
+    a.download = lastPatternFileName;
     a.click();
     URL.revokeObjectURL(url);
     hasUnsavedChanges = false;
@@ -734,8 +1445,9 @@
         pushUndo();
         rowsInput.value = data.rows;
         colsInput.value = data.cols;
-        buildBoard(data.rows, data.cols, data.colors);
+        buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes));
         hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
+        lastPatternFileName = file.name || lastPatternFileName;
       } catch (err) {
         alert(t('err_file_read') + err.message);
       }
@@ -818,8 +1530,18 @@
     const includeNumbers = showNumbers.checked;
 
     const fontSize = Math.max(9, Math.round(size * 0.5));
-    const marginX = includeNumbers ? Math.max(18, Math.round(size * 1.1)) : 0;
-    const marginY = includeNumbers ? Math.max(13, Math.round(size * 0.75)) : 0;
+    // Mindestens so groß wie der feste Board-Rand (24px/16px), in dem die
+    // Notizzettel-Koordinaten verankert sind - sonst würden Zettel nahe am
+    // Rand ins Negative rutschen, wenn die Nummern im Export ausgeblendet sind.
+    const BOARD_EDGE_X = 24;
+    const BOARD_EDGE_Y = 16;
+    const hasNotes = state.notes.length > 0;
+    let marginX = includeNumbers ? Math.max(18, Math.round(size * 1.1)) : 0;
+    let marginY = includeNumbers ? Math.max(13, Math.round(size * 0.75)) : 0;
+    if (hasNotes) {
+      marginX = Math.max(marginX, BOARD_EDGE_X);
+      marginY = Math.max(marginY, BOARD_EDGE_Y);
+    }
 
     const gridW = state.cols * size;
     const gridH = state.rows * size;
@@ -905,16 +1627,118 @@
       }
     }
 
+    // Notizzettel (falls vorhanden) über dem Muster einzeichnen. Notiz-Koordinaten
+    // sind relativ zur Board-Ecke gespeichert (siehe BOARD_EDGE_X/Y oben) - daher
+    // hier auf den tatsächlichen Export-Rand umrechnen.
+    const noteOffsetX = marginX - BOARD_EDGE_X;
+    const noteOffsetY = marginY - BOARD_EDGE_Y;
+    state.notes.forEach(note => {
+      drawNoteOnCanvas(ctx, note, noteOffsetX, noteOffsetY);
+    });
+
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'strickmuster.png';
+      a.download = derivePngFileName();
       a.click();
       URL.revokeObjectURL(url);
       hasUnsavedChanges = false;
     });
   });
+
+  // Zeichnet einen einzelnen Notizzettel (Hintergrund, Rahmen, umgebrochener Text) auf den Export-Canvas.
+  function drawNoteOnCanvas(ctx, note, offsetX, offsetY) {
+    const x = note.x + offsetX;
+    const y = note.y + offsetY;
+    const w = note.w;
+    const h = note.h;
+    const radius = 3;
+
+    ctx.save();
+
+    // Leichter Schlagschatten, wie im Editor.
+    ctx.shadowColor = 'rgba(50, 44, 38, 0.25)';
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 3;
+
+    ctx.fillStyle = note.bg;
+    ctx.strokeStyle = darkenColor(note.bg, 0.22);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.arcTo(x + w, y, x + w, y + radius, radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius);
+    ctx.lineTo(x + radius, y + h);
+    ctx.arcTo(x, y + h, x, y + h - radius, radius);
+    ctx.lineTo(x, y + radius);
+    ctx.arcTo(x, y, x + radius, y, radius);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+
+    if (!note.text) return;
+
+    // Textbereich: etwas Innenabstand, ohne den oberen Griff-Streifen (rein optisch, hier nicht mitgezeichnet).
+    const padding = 7;
+    const textX = x + padding;
+    const textY = y + padding;
+    const textW = Math.max(0, w - padding * 2);
+    const textH = Math.max(0, h - padding * 2);
+    if (textW <= 0 || textH <= 0) return;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+
+    ctx.fillStyle = note.textColor;
+    ctx.font = note.fontSize + 'px -apple-system, "Segoe UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const lineHeight = Math.round(note.fontSize * 1.35);
+    const lines = wrapNoteText(ctx, note.text, textW);
+    const maxLines = Math.max(1, Math.floor(textH / lineHeight));
+    lines.slice(0, maxLines).forEach((line, i) => {
+      ctx.fillText(line, textX, textY + i * lineHeight);
+    });
+
+    ctx.restore();
+  }
+
+  // Bricht Text auf mehrere Zeilen um (nach Wörtern, mit hartem Fallback bei sehr langen Wörtern),
+  // damit er wie im Zettel-Textfeld innerhalb der Breite bleibt.
+  function wrapNoteText(ctx, text, maxWidth) {
+    const lines = [];
+    text.split('\n').forEach(paragraph => {
+      const words = paragraph.split(' ');
+      let current = '';
+      words.forEach(word => {
+        const test = current ? current + ' ' + word : word;
+        if (ctx.measureText(test).width <= maxWidth || !current) {
+          current = test;
+        } else {
+          lines.push(current);
+          current = word;
+        }
+        // Sehr lange Einzelwörter zeichenweise umbrechen, damit sie nicht über den Rand hinausragen.
+        while (ctx.measureText(current).width > maxWidth && current.length > 1) {
+          let cut = current.length - 1;
+          while (cut > 1 && ctx.measureText(current.slice(0, cut)).width > maxWidth) cut--;
+          lines.push(current.slice(0, cut));
+          current = current.slice(cut);
+        }
+      });
+      lines.push(current);
+    });
+    return lines;
+  }
 
   // --- Kopfbereich einklappen ---
   const appHeader = document.getElementById('appHeader');
@@ -996,6 +1820,7 @@
   // --- Start ---
   applyLang();
   renderSwatches();
+  renderPalette();
   updateUndoRedoBtnState();
   buildBoard(50, 50);
   setToolMode('paint');
