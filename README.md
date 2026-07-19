@@ -17,9 +17,10 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 
 **Raster**
 - Frei einstellbares Raster von 50 bis 200 Reihen bzw. Maschen  
-- Einstellbare Zellgröße (Zoomstufe)  
+- Einstellbare Zellgröße (Zoomstufe), auch per Strg/Cmd + Mausrad direkt über dem Raster – während Strg/Cmd gedrückt gehalten wird, zeigt der Mauszeiger eine Lupe  
 - Zeilen-/Spaltenzahlen an allen vier Seiten (jede 10.), ein-/ausblendbar  
 - Gitterlinien komplett ein-/ausblendbar, jede 10. Linie optional hervorgehoben  
+- **Hintergrundbild**: eigenes Foto oder eine Vorlage hinter das komplette Raster legen (🖼️-Knopf im Header) – wächst/schrumpft beim Zoomen mit dem Raster mit, leere Maschen bleiben transparent, damit das Bild durchscheint; wird eingebettet gespeichert und ist auch im PNG-Export enthalten, aber bewusst nicht Teil von Undo/Redo  
 
 **Werkzeuge**
 - **Stift**: einzelne Maschen anklicken oder durch Ziehen mehrere am Stück einfärben  
@@ -32,6 +33,8 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 
 **Bild-Import**
 - Foto importieren, wird automatisch auf das aktuelle Raster gestreckt und in Pixelfarben umgesetzt (echtes Downsampling per Blockmittelung)  
+- **Farbstufen-Reduktion**: Farbtiefe optional auf wenige, klar unterscheidbare Stufen je Kanal begrenzen (Regler) – ergibt ein gröberes, blockigeres Ergebnis statt vieler feiner Zwischentöne  
+- **Auf Farbtabelle einrasten**: jede Masche kann statt einer frei berechneten Farbe automatisch die ähnlichste Farbe aus der eigenen Farbtabelle bekommen – ideal, um ein Muster nur mit tatsächlich vorhandenen Wollfarben umzusetzen; beide Optionen sind kombinierbar  
 
 **Rückgängig / Wiederherstellen**
 - Vollständiger Undo/Redo-Verlauf (bis zu 30 Schritte), per Button oder Tastenkombination (Strg+Z / Strg+Umschalt+Z bzw. Strg+Y)  
@@ -57,6 +60,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Sitzt in der Sidebar als eigene Gruppe ("Farbtabelle") und zusätzlich als kompakter Streifen im Header  
 - **Befüllen**: Pipette-Knopf "Aus Raster aufnehmen" + Klick auf eine Masche, oder manuell per Farbwähler + "Zur Farbtabelle hinzufügen"; wächst dynamisch bis maximal 49 Farben  
 - **Nutzen**: Klick auf eine Farbe aktiviert sie sofort im Stift; kleines "×" (beim Hover) entfernt eine Farbe aus der Sidebar-Tabelle  
+- **Sortieren**: Farbfelder per Ziehen frei in die gewünschte Reihenfolge bringen (Maus oder Touch), wirkt sich gleichzeitig auf Sidebar- und Header-Ansicht aus  
 - **Speichern/Laden**: eigene `Farbtabelle.json` exportier- und importierbar (unabhängig vom Muster), zusätzlich automatische Sicherung im Browser (localStorage)  
 - Bewusst **nicht** Teil von Undo/Redo oder der Muster-`.json` – bleibt musterunabhängig über mehrere Muster hinweg erhalten  
 
@@ -102,9 +106,10 @@ The default language can be set in the [lang.js](lang.js) file
 
 ### **Grid**
 - Freely adjustable grid from 50 to 200 rows/stitches  
-- Adjustable cell size (zoom level)  
+- Adjustable cell size (zoom level), also via Ctrl/Cmd + mouse wheel directly over the grid – while Ctrl/Cmd is held down, the cursor turns into a magnifying glass  
 - Row/column numbers on all four sides (every 10th), toggleable  
 - Grid lines fully toggleable, every 10th line optionally highlighted  
+- **Background image**: place your own photo or a reference image behind the entire grid (🖼️ button in the header) – grows/shrinks together with the grid when zooming, empty stitches stay transparent so the image shows through; saved embedded and included in the PNG export, but deliberately not part of undo/redo  
 
 ### **Tools**
 - **Pen**: click individual stitches or drag to color multiple at once  
@@ -116,7 +121,9 @@ The default language can be set in the [lang.js](lang.js) file
 - **Replace color**: swap one specific color throughout the whole pattern for another (or clear it entirely), with an eyedropper to pick the old color directly from the grid  
 
 ### **Image Import**
-- Import a photo; it is automatically stretched to the current grid and converted into pixel colors (true downsampling via block averaging)
+- Import a photo; it is automatically stretched to the current grid and converted into pixel colors (true downsampling via block averaging)  
+- **Color level reduction**: optionally limit the color depth to a few clearly distinct levels per channel (slider) – gives a coarser, blockier result instead of many fine in-between tones  
+- **Snap to color table**: each stitch can automatically get the closest match from your own color table instead of a freely computed color – great for working only with yarn colors you actually have; both options can be combined  
 
 ### **Undo / Redo**
 - Full undo/redo history (up to 30 steps), via button or keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y)
@@ -142,6 +149,7 @@ The default language can be set in the [lang.js](lang.js) file
 - Sits in the sidebar as its own group ("Color Table") and additionally as a compact strip in the header  
 - **Filling it**: eyedropper button "Pick from grid" + click a stitch, or manually via the color picker + "Add to color table"; grows dynamically up to a maximum of 49 colors  
 - **Using it**: clicking a color in the sidebar palette or header strip activates it immediately in the pen tool; a small "×" (shown on hover) removes a single color from the sidebar table  
+- **Reordering**: drag color swatches freely into the order you want (mouse or touch), reflected simultaneously in both the sidebar and header view  
 - **Save/Load**: a dedicated `Farbtabelle.json` file can be exported and imported (independent of the pattern), and the palette is also automatically preserved in the browser (localStorage)  
 - Deliberately **not** part of undo/redo or the pattern `.json` – it's a pattern-independent, personal collection that stays consistent across multiple patterns  
 

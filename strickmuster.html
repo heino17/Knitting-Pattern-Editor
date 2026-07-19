@@ -34,6 +34,18 @@
     <button type="button" id="addNoteBtn" class="header-note-btn" title="Neue Notiz erstellen" data-i18n-title="note_add_title" aria-label="Neue Notiz erstellen" data-i18n-aria-label="note_add_title">
       <span aria-hidden="true">📝</span>
     </button>
+    <div class="header-bg-menu-wrap">
+      <button type="button" id="bgImageBtn" class="header-note-btn header-bg-btn" title="Hintergrundbild" data-i18n-title="bgimage_btn_title" aria-label="Hintergrundbild" data-i18n-aria-label="bgimage_btn_title" aria-haspopup="true" aria-expanded="false">
+        <span aria-hidden="true">🖼️</span>
+      </button>
+      <div class="header-bg-menu" id="bgImageMenu" hidden>
+        <label class="header-bg-menu__item">
+          <span data-i18n="bgimage_choose">Bild wählen …</span>
+          <input type="file" id="bgImageInput" accept="image/*" hidden>
+        </label>
+        <button type="button" id="bgImageRemoveBtn" class="header-bg-menu__item header-bg-menu__item--btn" data-i18n="bgimage_remove">Bild entfernen</button>
+      </div>
+    </div>
     <div class="page-zoom" id="pageZoom" role="group" aria-label="Seiten-Zoom" data-i18n-aria-label="page_zoom_aria">
       <button type="button" id="pageZoomOutBtn" class="page-zoom__btn" title="Verkleinern" data-i18n-title="page_zoom_out_title" aria-label="Seite verkleinern" data-i18n-aria-label="page_zoom_out_title">−</button>
       <button type="button" id="pageZoomInBtn" class="page-zoom__btn" title="Vergrößern" data-i18n-title="page_zoom_in_title" aria-label="Seite vergrößern" data-i18n-aria-label="page_zoom_in_title">+</button>
@@ -201,6 +213,16 @@
               <input type="file" id="importImageInput" accept="image/*" hidden>
             </label>
           </div>
+          <label class="field">
+            <span><span data-i18n="import_levels_label">Farbstufen je Kanal</span> <output id="importLevelsOut">Aus</output></span>
+            <input type="range" id="importLevels" min="0" max="8" value="0">
+          </label>
+          <p class="panel__note" data-i18n="import_levels_note">Reduziert die Farbtiefe auf wenige, klar unterscheidbare Farbstufen statt vieler feiner Zwischentöne - je weniger Stufen, desto gröber.</p>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="importSnapPalette">
+            <span data-i18n="import_snap_palette_label">Auf meine Farbtabelle einrasten</span>
+          </label>
+          <p class="panel__note" data-i18n="import_snap_palette_note">Jede Masche bekommt die ähnlichste Farbe aus deiner gespeicherten Farbtabelle statt einer frei berechneten Farbe. Wird zusätzlich zu den Farbstufen angewendet.</p>
           <p class="panel__note"><span data-i18n="import_note_before">Das Bild wird auf das aktuelle Raster (</span><span id="importSizeHint">50 × 50</span><span data-i18n="import_note_after">, Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.</span></p>
           <div class="btn-row">
             <button id="exportJsonBtn" class="btn" data-i18n="export_json_btn">Als Datei exportieren</button>
@@ -304,6 +326,10 @@
     // Farbtabelle enthält dynamisch erzeugte Texte (Zähler, Lösch-Titel, Leer-Hinweis),
     // die von den obigen data-i18n-Selektoren nicht erfasst werden.
     if (typeof renderPalette === 'function') renderPalette();
+
+    // Ebenso die Farbstufen-Anzeige beim Bild-Import - deren Text hängt vom
+    // aktuellen Reglerstand ab und darf nicht pauschal überschrieben werden.
+    if (typeof refreshImportLevelsOut === 'function') refreshImportLevelsOut();
   }
 
   if (langSelect) {
@@ -368,6 +394,9 @@
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   const importJsonInput = document.getElementById('importJsonInput');
   const importImageInput = document.getElementById('importImageInput');
+  const importLevels = document.getElementById('importLevels');
+  const importLevelsOut = document.getElementById('importLevelsOut');
+  const importSnapPalette = document.getElementById('importSnapPalette');
   const importSizeHint = document.getElementById('importSizeHint');
   const exportPngBtn = document.getElementById('exportPngBtn');
   const showGrid10 = document.getElementById('showGrid10');
@@ -389,13 +418,23 @@
   const paletteImportInput = document.getElementById('paletteImportInput');
   const paletteClearBtn = document.getElementById('paletteClearBtn');
   const headerPalette = document.getElementById('headerPalette');
+  const bgImageBtn = document.getElementById('bgImageBtn');
+  const bgImageMenu = document.getElementById('bgImageMenu');
+  const bgImageInput = document.getElementById('bgImageInput');
+  const bgImageRemoveBtn = document.getElementById('bgImageRemoveBtn');
 
   const EMPTY = '#ffffff';
+  // Liefert die tatsächlich zu setzende Hintergrundfarbe für eine Zelle: bei
+  // gesetztem Hintergrundbild werden leere Maschen transparent dargestellt,
+  // damit das Bild durchscheint - sonst ganz normal die (Leer-)Farbe selbst.
+  function cellBg(color) {
+    return (color === EMPTY && state.backgroundImage) ? 'transparent' : color;
+  }
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
   const PALETTE_KEY = 'strickmuster-farbtabelle-v1';
   const PALETTE_MAX = 49; // 7 x 7 Raster in der Sidebar
 
-  let state = { rows: 50, cols: 50, colors: [], notes: [] };
+  let state = { rows: 50, cols: 50, colors: [], notes: [], backgroundImage: null };
   let cellEls = [];
   let isPainting = false;
   let paintValue = null; // Farbe, die während des Ziehens verwendet wird
@@ -497,6 +536,8 @@
     board.innerHTML = '';
     const frag = document.createDocumentFragment();
 
+    renderBackgroundImage();
+
     // Obere Zeile: Ecke oben links, Spaltenköpfe, Ecke oben rechts
     frag.appendChild(makeCorner('tl'));
     for (let c = 0; c < cols; c++) {
@@ -514,7 +555,7 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.dataset.idx = idx;
-        cell.style.background = state.colors[idx];
+        cell.style.background = cellBg(state.colors[idx]);
         if ((c + 1) % 10 === 0) cell.classList.add('cell--edge-v');
         if ((r + 1) % 10 === 0) cell.classList.add('cell--edge-h');
         frag.appendChild(cell);
@@ -588,7 +629,7 @@
   function paintCell(cell, color) {
     const idx = Number(cell.dataset.idx);
     state.colors[idx] = color;
-    cell.style.background = color;
+    cell.style.background = cellBg(color);
   }
 
   function getActiveColor() {
@@ -647,14 +688,85 @@
     renderPalette();
   }
 
+  // --- Farbtabelle: manuelles Umsortieren per Ziehen (Pointer Events, wie
+  // beim Verschieben der Notizzettel - funktioniert auch per Touch). Ein
+  // Klick ohne nennenswerte Bewegung wählt weiterhin ganz normal die Farbe
+  // aus; erst ab einer kleinen Zieh-Schwelle wird umsortiert. Wirkt sich auf
+  // headerPalette UND paletteGrid gleichermaßen aus, da beide dieselbe
+  // paletteColors-Reihenfolge anzeigen.
+  const PALETTE_DRAG_THRESHOLD = 5; // px
+  let paletteDropTargetEl = null;
+
+  function clearPaletteDropTarget() {
+    if (paletteDropTargetEl) {
+      paletteDropTargetEl.classList.remove('is-drop-target');
+      paletteDropTargetEl = null;
+    }
+  }
+
+  function attachPaletteDrag(swatchEl, hex) {
+    swatchEl.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return; // nur linke Maustaste bzw. primärer Touch-Punkt
+      const startX = e.clientX;
+      const startY = e.clientY;
+      let moved = false;
+
+      const onMove = (e2) => {
+        if (!moved) {
+          if (Math.hypot(e2.clientX - startX, e2.clientY - startY) < PALETTE_DRAG_THRESHOLD) return;
+          moved = true;
+          swatchEl.classList.add('is-dragging');
+          document.body.style.cursor = 'move'; // gilt für den ganzen Bildschirm, nicht nur übers Swatch
+        }
+        const overEl = document.elementFromPoint(e2.clientX, e2.clientY);
+        const targetSwatch = overEl ? overEl.closest('.palette-swatch') : null;
+        const validTarget = targetSwatch && targetSwatch !== swatchEl && targetSwatch.parentElement === swatchEl.parentElement;
+        if (validTarget) {
+          if (paletteDropTargetEl !== targetSwatch) {
+            clearPaletteDropTarget();
+            targetSwatch.classList.add('is-drop-target');
+            paletteDropTargetEl = targetSwatch;
+          }
+        } else {
+          clearPaletteDropTarget();
+        }
+      };
+
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        swatchEl.classList.remove('is-dragging');
+        document.body.style.cursor = '';
+        const dropHex = paletteDropTargetEl ? paletteDropTargetEl.dataset.hex : null;
+        clearPaletteDropTarget();
+
+        if (moved && dropHex && dropHex !== hex) {
+          const fromIdx = paletteColors.indexOf(hex);
+          const toIdx = paletteColors.indexOf(dropHex);
+          if (fromIdx !== -1 && toIdx !== -1) {
+            paletteColors.splice(fromIdx, 1);
+            paletteColors.splice(toIdx, 0, hex);
+            savePaletteToStorage();
+            renderPalette();
+          }
+        }
+      };
+
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    });
+  }
+
   function makePaletteSwatch(hex, forHeader) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'palette-swatch';
     b.style.background = hex;
     b.title = hex;
+    b.dataset.hex = hex;
     b.classList.toggle('is-active', !forHeader && colorPicker.value.toLowerCase() === hex.toLowerCase() && eraserBtn.dataset.active !== 'true');
     b.addEventListener('click', () => activatePaletteColor(hex));
+    attachPaletteDrag(b, hex);
 
     if (!forHeader) {
       const del = document.createElement('button');
@@ -686,6 +798,13 @@
 
     headerPalette.innerHTML = '';
     paletteColors.forEach(hex => headerPalette.appendChild(makePaletteSwatch(hex, true)));
+
+    // "Auf Palette einrasten" beim Bild-Import ergibt ohne gespeicherte
+    // Farben keinen Sinn - Checkbox so lange deaktivieren.
+    const hasPalette = paletteColors.length > 0;
+    importSnapPalette.disabled = !hasPalette;
+    if (!hasPalette) importSnapPalette.checked = false;
+    importSnapPalette.title = hasPalette ? '' : t('import_snap_palette_empty_title');
   }
 
   paletteAddBtn.addEventListener('click', () => addToPalette(paletteNewColor.value));
@@ -772,7 +891,7 @@
       for (let c = minC; c <= maxC; c++) {
         const idx = r * cols + c;
         state.colors[idx] = color;
-        if (cellEls[idx]) cellEls[idx].style.background = color;
+        if (cellEls[idx]) cellEls[idx].style.background = cellBg(color);
       }
     }
   }
@@ -1179,6 +1298,81 @@
 
   addNoteBtn.addEventListener('click', addNoteAtCenter);
 
+  // --- Hintergrundbild fürs Raster ---
+  // Liegt hinter allen Maschen, als ein einziges Bild über die gesamte
+  // Rasterfläche gestreckt (kein Kacheln) - wächst/schrumpft beim Zoomen
+  // mit dem Raster mit. Wird eingebettet gespeichert (Data-URL), damit
+  // auch der PNG-Export direkt aus dem Browser funktioniert. Ist NICHT Teil
+  // von Undo/Redo (genau wie Rasterfarbe/-sichtbarkeit an anderer Stelle).
+  let bgImageLayerEl = null;
+
+  function renderBackgroundImage() {
+    board.classList.toggle('board--has-bg-image', !!state.backgroundImage);
+    if (!state.backgroundImage) {
+      bgImageLayerEl = null;
+      return;
+    }
+    bgImageLayerEl = document.createElement('div');
+    bgImageLayerEl.className = 'board__bg-image';
+    bgImageLayerEl.style.backgroundImage = 'url("' + state.backgroundImage + '")';
+    board.insertBefore(bgImageLayerEl, board.firstChild);
+  }
+
+  function refreshEmptyCellBackgrounds() {
+    // Aktualisiert bereits im DOM vorhandene Zellen, deren Inline-Hintergrund
+    // noch aus der Zeit vor dem Setzen/Entfernen des Hintergrundbilds stammt.
+    for (let idx = 0; idx < state.colors.length; idx++) {
+      const color = state.colors[idx];
+      if (color === EMPTY && cellEls[idx]) {
+        cellEls[idx].style.background = cellBg(color);
+      }
+    }
+  }
+
+  function setBackgroundImage(dataUrl) {
+    state.backgroundImage = dataUrl;
+    hasUnsavedChanges = true;
+    renderBackgroundImage();
+    refreshEmptyCellBackgrounds();
+  }
+
+  function closeBgImageMenu() {
+    bgImageMenu.hidden = true;
+    bgImageBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  bgImageBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = bgImageMenu.hidden;
+    closeBgImageMenu();
+    if (willOpen) {
+      bgImageMenu.hidden = false;
+      bgImageBtn.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+  bgImageMenu.addEventListener('click', (e) => e.stopPropagation());
+
+  document.addEventListener('click', () => {
+    if (!bgImageMenu.hidden) closeBgImageMenu();
+  });
+
+  bgImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    closeBgImageMenu();
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setBackgroundImage(reader.result);
+    reader.onerror = () => alert(t('err_image_load'));
+    reader.readAsDataURL(file);
+    bgImageInput.value = '';
+  });
+
+  bgImageRemoveBtn.addEventListener('click', () => {
+    setBackgroundImage(null);
+    closeBgImageMenu();
+  });
+
   function setToolMode(mode) {
     toolMode = mode;
     if (pickingOldColor) {
@@ -1212,7 +1406,7 @@
     for (let idx = 0; idx < state.colors.length; idx++) {
       if (state.colors[idx].toLowerCase() === oldHex) {
         state.colors[idx] = newColor;
-        if (cellEls[idx]) cellEls[idx].style.background = newColor;
+        if (cellEls[idx]) cellEls[idx].style.background = cellBg(newColor);
       }
     }
     if (newColor !== EMPTY) addRecentColor(newColor);
@@ -1375,6 +1569,40 @@
     applyCellSize();
   });
 
+  // Zeigt beim Gedrückthalten von Strg/Cmd eine Lupe als Cursor übers Raster,
+  // als Hinweis auf die Zoom-per-Mausrad-Funktion. window-Listener statt nur
+  // boardScroll, damit auch ein Loslassen außerhalb des Rasters erkannt wird.
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Control' || e.key === 'Meta') {
+      board.classList.add('board--zoom-cursor');
+    }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'Control' || e.key === 'Meta') {
+      board.classList.remove('board--zoom-cursor');
+    }
+  });
+  // Sicherheitsnetz: falls das Fenster den Fokus verliert, während Strg/Cmd
+  // gedrückt ist (z. B. Alt-Tab), kommt sonst kein keyup mehr an.
+  window.addEventListener('blur', () => {
+    board.classList.remove('board--zoom-cursor');
+  });
+
+  // Zoomen per Strg/Cmd + Mausrad direkt über dem Raster - verhindert dabei
+  // den Browser-Zoom (preventDefault), da beides sonst leicht kollidiert.
+  boardScroll.addEventListener('wheel', (e) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    e.preventDefault();
+    const min = Number(cellSizeInput.min);
+    const max = Number(cellSizeInput.max);
+    const step = e.deltaY < 0 ? 1 : -1;
+    const newValue = clamp(Number(cellSizeInput.value) + step, min, max);
+    if (newValue === Number(cellSizeInput.value)) return;
+    cellSizeInput.value = newValue;
+    cellSizeOut.textContent = newValue;
+    applyCellSize();
+  }, { passive: false });
+
   buildBtn.addEventListener('click', () => {
     const rows = clamp(parseInt(rowsInput.value, 10) || 50, 50, 200);
     const cols = clamp(parseInt(colsInput.value, 10) || 50, 50, 200);
@@ -1445,6 +1673,7 @@
         pushUndo();
         rowsInput.value = data.rows;
         colsInput.value = data.cols;
+        state.backgroundImage = (typeof data.backgroundImage === 'string') ? data.backgroundImage : null;
         buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes));
         hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
         lastPatternFileName = file.name || lastPatternFileName;
@@ -1471,9 +1700,54 @@
     importImageInput.value = '';
   });
 
+  function refreshImportLevelsOut() {
+    const v = Number(importLevels.value);
+    importLevelsOut.textContent = v === 0 ? t('import_levels_off') : String(v);
+  }
+
+  importLevels.addEventListener('input', refreshImportLevelsOut);
+
+  // Farbstufen-Reduktion (Posterize): rundet jeden Farbkanal auf eine von
+  // "levels" gleichmäßig verteilten Stufen zwischen 0 und 255 - weniger
+  // Stufen ergeben ein gröberes, blockigeres Ergebnis mit weniger
+  // unterschiedlichen Zwischenfarben.
+  function posterizeChannel(value, levels) {
+    if (levels < 2) return value;
+    const step = 255 / (levels - 1);
+    return Math.round(Math.round(value / step) * step);
+  }
+
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return {
+      r: parseInt(h.substring(0, 2), 16),
+      g: parseInt(h.substring(2, 4), 16),
+      b: parseInt(h.substring(4, 6), 16)
+    };
+  }
+
+  // Findet die Farbe aus der gespeicherten Farbtabelle, die (im RGB-Raum)
+  // am nächsten an der übergebenen Farbe liegt.
+  function nearestPaletteColor(r, g, b) {
+    let bestHex = null;
+    let bestDist = Infinity;
+    for (const hex of paletteColors) {
+      const p = hexToRgb(hex);
+      const dr = p.r - r, dg = p.g - g, db = p.b - b;
+      const dist = dr * dr + dg * dg + db * db;
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestHex = hex;
+      }
+    }
+    return bestHex;
+  }
+
   function applyImageToGrid(img) {
     const rows = state.rows;
     const cols = state.cols;
+    const levels = Number(importLevels.value); // 0 = aus (volle Farbtiefe)
+    const snapToPalette = importSnapPalette.checked && paletteColors.length > 0;
 
     // Bild zunächst auf eine moderate Arbeitsgröße bringen (schneller & der
     // Browser glättet dabei bereits sinnvoll vor), danach exakt blockweise mitteln.
@@ -1509,10 +1783,21 @@
             count++;
           }
         }
-        const rAvg = count ? Math.round(rSum / count) : 255;
-        const gAvg = count ? Math.round(gSum / count) : 255;
-        const bAvg = count ? Math.round(bSum / count) : 255;
-        newColors[r * cols + c] = rgbToHex(rAvg, gAvg, bAvg);
+        let rAvg = count ? Math.round(rSum / count) : 255;
+        let gAvg = count ? Math.round(gSum / count) : 255;
+        let bAvg = count ? Math.round(bSum / count) : 255;
+
+        if (levels >= 2) {
+          rAvg = posterizeChannel(rAvg, levels);
+          gAvg = posterizeChannel(gAvg, levels);
+          bAvg = posterizeChannel(bAvg, levels);
+        }
+
+        let hex = rgbToHex(rAvg, gAvg, bAvg);
+        if (snapToPalette) {
+          hex = nearestPaletteColor(rAvg, gAvg, bAvg) || hex;
+        }
+        newColors[r * cols + c] = hex;
       }
     }
     pushUndo();
@@ -1526,6 +1811,19 @@
 
   // --- Export als PNG ---
   exportPngBtn.addEventListener('click', () => {
+    // Falls ein Hintergrundbild gesetzt ist, muss es erst geladen werden
+    // (Data-URL -> Image), bevor der Rest gezeichnet werden kann.
+    if (state.backgroundImage) {
+      const bgImg = new Image();
+      bgImg.onload = () => renderPngExport(bgImg);
+      bgImg.onerror = () => renderPngExport(null);
+      bgImg.src = state.backgroundImage;
+    } else {
+      renderPngExport(null);
+    }
+  });
+
+  function renderPngExport(bgImg) {
     const size = Number(cellSizeInput.value);
     const includeNumbers = showNumbers.checked;
 
@@ -1563,10 +1861,19 @@
       ctx.fillRect(marginX + gridW, 0, marginX, canvas.height); // rechts
     }
 
-    // Maschenfarben
+    // Hintergrundbild: ein einziges Bild über die gesamte Rasterfläche
+    // gestreckt (kein Kacheln), genau wie in der Live-Ansicht.
+    if (bgImg) {
+      ctx.drawImage(bgImg, marginX, marginY, gridW, gridH);
+    }
+
+    // Maschenfarben (leere Maschen bleiben aus, wenn ein Hintergrundbild
+    // gesetzt ist, damit dieses durch sie hindurchscheint)
     for (let r = 0; r < state.rows; r++) {
       for (let c = 0; c < state.cols; c++) {
-        ctx.fillStyle = state.colors[r * state.cols + c];
+        const color = state.colors[r * state.cols + c];
+        if (bgImg && color === EMPTY) continue;
+        ctx.fillStyle = color;
         ctx.fillRect(marginX + c * size, marginY + r * size, size, size);
       }
     }
@@ -1645,7 +1952,7 @@
       URL.revokeObjectURL(url);
       hasUnsavedChanges = false;
     });
-  });
+  }
 
   // Zeichnet einen einzelnen Notizzettel (Hintergrund, Rahmen, umgebrochener Text) auf den Export-Canvas.
   function drawNoteOnCanvas(ctx, note, offsetX, offsetY) {
