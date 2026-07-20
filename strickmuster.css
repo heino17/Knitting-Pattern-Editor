@@ -458,8 +458,8 @@ body {
 .icon-btn svg { width: 18px; height: 18px; }
 
 .panel__group {
-  padding-bottom: 18px;
-  margin-bottom: 18px;
+  padding-bottom: 1px;
+  margin-bottom: 5px;
   border-bottom: 1px dashed var(--line);
 }
 .panel__group:last-child {
@@ -548,7 +548,7 @@ body {
   gap: 4px;
   font-size: 12px;
   color: var(--ink-soft);
-  margin-bottom: 10px;
+  margin-bottom: 1px;
 }
 
 .field span { font-weight: 500; color: var(--ink); }
@@ -686,7 +686,7 @@ input[type="color"] {
 .btn-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-top: 5px;
 }
 .btn-row .btn { flex: 1; }
 
@@ -743,7 +743,7 @@ input[type="color"] {
   justify-content: center;
   padding: 8px;
 }
-.btn--icon-text svg { width: 22px; height: 22px; }
+.btn--icon-text svg { width: 17px; height: 17px; }
 
 .field input[type="color"]:disabled {
   opacity: 0.4;
