@@ -43,8 +43,17 @@
           <span data-i18n="bgimage_choose">Bild wählen …</span>
           <input type="file" id="bgImageInput" accept="image/*" hidden>
         </label>
+        <button type="button" id="bgImageToggleBtn" class="header-bg-menu__item header-bg-menu__item--btn" disabled data-i18n="bgimage_hide">Bild ausblenden</button>
         <button type="button" id="bgImageRemoveBtn" class="header-bg-menu__item header-bg-menu__item--btn" data-i18n="bgimage_remove">Bild entfernen</button>
       </div>
+    </div>
+    <div class="header-undo-redo" id="headerUndoRedo" role="group" aria-label="Rückgängig / Wiederherstellen" data-i18n-aria-label="header_undoredo_aria">
+      <button type="button" id="headerUndoBtn" class="header-undo-redo__btn" disabled title="Strg+Z" data-i18n-title="undo_title" aria-label="Rückgängig" data-i18n-aria-label="undo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" id="headerRedoBtn" class="header-undo-redo__btn" disabled title="Strg+Y" data-i18n-title="redo_title" aria-label="Wiederherstellen" data-i18n-aria-label="redo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
     <div class="page-zoom" id="pageZoom" role="group" aria-label="Seiten-Zoom" data-i18n-aria-label="page_zoom_aria">
       <button type="button" id="pageZoomOutBtn" class="page-zoom__btn" title="Verkleinern" data-i18n-title="page_zoom_out_title" aria-label="Seite verkleinern" data-i18n-aria-label="page_zoom_out_title">−</button>
@@ -82,6 +91,9 @@
       <div class="panel__scroll" id="panelScroll">
 
         <nav class="panel__icons" id="panelIcons" aria-label="Eingeklappte Seitenleiste" data-i18n-aria-label="panel_icons_aria">
+          <button type="button" class="icon-btn" data-target="group-werkzeuge" title="Werkzeuge" data-i18n-title="icon_werkzeuge_title" aria-label="Werkzeuge anzeigen" data-i18n-aria-label="icon_werkzeuge_aria">
+            <svg viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
           <button type="button" class="icon-btn" data-target="group-raster" title="Raster" data-i18n-title="icon_raster_title" aria-label="Raster-Einstellungen anzeigen" data-i18n-aria-label="icon_raster_aria">
             <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           </button>
@@ -101,34 +113,20 @@
 
         <div class="panel__body" id="panelBody">
 
-        <section class="panel__group" id="group-raster">
-          <h2 data-i18n="group_raster_h2">Raster</h2>
-          <label class="field">
-            <span data-i18n="rows_label">Reihen (Höhe)</span>
-            <input type="number" id="rows" min="50" max="200" value="50">
-          </label>
-          <label class="field">
-            <span data-i18n="cols_label">Maschen (Breite)</span>
-            <input type="number" id="cols" min="50" max="200" value="50">
+        <section class="panel__group panel__group--pinned panel__group--current-color" id="group-aktuelle-farbe">
+          <label class="field field--inline field--current-color">
+            <span data-i18n="current_color_label">Aktuelle Farbe</span>
+            <input type="color" id="colorPicker" value="#7a2e3a">
           </label>
           <label class="field">
             <span><span data-i18n="cellsize_label">Zellgröße</span> <output id="cellSizeOut">20</output>&nbsp;px</span>
             <input type="range" id="cellSize" min="10" max="36" value="20">
           </label>
-          <button id="buildBtn" class="btn btn--primary" data-i18n="build_btn">Raster erstellen</button>
-          <p class="panel__note" data-i18n="raster_note">Achtung: Ändert das Raster, werden bereits gesetzte Farben zurückgesetzt.</p>
         </section>
 
-        <section class="panel__group" id="group-farbe">
-          <h2 data-i18n="group_farbe_h2">Farbe</h2>
-          <label class="field field--inline">
-            <span data-i18n="current_color_label">Aktuelle Farbe</span>
-            <input type="color" id="colorPicker" value="#7a2e3a">
-          </label>
-          <div class="swatches" id="swatches" aria-label="Zuletzt verwendete Farben" data-i18n-aria-label="swatches_aria"></div>
-          <button id="eraserBtn" class="btn btn--toggle" data-active="false">
-            <span class="eraser-icon" aria-hidden="true"></span> <span data-i18n="eraser_btn">Radiergummi</span>
-          </button>
+        <section class="panel__group panel__group--pinned" id="group-werkzeuge">
+          <h2 data-i18n="group_werkzeuge_h2">Werkzeuge</h2>
+
 
           <div class="field-label" data-i18n="tool_label">Werkzeug</div>
           <div class="tool-toggle" id="toolToggle" role="group" aria-label="Werkzeug wählen" data-i18n-aria-label="tooltoggle_aria">
@@ -145,32 +143,31 @@
               <span data-i18n="tool_pipette_label">Pipette</span>
             </button>
           </div>
-          <p class="panel__note" data-i18n="farbe_note">Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.</p>
+          <p class="panel__note" data-i18n="werkzeug_note">Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.</p>
 
-          <div class="field-label" data-i18n="replace_label">Farbe im Muster austauschen</div>
-          <div class="replace-row">
-            <label class="field field--inline replace-field">
-              <span data-i18n="replace_old_label">Alte Farbe</span>
-              <input type="color" id="replaceOldColor" value="#7a2e3a">
-            </label>
-            <button type="button" id="pickOldColorBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="replace_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="replace_pick_title">
-              <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <button id="eraserBtn" class="btn btn--toggle" data-active="false">
+            <span class="eraser-icon" aria-hidden="true"></span> <span data-i18n="eraser_btn">Radiergummi</span>
+          </button>
+
+          <div class="btn-row">
+            <button id="undoBtn" class="btn btn--icon-text" disabled title="Strg+Z" data-i18n-title="undo_title" aria-label="Rückgängig" data-i18n-aria-label="undo_btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="redoBtn" class="btn btn--icon-text" disabled title="Strg+Y" data-i18n-title="redo_title" aria-label="Wiederherstellen" data-i18n-aria-label="redo_btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
-          <label class="field field--inline replace-field">
-            <span data-i18n="replace_new_label">Neue Farbe</span>
-            <input type="color" id="replaceNewColor" value="#ffffff">
-          </label>
-          <label class="field field--checkbox">
-            <input type="checkbox" id="replaceWithEraser">
-            <span data-i18n="replace_eraser_label">Neue Farbe = Radiergummi (leer)</span>
-          </label>
-          <button id="replaceColorBtn" class="btn" data-i18n="replace_btn">Farbe austauschen</button>
-          <p class="panel__note" data-i18n="replace_note">Ersetzt im gesamten Raster jede Masche mit der „Alten Farbe“ durch die „Neue Farbe“ (oder leert sie, wenn „Radiergummi“ aktiviert ist).</p>
+
         </section>
 
         <section class="panel__group" id="group-farbtabelle">
-          <h2 data-i18n="group_farbtabelle_h2">Farbtabelle</h2>
+          <h2>
+            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-farbtabelle-body">
+              <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="group_farbtabelle_h2">Farbtabelle</span>
+            </button>
+          </h2>
+          <div class="panel__group-body" id="group-farbtabelle-body">
           <p class="panel__note" data-i18n="palette_intro_note">Feste, dauerhafte Farbsammlung (bis zu 49 Farben) - unabhängig von "Zuletzt verwendet". Wird mit in eine eigene Datei gespeichert.</p>
 
           <div class="replace-row">
@@ -196,20 +193,23 @@
             </label>
           </div>
           <button type="button" id="paletteClearBtn" class="btn" data-i18n="palette_clear_btn">Farbtabelle leeren</button>
+          </div>
         </section>
 
         <section class="panel__group" id="group-muster">
-          <h2 data-i18n="group_muster_h2">Muster</h2>
-          <div class="btn-row">
-            <button id="undoBtn" class="btn" disabled title="Strg+Z" data-i18n-title="undo_title">↺ <span data-i18n="undo_btn">Rückgängig</span></button>
-            <button id="redoBtn" class="btn" disabled title="Strg+Umschalt+Z" data-i18n-title="redo_title">↻ <span data-i18n="redo_btn">Wiederherstellen</span></button>
-          </div>
+          <h2>
+            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-muster-body">
+              <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="group_muster_h2">Muster</span>
+            </button>
+          </h2>
+          <div class="panel__group-body" id="group-muster-body">
           <div class="btn-row">
             <button id="clearBtn" class="btn" data-i18n="clear_btn">Alles leeren</button>
           </div>
           <div class="btn-row">
             <label class="btn btn--file">
-              <span data-i18n="import_image_btn">Bild importieren</span>
+              <span data-i18n="import_image_btn">Bild ins Raster laden</span>
               <input type="file" id="importImageInput" accept="image/*" hidden>
             </label>
           </div>
@@ -225,17 +225,81 @@
           <p class="panel__note" data-i18n="import_snap_palette_note">Jede Masche bekommt die ähnlichste Farbe aus deiner gespeicherten Farbtabelle statt einer frei berechneten Farbe. Wird zusätzlich zu den Farbstufen angewendet.</p>
           <p class="panel__note"><span data-i18n="import_note_before">Das Bild wird auf das aktuelle Raster (</span><span id="importSizeHint">50 × 50</span><span data-i18n="import_note_after">, Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.</span></p>
           <div class="btn-row">
-            <button id="exportJsonBtn" class="btn" data-i18n="export_json_btn">Als Datei exportieren</button>
+            <button id="exportJsonBtn" class="btn" data-i18n="export_json_btn">Muster speichern</button>
             <label class="btn btn--file">
-              <span data-i18n="import_json_btn">Datei importieren</span>
+              <span data-i18n="import_json_btn">Muster laden</span>
               <input type="file" id="importJsonInput" accept="application/json" hidden>
             </label>
           </div>
           <button id="exportPngBtn" class="btn btn--primary" data-i18n="export_png_btn">Als PNG exportieren</button>
+          </div>
+        </section>
+
+        <section class="panel__group" id="group-farbe">
+          <h2>
+            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-farbe-body">
+              <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="group_farbe_h2">Farbe</span>
+            </button>
+          </h2>
+          <div class="panel__group-body" id="group-farbe-body">
+          <div class="field-label" data-i18n="replace_label">Farbe im Muster austauschen</div>
+
+          <div class="replace-row">
+            <label class="field field--inline replace-field">
+              <span data-i18n="replace_old_label">Alte Farbe</span>
+              <input type="color" id="replaceOldColor" value="#7a2e3a">
+            </label>
+            <button type="button" id="pickOldColorBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="replace_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="replace_pick_title">
+              <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <label class="field field--inline replace-field">
+            <span data-i18n="replace_new_label">Neue Farbe</span>
+            <input type="color" id="replaceNewColor" value="#ffffff">
+          </label>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="replaceWithEraser">
+            <span data-i18n="replace_eraser_label">Neue Farbe = Radiergummi (leer)</span>
+          </label>
+          <button id="replaceColorBtn" class="btn" data-i18n="replace_btn">Farbe austauschen</button>
+          <p class="panel__note" data-i18n="replace_note">Ersetzt im gesamten Raster jede Masche mit der „Alten Farbe“ durch die „Neue Farbe“ (oder leert sie, wenn „Radiergummi“ aktiviert ist).</p>
+          </div>
+        </section>
+
+        <section class="panel__group" id="group-raster">
+          <h2>
+            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-raster-body">
+              <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="group_raster_h2">Raster</span>
+            </button>
+          </h2>
+          <div class="panel__group-body" id="group-raster-body">
+          <label class="field">
+            <span data-i18n="rows_label">Reihen (Höhe)</span>
+            <input type="number" id="rows" min="50" max="200" value="50">
+          </label>
+          <label class="field">
+            <span data-i18n="cols_label">Maschen (Breite)</span>
+            <input type="number" id="cols" min="50" max="200" value="50">
+          </label>
+          <button id="buildBtn" class="btn btn--primary" data-i18n="build_btn">Raster erstellen</button>
+          <p class="panel__note" data-i18n="raster_note">Achtung: Ändert das Raster, werden bereits gesetzte Farben zurückgesetzt.</p>
+          </div>
         </section>
 
         <section class="panel__group" id="group-ansicht">
-          <h2 data-i18n="group_ansicht_h2">Ansicht</h2>
+          <h2>
+            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-ansicht-body">
+              <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="group_ansicht_h2">Ansicht</span>
+            </button>
+          </h2>
+          <div class="panel__group-body" id="group-ansicht-body">
+          <label class="field field--checkbox">
+            <input type="checkbox" id="showRgbValues" checked>
+            <span data-i18n="rgb_values_label">Farbwerte als RGB anzeigen</span>
+          </label>
           <label class="field field--checkbox">
             <input type="checkbox" id="showGrid10" checked>
             <span data-i18n="grid10_label">Jede 10. Linie hervorheben</span>
@@ -249,6 +313,7 @@
             <span data-i18n="gridlines_label">Gitterlinien anzeigen</span>
           </label>
           <p class="panel__note" data-i18n="ansicht_note">Einstellungen gelten auch für den PNG-Export.</p>
+          </div>
         </section>
 
         </div>
@@ -330,6 +395,10 @@
     // Ebenso die Farbstufen-Anzeige beim Bild-Import - deren Text hängt vom
     // aktuellen Reglerstand ab und darf nicht pauschal überschrieben werden.
     if (typeof refreshImportLevelsOut === 'function') refreshImportLevelsOut();
+
+    // Hintergrundbild-Sichtbarkeits-Button zeigt "Bild ausblenden" ODER
+    // "Bild einblenden", je nach Zustand - kein fixer data-i18n-Text.
+    if (typeof updateBgImageToggleBtnLabel === 'function') updateBgImageToggleBtnLabel();
   }
 
   if (langSelect) {
@@ -390,6 +459,8 @@
   const toolToggle = document.getElementById('toolToggle');
   const undoBtn = document.getElementById('undoBtn');
   const redoBtn = document.getElementById('redoBtn');
+  const headerUndoBtn = document.getElementById('headerUndoBtn');
+  const headerRedoBtn = document.getElementById('headerRedoBtn');
   const clearBtn = document.getElementById('clearBtn');
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   const importJsonInput = document.getElementById('importJsonInput');
@@ -400,6 +471,7 @@
   const importSizeHint = document.getElementById('importSizeHint');
   const exportPngBtn = document.getElementById('exportPngBtn');
   const showGrid10 = document.getElementById('showGrid10');
+  const showRgbValues = document.getElementById('showRgbValues');
   const showNumbers = document.getElementById('showNumbers');
   const showGridLines = document.getElementById('showGridLines');
   const swatchesEl = document.getElementById('swatches');
@@ -422,19 +494,38 @@
   const bgImageMenu = document.getElementById('bgImageMenu');
   const bgImageInput = document.getElementById('bgImageInput');
   const bgImageRemoveBtn = document.getElementById('bgImageRemoveBtn');
+  const bgImageToggleBtn = document.getElementById('bgImageToggleBtn');
 
   const EMPTY = '#ffffff';
   // Liefert die tatsächlich zu setzende Hintergrundfarbe für eine Zelle: bei
   // gesetztem Hintergrundbild werden leere Maschen transparent dargestellt,
   // damit das Bild durchscheint - sonst ganz normal die (Leer-)Farbe selbst.
   function cellBg(color) {
-    return (color === EMPTY && state.backgroundImage) ? 'transparent' : color;
+    return (color === EMPTY && state.backgroundImage && state.backgroundImageVisible) ? 'transparent' : color;
   }
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
   const PALETTE_KEY = 'strickmuster-farbtabelle-v1';
   const PALETTE_MAX = 49; // 7 x 7 Raster in der Sidebar
+  const RGB_DISPLAY_KEY = 'strickmuster-rgb-display';
 
-  let state = { rows: 50, cols: 50, colors: [], notes: [], backgroundImage: null };
+  // Wandelt einen Hex-Farbcode (#rrggbb) in eine lesbare "rgb(r,g,b)"-Zeichenkette um.
+  // Bei ungültigem Format wird der Hex-Wert unverändert zurückgegeben.
+  function hexToRgbString(hex) {
+    const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+    if (!m) return hex;
+    const r = parseInt(m[1], 16);
+    const g = parseInt(m[2], 16);
+    const b = parseInt(m[3], 16);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  // Liefert den für Tooltips anzuzeigenden Farbwert, abhängig von der
+  // "Farbwerte als RGB anzeigen"-Einstellung.
+  function colorDisplayValue(hex) {
+    return showRgbValues.checked ? hexToRgbString(hex) : hex;
+  }
+
+  let state = { rows: 50, cols: 50, colors: [], notes: [], backgroundImage: null, backgroundImageVisible: true };
   let cellEls = [];
   let isPainting = false;
   let paintValue = null; // Farbe, die während des Ziehens verwendet wird
@@ -513,6 +604,8 @@
   function updateUndoRedoBtnState() {
     undoBtn.disabled = undoStack.length === 0;
     redoBtn.disabled = redoStack.length === 0;
+    if (headerUndoBtn) headerUndoBtn.disabled = undoStack.length === 0;
+    if (headerRedoBtn) headerRedoBtn.disabled = redoStack.length === 0;
   }
 
   function buildBoard(rows, cols, colors, notes) {
@@ -644,6 +737,9 @@
   }
 
   function renderSwatches() {
+    // "Zuletzt verwendete Farben"-Swatches wurden aus der Sidebar entfernt
+    // (die Farbtabelle deckt diesen Bedarf bereits ab).
+    if (!swatchesEl) return;
     swatchesEl.innerHTML = '';
     recentColors.forEach(hex => {
       const b = document.createElement('button');
@@ -762,7 +858,7 @@
     b.type = 'button';
     b.className = 'palette-swatch';
     b.style.background = hex;
-    b.title = hex;
+    b.title = colorDisplayValue(hex);
     b.dataset.hex = hex;
     b.classList.toggle('is-active', !forHeader && colorPicker.value.toLowerCase() === hex.toLowerCase() && eraserBtn.dataset.active !== 'true');
     b.addEventListener('click', () => activatePaletteColor(hex));
@@ -1307,11 +1403,17 @@
   let bgImageLayerEl = null;
 
   function renderBackgroundImage() {
-    board.classList.toggle('board--has-bg-image', !!state.backgroundImage);
-    if (!state.backgroundImage) {
-      bgImageLayerEl = null;
-      return;
+    const showImage = !!state.backgroundImage && state.backgroundImageVisible;
+    board.classList.toggle('board--has-bg-image', showImage);
+    updateBgImageToggleBtnLabel();
+    // Vorherige Bild-Layer-Div immer zuerst entfernen: sonst sammeln sich bei
+    // wiederholtem Laden/Entfernen mehrere .board__bg-image-Divs im DOM an,
+    // die als zusätzliche (unsichtbare) Grid-Items das Raster verschieben.
+    if (bgImageLayerEl && bgImageLayerEl.parentNode) {
+      bgImageLayerEl.remove();
     }
+    bgImageLayerEl = null;
+    if (!showImage) return;
     bgImageLayerEl = document.createElement('div');
     bgImageLayerEl.className = 'board__bg-image';
     bgImageLayerEl.style.backgroundImage = 'url("' + state.backgroundImage + '")';
@@ -1331,9 +1433,26 @@
 
   function setBackgroundImage(dataUrl) {
     state.backgroundImage = dataUrl;
+    state.backgroundImageVisible = true;
     hasUnsavedChanges = true;
     renderBackgroundImage();
     refreshEmptyCellBackgrounds();
+  }
+
+  function toggleBackgroundImageVisibility() {
+    if (!state.backgroundImage) return;
+    state.backgroundImageVisible = !state.backgroundImageVisible;
+    hasUnsavedChanges = true;
+    renderBackgroundImage();
+    refreshEmptyCellBackgrounds();
+  }
+
+  function updateBgImageToggleBtnLabel() {
+    const hasImage = !!state.backgroundImage;
+    bgImageToggleBtn.disabled = !hasImage;
+    const key = state.backgroundImageVisible ? 'bgimage_hide' : 'bgimage_show';
+    bgImageToggleBtn.dataset.i18n = key;
+    bgImageToggleBtn.textContent = t(key);
   }
 
   function closeBgImageMenu() {
@@ -1366,6 +1485,11 @@
     reader.onerror = () => alert(t('err_image_load'));
     reader.readAsDataURL(file);
     bgImageInput.value = '';
+  });
+
+  bgImageToggleBtn.addEventListener('click', () => {
+    toggleBackgroundImageVisibility();
+    closeBgImageMenu();
   });
 
   bgImageRemoveBtn.addEventListener('click', () => {
@@ -1531,6 +1655,8 @@
   // --- Rückgängig / Wiederherstellen ---
   undoBtn.addEventListener('click', undo);
   redoBtn.addEventListener('click', redo);
+  if (headerUndoBtn) headerUndoBtn.addEventListener('click', undo);
+  if (headerRedoBtn) headerRedoBtn.addEventListener('click', redo);
   document.addEventListener('keydown', (e) => {
     const active = document.activeElement;
     const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
@@ -1627,6 +1753,12 @@
   showGrid10.addEventListener('change', () => {
     board.classList.toggle('board--grid10', showGrid10.checked);
   });
+
+  showRgbValues.checked = localStorage.getItem(RGB_DISPLAY_KEY) !== '0';
+  showRgbValues.addEventListener('change', () => {
+    localStorage.setItem(RGB_DISPLAY_KEY, showRgbValues.checked ? '1' : '0');
+    renderPalette();
+  });
   showNumbers.addEventListener('change', () => {
     board.classList.toggle('board--numbers', showNumbers.checked);
   });
@@ -1674,6 +1806,7 @@
         rowsInput.value = data.rows;
         colsInput.value = data.cols;
         state.backgroundImage = (typeof data.backgroundImage === 'string') ? data.backgroundImage : null;
+        state.backgroundImageVisible = (typeof data.backgroundImageVisible === 'boolean') ? data.backgroundImageVisible : true;
         buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes));
         hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
         lastPatternFileName = file.name || lastPatternFileName;
@@ -1811,9 +1944,10 @@
 
   // --- Export als PNG ---
   exportPngBtn.addEventListener('click', () => {
-    // Falls ein Hintergrundbild gesetzt ist, muss es erst geladen werden
-    // (Data-URL -> Image), bevor der Rest gezeichnet werden kann.
-    if (state.backgroundImage) {
+    // Falls ein Hintergrundbild gesetzt UND aktuell sichtbar ist, muss es
+    // erst geladen werden (Data-URL -> Image), bevor der Rest gezeichnet
+    // werden kann. Ist es ausgeblendet, exportieren wir wie ohne Bild.
+    if (state.backgroundImage && state.backgroundImageVisible) {
       const bgImg = new Image();
       bgImg.onload = () => renderPngExport(bgImg);
       bgImg.onerror = () => renderPngExport(null);
@@ -2074,6 +2208,7 @@
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarToggleBottom = document.getElementById('sidebarToggleBottom');
   const panelIcons = document.getElementById('panelIcons');
+  const panelBody = document.getElementById('panelBody');
   const COLLAPSE_KEY = 'strickmuster-sidebar-collapsed';
 
   let lastSidebarCollapsed = false;
@@ -2116,6 +2251,55 @@
   });
 
   setSidebarCollapsed(localStorage.getItem(COLLAPSE_KEY) === '1');
+
+  // --- Ein-/ausklappbare Bereiche in der Seitenleiste ---
+  // Zustand wird pro Bereich dauerhaft gemerkt (localStorage) und öffnet
+  // sich nie von selbst - ausschließlich ein bewusster Klick auf die
+  // Kopfzeile ändert ihn. Die gepinnte "Werkzeuge"-Sektion hat keinen
+  // solchen Umschalter und bleibt immer sichtbar.
+  const PANEL_GROUPS_KEY = 'strickmuster-panel-groups-v1';
+
+  function loadPanelGroupStates() {
+    try {
+      return JSON.parse(localStorage.getItem(PANEL_GROUPS_KEY) || '{}');
+    } catch {
+      return {};
+    }
+  }
+
+  function savePanelGroupState(groupId, expanded) {
+    const states = loadPanelGroupStates();
+    states[groupId] = expanded;
+    localStorage.setItem(PANEL_GROUPS_KEY, JSON.stringify(states));
+  }
+
+  function setGroupExpanded(toggleBtn, expanded, persist) {
+    toggleBtn.setAttribute('aria-expanded', String(expanded));
+    const body = document.getElementById(toggleBtn.getAttribute('aria-controls'));
+    if (body) body.classList.toggle('is-collapsed', !expanded);
+    if (persist) {
+      const group = toggleBtn.closest('.panel__group');
+      if (group) savePanelGroupState(group.id, expanded);
+    }
+  }
+
+  // Anfangszustand aus dem Speicher übernehmen (Standard: aufgeklappt) -
+  // ausschließlich beim Laden, niemals später automatisch verändert.
+  const storedGroupStates = loadPanelGroupStates();
+  document.querySelectorAll('.panel__group-toggle').forEach((toggleBtn) => {
+    const group = toggleBtn.closest('.panel__group');
+    const expanded = group && Object.prototype.hasOwnProperty.call(storedGroupStates, group.id)
+      ? storedGroupStates[group.id]
+      : true;
+    setGroupExpanded(toggleBtn, expanded, false);
+  });
+
+  panelBody.addEventListener('click', (e) => {
+    const toggleBtn = e.target.closest('.panel__group-toggle');
+    if (!toggleBtn) return;
+    const currentlyExpanded = toggleBtn.getAttribute('aria-expanded') !== 'false';
+    setGroupExpanded(toggleBtn, !currentlyExpanded, true);
+  });
 
   // --- Warnung vor Neuladen/Verlassen bei ungespeicherten Änderungen ---
   window.addEventListener('beforeunload', (e) => {

@@ -45,6 +45,8 @@ const I18N = {
     sidebar_toggle_expand: "Seitenleiste ausklappen",
     panel_icons_aria: "Eingeklappte Seitenleiste",
 
+    icon_werkzeuge_title: "Werkzeuge",
+    icon_werkzeuge_aria: "Werkzeuge anzeigen",
     icon_raster_title: "Raster",
     icon_raster_aria: "Raster-Einstellungen anzeigen",
     icon_farbe_title: "Farbe",
@@ -54,7 +56,9 @@ const I18N = {
     icon_ansicht_title: "Ansicht",
     icon_ansicht_aria: "Ansicht-Einstellungen anzeigen",
 
+    group_werkzeuge_h2: "Werkzeuge",
     group_raster_h2: "Raster",
+    rgb_values_label: "Farbwerte als RGB anzeigen",
     rows_label: "Reihen (Höhe)",
     cols_label: "Maschen (Breite)",
     cellsize_label: "Zellgröße",
@@ -74,7 +78,7 @@ const I18N = {
     tool_area_label: "Bereich",
     tool_pipette_title: "Pipette (Farbe aus dem Muster aufnehmen)",
     tool_pipette_label: "Pipette",
-    farbe_note: "Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.",
+    werkzeug_note: "Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.",
 
     replace_label: "Farbe im Muster austauschen",
     replace_old_label: "Alte Farbe",
@@ -96,6 +100,8 @@ const I18N = {
 
     bgimage_btn_title: "Hintergrundbild",
     bgimage_choose: "Bild wählen …",
+    bgimage_hide: "Bild ausblenden",
+    bgimage_show: "Bild einblenden",
     bgimage_remove: "Bild entfernen",
 
     icon_farbtabelle_title: "Farbtabelle",
@@ -116,6 +122,7 @@ const I18N = {
     palette_empty_hint: "Noch keine Farben in der Tabelle. Mit der Pipette oder dem Farbwähler oben Farben hinzufügen.",
     palette_confirm_clear: "Wirklich die gesamte Farbtabelle leeren?",
     page_zoom_aria: "Seiten-Zoom",
+    header_undoredo_aria: "Rückgängig / Wiederherstellen (Kopfbereich)",
     page_zoom_out_title: "Seite verkleinern",
     page_zoom_in_title: "Seite vergrößern",
 
@@ -123,9 +130,9 @@ const I18N = {
     undo_btn: "Rückgängig",
     undo_title: "Strg+Z",
     redo_btn: "Wiederherstellen",
-    redo_title: "Strg+Umschalt+Z",
+    redo_title: "Strg+Y",
     clear_btn: "Alles leeren",
-    import_image_btn: "Bild importieren",
+    import_image_btn: "Bild ins Raster laden",
     import_levels_label: "Farbstufen je Kanal",
     import_levels_off: "Aus",
     import_levels_note: "Reduziert die Farbtiefe auf wenige, klar unterscheidbare Farbstufen statt vieler feiner Zwischentöne - je weniger Stufen, desto gröber.",
@@ -134,8 +141,8 @@ const I18N = {
     import_snap_palette_empty_title: "Lege zuerst Farben in deiner Farbtabelle an, um diese Option zu nutzen.",
     import_note_before: "Das Bild wird auf das aktuelle Raster (",
     import_note_after: ", Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.",
-    export_json_btn: "Als Datei exportieren",
-    import_json_btn: "Datei importieren",
+    export_json_btn: "Muster speichern",
+    import_json_btn: "Muster laden",
     export_png_btn: "Als PNG exportieren",
 
     group_ansicht_h2: "Ansicht",
@@ -171,6 +178,8 @@ const I18N = {
     sidebar_toggle_expand: "Expand sidebar",
     panel_icons_aria: "Collapsed sidebar",
 
+    icon_werkzeuge_title: "Tools",
+    icon_werkzeuge_aria: "Show tools",
     icon_raster_title: "Grid",
     icon_raster_aria: "Show grid settings",
     icon_farbe_title: "Color",
@@ -180,7 +189,9 @@ const I18N = {
     icon_ansicht_title: "View",
     icon_ansicht_aria: "Show view settings",
 
+    group_werkzeuge_h2: "Tools",
     group_raster_h2: "Grid",
+    rgb_values_label: "Show color values as RGB",
     rows_label: "Rows (height)",
     cols_label: "Stitches (width)",
     cellsize_label: "Cell size",
@@ -200,7 +211,7 @@ const I18N = {
     tool_area_label: "Area",
     tool_pipette_title: "Eyedropper (pick a color from the pattern)",
     tool_pipette_label: "Eyedropper",
-    farbe_note: "In area mode: click a corner, drag out a rectangle, release to fill. With the eyedropper, click a stitch to pick up its color.",
+    werkzeug_note: "In area mode: click a corner, drag out a rectangle, release to fill. With the eyedropper, click a stitch to pick up its color.",
 
     replace_label: "Replace a color in the pattern",
     replace_old_label: "Old color",
@@ -222,6 +233,8 @@ const I18N = {
 
     bgimage_btn_title: "Background image",
     bgimage_choose: "Choose image …",
+    bgimage_hide: "Hide image",
+    bgimage_show: "Show image",
     bgimage_remove: "Remove image",
 
     icon_farbtabelle_title: "Color palette",
@@ -242,6 +255,7 @@ const I18N = {
     palette_empty_hint: "No colors in the palette yet. Add colors above using the eyedropper or the color picker.",
     palette_confirm_clear: "Really clear the entire color palette?",
     page_zoom_aria: "Page zoom",
+    header_undoredo_aria: "Undo / redo (header)",
     page_zoom_out_title: "Zoom page out",
     page_zoom_in_title: "Zoom page in",
 
@@ -249,9 +263,9 @@ const I18N = {
     undo_btn: "Undo",
     undo_title: "Ctrl+Z",
     redo_btn: "Redo",
-    redo_title: "Ctrl+Shift+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "Clear all",
-    import_image_btn: "Import image",
+    import_image_btn: "Load image into grid",
     import_levels_label: "Color levels per channel",
     import_levels_off: "Off",
     import_levels_note: "Reduces the color depth to a few clearly distinct levels instead of many fine in-between tones - fewer levels give a coarser result.",
@@ -260,8 +274,8 @@ const I18N = {
     import_snap_palette_empty_title: "Add colors to your palette first to use this option.",
     import_note_before: "The image will be stretched to fit the current grid (",
     import_note_after: ", width × height) and converted to pixel colors.",
-    export_json_btn: "Export as file",
-    import_json_btn: "Import file",
+    export_json_btn: "Save pattern",
+    import_json_btn: "Load pattern",
     export_png_btn: "Export as PNG",
 
     group_ansicht_h2: "View",
@@ -297,6 +311,8 @@ const I18N = {
     sidebar_toggle_expand: "Развернуть боковую панель",
     panel_icons_aria: "Свёрнутая боковая панель",
 
+    icon_werkzeuge_title: "Инструменты",
+    icon_werkzeuge_aria: "Показать инструменты",
     icon_raster_title: "Сетка",
     icon_raster_aria: "Показать настройки сетки",
     icon_farbe_title: "Цвет",
@@ -306,7 +322,9 @@ const I18N = {
     icon_ansicht_title: "Вид",
     icon_ansicht_aria: "Показать настройки вида",
 
+    group_werkzeuge_h2: "Инструменты",
     group_raster_h2: "Сетка",
+    rgb_values_label: "Показывать цвета в формате RGB",
     rows_label: "Ряды (высота)",
     cols_label: "Петли (ширина)",
     cellsize_label: "Размер клетки",
@@ -326,7 +344,7 @@ const I18N = {
     tool_area_label: "Область",
     tool_pipette_title: "Пипетка (взять цвет из узора)",
     tool_pipette_label: "Пипетка",
-    farbe_note: "В режиме области: щёлкните по углу, растяните прямоугольник, отпустите для заполнения. Пипеткой щёлкните по клетке, чтобы взять её цвет.",
+    werkzeug_note: "В режиме области: щёлкните по углу, растяните прямоугольник, отпустите для заполнения. Пипеткой щёлкните по клетке, чтобы взять её цвет.",
 
     replace_label: "Заменить цвет в узоре",
     replace_old_label: "Старый цвет",
@@ -348,6 +366,8 @@ const I18N = {
 
     bgimage_btn_title: "Фоновое изображение",
     bgimage_choose: "Выбрать изображение …",
+    bgimage_hide: "Скрыть изображение",
+    bgimage_show: "Показать изображение",
     bgimage_remove: "Удалить изображение",
 
     icon_farbtabelle_title: "Палитра цветов",
@@ -368,6 +388,7 @@ const I18N = {
     palette_empty_hint: "В палитре пока нет цветов. Добавьте цвета выше с помощью пипетки или палитры цветов.",
     palette_confirm_clear: "Действительно очистить всю палитру цветов?",
     page_zoom_aria: "Масштаб страницы",
+    header_undoredo_aria: "Отменить / повторить (шапка)",
     page_zoom_out_title: "Уменьшить масштаб страницы",
     page_zoom_in_title: "Увеличить масштаб страницы",
 
@@ -375,9 +396,9 @@ const I18N = {
     undo_btn: "Отменить",
     undo_title: "Ctrl+Z",
     redo_btn: "Повторить",
-    redo_title: "Ctrl+Shift+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "Очистить всё",
-    import_image_btn: "Импорт изображения",
+    import_image_btn: "Загрузить изображение в сетку",
     import_levels_label: "Уровни цвета на канал",
     import_levels_off: "Выкл",
     import_levels_note: "Уменьшает глубину цвета до нескольких четко различимых уровней вместо множества тонких промежуточных оттенков - чем меньше уровней, тем грубее результат.",
@@ -386,8 +407,8 @@ const I18N = {
     import_snap_palette_empty_title: "Сначала добавьте цвета в свою палитру, чтобы использовать эту функцию.",
     import_note_before: "Изображение будет растянуто на текущую сетку (",
     import_note_after: ", ширина × высота) и преобразовано в цвета пикселей.",
-    export_json_btn: "Экспортировать как файл",
-    import_json_btn: "Импортировать файл",
+    export_json_btn: "Сохранить узор",
+    import_json_btn: "Загрузить узор",
     export_png_btn: "Экспортировать как PNG",
 
     group_ansicht_h2: "Вид",
@@ -423,6 +444,8 @@ const I18N = {
     sidebar_toggle_expand: "Expandir barra lateral",
     panel_icons_aria: "Barra lateral contraída",
 
+    icon_werkzeuge_title: "Herramientas",
+    icon_werkzeuge_aria: "Mostrar herramientas",
     icon_raster_title: "Cuadrícula",
     icon_raster_aria: "Mostrar ajustes de cuadrícula",
     icon_farbe_title: "Color",
@@ -432,7 +455,9 @@ const I18N = {
     icon_ansicht_title: "Vista",
     icon_ansicht_aria: "Mostrar ajustes de vista",
 
+    group_werkzeuge_h2: "Herramientas",
     group_raster_h2: "Cuadrícula",
+    rgb_values_label: "Mostrar valores de color como RGB",
     rows_label: "Filas (alto)",
     cols_label: "Puntos (ancho)",
     cellsize_label: "Tamaño de celda",
@@ -452,7 +477,7 @@ const I18N = {
     tool_area_label: "Área",
     tool_pipette_title: "Cuentagotas (tomar un color del patrón)",
     tool_pipette_label: "Cuentagotas",
-    farbe_note: "En modo área: haz clic en una esquina, arrastra un rectángulo y suelta para rellenar. Con el cuentagotas, haz clic en una celda para tomar su color.",
+    werkzeug_note: "En modo área: haz clic en una esquina, arrastra un rectángulo y suelta para rellenar. Con el cuentagotas, haz clic en una celda para tomar su color.",
 
     replace_label: "Reemplazar un color del patrón",
     replace_old_label: "Color antiguo",
@@ -474,6 +499,8 @@ const I18N = {
 
     bgimage_btn_title: "Imagen de fondo",
     bgimage_choose: "Elegir imagen …",
+    bgimage_hide: "Ocultar imagen",
+    bgimage_show: "Mostrar imagen",
     bgimage_remove: "Quitar imagen",
 
     icon_farbtabelle_title: "Tabla de colores",
@@ -494,6 +521,7 @@ const I18N = {
     palette_empty_hint: "Aún no hay colores en la tabla. Añade colores arriba con el cuentagotas o el selector de color.",
     palette_confirm_clear: "¿Seguro que quieres vaciar toda la tabla de colores?",
     page_zoom_aria: "Zoom de página",
+    header_undoredo_aria: "Deshacer / rehacer (encabezado)",
     page_zoom_out_title: "Reducir zoom de página",
     page_zoom_in_title: "Aumentar zoom de página",
 
@@ -501,9 +529,9 @@ const I18N = {
     undo_btn: "Deshacer",
     undo_title: "Ctrl+Z",
     redo_btn: "Rehacer",
-    redo_title: "Ctrl+Mayús+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "Borrar todo",
-    import_image_btn: "Importar imagen",
+    import_image_btn: "Cargar imagen en la cuadrícula",
     import_levels_label: "Niveles de color por canal",
     import_levels_off: "Desactivado",
     import_levels_note: "Reduce la profundidad de color a unos pocos niveles claramente distintos en lugar de muchos tonos intermedios finos - menos niveles dan un resultado más tosco.",
@@ -512,8 +540,8 @@ const I18N = {
     import_snap_palette_empty_title: "Añade colores a tu paleta primero para usar esta opción.",
     import_note_before: "La imagen se ajustará a la cuadrícula actual (",
     import_note_after: ", ancho × alto) y se convertirá en colores de píxeles.",
-    export_json_btn: "Exportar como archivo",
-    import_json_btn: "Importar archivo",
+    export_json_btn: "Guardar patrón",
+    import_json_btn: "Cargar patrón",
     export_png_btn: "Exportar como PNG",
 
     group_ansicht_h2: "Vista",
@@ -549,6 +577,8 @@ const I18N = {
     sidebar_toggle_expand: "Développer la barre latérale",
     panel_icons_aria: "Barre latérale réduite",
 
+    icon_werkzeuge_title: "Outils",
+    icon_werkzeuge_aria: "Afficher les outils",
     icon_raster_title: "Grille",
     icon_raster_aria: "Afficher les paramètres de la grille",
     icon_farbe_title: "Couleur",
@@ -558,7 +588,9 @@ const I18N = {
     icon_ansicht_title: "Affichage",
     icon_ansicht_aria: "Afficher les paramètres d'affichage",
 
+    group_werkzeuge_h2: "Outils",
     group_raster_h2: "Grille",
+    rgb_values_label: "Afficher les couleurs en RGB",
     rows_label: "Rangs (hauteur)",
     cols_label: "Mailles (largeur)",
     cellsize_label: "Taille des cases",
@@ -578,7 +610,7 @@ const I18N = {
     tool_area_label: "Zone",
     tool_pipette_title: "Pipette (prélever une couleur du motif)",
     tool_pipette_label: "Pipette",
-    farbe_note: "En mode zone : cliquez sur un coin, tracez un rectangle, relâchez pour remplir. Avec la pipette, cliquez sur une case pour en récupérer la couleur.",
+    werkzeug_note: "En mode zone : cliquez sur un coin, tracez un rectangle, relâchez pour remplir. Avec la pipette, cliquez sur une case pour en récupérer la couleur.",
 
     replace_label: "Remplacer une couleur du motif",
     replace_old_label: "Ancienne couleur",
@@ -600,6 +632,8 @@ const I18N = {
 
     bgimage_btn_title: "Image de fond",
     bgimage_choose: "Choisir une image …",
+    bgimage_hide: "Masquer l'image",
+    bgimage_show: "Afficher l'image",
     bgimage_remove: "Supprimer l'image",
 
     icon_farbtabelle_title: "Palette de couleurs",
@@ -620,6 +654,7 @@ const I18N = {
     palette_empty_hint: "Aucune couleur dans la palette pour l'instant. Ajoutez des couleurs ci-dessus avec la pipette ou le sélecteur.",
     palette_confirm_clear: "Vraiment vider toute la palette de couleurs ?",
     page_zoom_aria: "Zoom de la page",
+    header_undoredo_aria: "Annuler / rétablir (en-tête)",
     page_zoom_out_title: "Réduire le zoom de la page",
     page_zoom_in_title: "Augmenter le zoom de la page",
 
@@ -627,9 +662,9 @@ const I18N = {
     undo_btn: "Annuler",
     undo_title: "Ctrl+Z",
     redo_btn: "Rétablir",
-    redo_title: "Ctrl+Maj+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "Tout effacer",
-    import_image_btn: "Importer une image",
+    import_image_btn: "Charger une image dans la grille",
     import_levels_label: "Niveaux de couleur par canal",
     import_levels_off: "Désactivé",
     import_levels_note: "Réduit la profondeur de couleur à quelques niveaux clairement distincts au lieu de nombreuses teintes intermédiaires fines - moins de niveaux donnent un résultat plus grossier.",
@@ -638,8 +673,8 @@ const I18N = {
     import_snap_palette_empty_title: "Ajoutez d'abord des couleurs à votre palette pour utiliser cette option.",
     import_note_before: "L'image sera adaptée à la grille actuelle (",
     import_note_after: ", largeur × hauteur) et convertie en couleurs de pixels.",
-    export_json_btn: "Exporter en fichier",
-    import_json_btn: "Importer un fichier",
+    export_json_btn: "Enregistrer le motif",
+    import_json_btn: "Charger le motif",
     export_png_btn: "Exporter en PNG",
 
     group_ansicht_h2: "Affichage",
@@ -675,6 +710,8 @@ const I18N = {
     sidebar_toggle_expand: "サイドバーを展開する",
     panel_icons_aria: "折りたたまれたサイドバー",
 
+    icon_werkzeuge_title: "ツール",
+    icon_werkzeuge_aria: "ツールを表示",
     icon_raster_title: "グリッド",
     icon_raster_aria: "グリッド設定を表示",
     icon_farbe_title: "色",
@@ -684,7 +721,9 @@ const I18N = {
     icon_ansicht_title: "表示",
     icon_ansicht_aria: "表示設定を表示",
 
+    group_werkzeuge_h2: "ツール",
     group_raster_h2: "グリッド",
+    rgb_values_label: "色の値をRGBで表示",
     rows_label: "段数(高さ)",
     cols_label: "目数(幅)",
     cellsize_label: "セルサイズ",
@@ -704,7 +743,7 @@ const I18N = {
     tool_area_label: "範囲",
     tool_pipette_title: "スポイト(パターンから色を取得)",
     tool_pipette_label: "スポイト",
-    farbe_note: "範囲モード:角をクリックして矩形をドラッグし、離すと塗りつぶされます。スポイトでは、セルをクリックしてその色を取得します。",
+    werkzeug_note: "範囲モード:角をクリックして矩形をドラッグし、離すと塗りつぶされます。スポイトでは、セルをクリックしてその色を取得します。",
 
     replace_label: "パターン内の色を置き換え",
     replace_old_label: "元の色",
@@ -726,6 +765,8 @@ const I18N = {
 
     bgimage_btn_title: "背景画像",
     bgimage_choose: "画像を選択 …",
+    bgimage_hide: "画像を非表示",
+    bgimage_show: "画像を表示",
     bgimage_remove: "画像を削除",
 
     icon_farbtabelle_title: "カラーパレット",
@@ -746,6 +787,7 @@ const I18N = {
     palette_empty_hint: "まだパレットに色がありません。上のスポイトまたはカラーピッカーで色を追加してください。",
     palette_confirm_clear: "本当にカラーパレット全体を空にしますか?",
     page_zoom_aria: "ページの拡大縮小",
+    header_undoredo_aria: "元に戻す・やり直し（ヘッダー）",
     page_zoom_out_title: "ページを縮小",
     page_zoom_in_title: "ページを拡大",
 
@@ -753,9 +795,9 @@ const I18N = {
     undo_btn: "元に戻す",
     undo_title: "Ctrl+Z",
     redo_btn: "やり直す",
-    redo_title: "Ctrl+Shift+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "すべて消去",
-    import_image_btn: "画像を読み込む",
+    import_image_btn: "画像をグリッドに読み込む",
     import_levels_label: "チャンネルごとの色数",
     import_levels_off: "オフ",
     import_levels_note: "多くの微妙な中間色の代わりに、はっきり区別できる少数の色数に減らします。数が少ないほど、より粗い仕上がりになります。",
@@ -764,8 +806,8 @@ const I18N = {
     import_snap_palette_empty_title: "このオプションを使うには、まずカラーパレットに色を追加してください。",
     import_note_before: "画像は現在のグリッド(",
     import_note_after: "、幅×高さ)に合わせて引き伸ばされ、ピクセルの色に変換されます。",
-    export_json_btn: "ファイルとして書き出す",
-    import_json_btn: "ファイルを読み込む",
+    export_json_btn: "模様を保存",
+    import_json_btn: "模様を読み込む",
     export_png_btn: "PNGとして書き出す",
 
     group_ansicht_h2: "表示",
@@ -801,6 +843,8 @@ const I18N = {
     sidebar_toggle_expand: "사이드바 펼치기",
     panel_icons_aria: "접힌 사이드바",
 
+    icon_werkzeuge_title: "도구",
+    icon_werkzeuge_aria: "도구 표시",
     icon_raster_title: "그리드",
     icon_raster_aria: "그리드 설정 표시",
     icon_farbe_title: "색상",
@@ -810,7 +854,9 @@ const I18N = {
     icon_ansicht_title: "보기",
     icon_ansicht_aria: "보기 설정 표시",
 
+    group_werkzeuge_h2: "도구",
     group_raster_h2: "그리드",
+    rgb_values_label: "색상 값을 RGB로 표시",
     rows_label: "단(높이)",
     cols_label: "코(너비)",
     cellsize_label: "셀 크기",
@@ -830,7 +876,7 @@ const I18N = {
     tool_area_label: "영역",
     tool_pipette_title: "스포이드(패턴에서 색상 추출)",
     tool_pipette_label: "스포이드",
-    farbe_note: "영역 모드: 모서리를 클릭하고 사각형을 드래그한 뒤 놓으면 채워집니다. 스포이드는 셀을 클릭해 색상을 가져옵니다.",
+    werkzeug_note: "영역 모드: 모서리를 클릭하고 사각형을 드래그한 뒤 놓으면 채워집니다. 스포이드는 셀을 클릭해 색상을 가져옵니다.",
 
     replace_label: "패턴의 색상 바꾸기",
     replace_old_label: "이전 색상",
@@ -852,6 +898,8 @@ const I18N = {
 
     bgimage_btn_title: "배경 이미지",
     bgimage_choose: "이미지 선택 …",
+    bgimage_hide: "이미지 숨기기",
+    bgimage_show: "이미지 표시",
     bgimage_remove: "이미지 제거",
 
     icon_farbtabelle_title: "색상표",
@@ -872,6 +920,7 @@ const I18N = {
     palette_empty_hint: "아직 색상표에 색상이 없습니다. 위의 스포이트나 색상 선택기로 색상을 추가하세요.",
     palette_confirm_clear: "정말 전체 색상표를 비우시겠습니까?",
     page_zoom_aria: "페이지 확대/축소",
+    header_undoredo_aria: "실행 취소 / 다시 실행 (헤더)",
     page_zoom_out_title: "페이지 축소",
     page_zoom_in_title: "페이지 확대",
 
@@ -879,9 +928,9 @@ const I18N = {
     undo_btn: "실행 취소",
     undo_title: "Ctrl+Z",
     redo_btn: "다시 실행",
-    redo_title: "Ctrl+Shift+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "전체 지우기",
-    import_image_btn: "이미지 가져오기",
+    import_image_btn: "이미지를 격자에 불러오기",
     import_levels_label: "채널당 색상 단계",
     import_levels_off: "끄기",
     import_levels_note: "미세한 중간 색조를 여러 개 사용하는 대신 뚜렷하게 구분되는 몇 가지 색상 단계로 줄입니다 - 단계가 적을수록 더 거칠어집니다.",
@@ -890,8 +939,8 @@ const I18N = {
     import_snap_palette_empty_title: "이 옵션을 사용하려면 먼저 색상표에 색상을 추가하세요.",
     import_note_before: "이미지는 현재 그리드(",
     import_note_after: ", 너비 × 높이)에 맞춰 늘어나고 픽셀 색상으로 변환됩니다.",
-    export_json_btn: "파일로 내보내기",
-    import_json_btn: "파일 가져오기",
+    export_json_btn: "무늬 저장",
+    import_json_btn: "무늬 불러오기",
     export_png_btn: "PNG로 내보내기",
 
     group_ansicht_h2: "보기",
@@ -927,6 +976,8 @@ const I18N = {
     sidebar_toggle_expand: "展开侧边栏",
     panel_icons_aria: "已收起的侧边栏",
 
+    icon_werkzeuge_title: "工具",
+    icon_werkzeuge_aria: "显示工具",
     icon_raster_title: "网格",
     icon_raster_aria: "显示网格设置",
     icon_farbe_title: "颜色",
@@ -936,7 +987,9 @@ const I18N = {
     icon_ansicht_title: "视图",
     icon_ansicht_aria: "显示视图设置",
 
+    group_werkzeuge_h2: "工具",
     group_raster_h2: "网格",
+    rgb_values_label: "以RGB显示颜色值",
     rows_label: "行数(高度)",
     cols_label: "针数(宽度)",
     cellsize_label: "格子大小",
@@ -956,7 +1009,7 @@ const I18N = {
     tool_area_label: "区域",
     tool_pipette_title: "吸管(从图案中取色)",
     tool_pipette_label: "吸管",
-    farbe_note: "区域模式:点击一个角,拖出矩形,松开即可填充。使用吸管点击格子即可获取该颜色。",
+    werkzeug_note: "区域模式:点击一个角,拖出矩形,松开即可填充。使用吸管点击格子即可获取该颜色。",
 
     replace_label: "替换图案中的颜色",
     replace_old_label: "旧颜色",
@@ -978,6 +1031,8 @@ const I18N = {
 
     bgimage_btn_title: "背景图片",
     bgimage_choose: "选择图片…",
+    bgimage_hide: "隐藏图片",
+    bgimage_show: "显示图片",
     bgimage_remove: "移除图片",
 
     icon_farbtabelle_title: "调色板",
@@ -998,6 +1053,7 @@ const I18N = {
     palette_empty_hint: "调色板中还没有颜色。请使用上方的吸管或取色器添加颜色。",
     palette_confirm_clear: "确定要清空整个调色板吗?",
     page_zoom_aria: "页面缩放",
+    header_undoredo_aria: "撤销 / 重做（页眉）",
     page_zoom_out_title: "缩小页面",
     page_zoom_in_title: "放大页面",
 
@@ -1005,9 +1061,9 @@ const I18N = {
     undo_btn: "撤销",
     undo_title: "Ctrl+Z",
     redo_btn: "重做",
-    redo_title: "Ctrl+Shift+Z",
+    redo_title: "Ctrl+Y",
     clear_btn: "清空全部",
-    import_image_btn: "导入图片",
+    import_image_btn: "将图片载入网格",
     import_levels_label: "每通道色阶",
     import_levels_off: "关闭",
     import_levels_note: "将颜色深度减少为几个清晰可辨的色阶，而不是许多细微的中间色调——色阶越少，效果越粗糙。",
@@ -1016,8 +1072,8 @@ const I18N = {
     import_snap_palette_empty_title: "请先在调色板中添加颜色以使用此选项。",
     import_note_before: "图片将被拉伸以适应当前网格(",
     import_note_after: ",宽×高),并转换为像素颜色。",
-    export_json_btn: "导出为文件",
-    import_json_btn: "导入文件",
+    export_json_btn: "保存图案",
+    import_json_btn: "载入图案",
     export_png_btn: "导出为PNG",
 
     group_ansicht_h2: "视图",
