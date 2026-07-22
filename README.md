@@ -168,7 +168,7 @@ The default language can be set in the [lang.js](lang.js) file
 
 ## **Technology**
 
-Pure HTML, CSS, and JavaScript (vanilla JS, no frameworks or build tools required). Two files:
+Pure HTML, CSS, and JavaScript (vanilla JS, no frameworks or build tools required). Three files:
 
 - `strickmuster.html` – structure and logic  
 - `strickmuster.css` – styling  
