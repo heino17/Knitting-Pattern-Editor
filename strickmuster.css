@@ -101,14 +101,14 @@ body {
 .lang-select-wrap {
   position: absolute;
   top: 10px;
-  right: 119px;
+  right: 106px;
   z-index: 4;
 }
 
 .page-zoom {
   position: absolute;
   top: 10px;
-  right: 253px;
+  right: 234px;
   z-index: 4;
   display: flex;
   gap: 3px;
@@ -136,16 +136,17 @@ body {
 
 .app-header.is-collapsed .page-zoom { top: 7px; right: 84px; }
 
-/* Zweites Undo/Redo-Set im Header (Duplikat der Sidebar-Buttons für schnellen
-   Zugriff) - bleibt in beiden Header-Zuständen sichtbar, analog zu Notiz-
-   und Hintergrundbild-Button, sitzt links neben dem Seiten-Zoom. */
+/* Speichern/Laden-Buttons im Header (💾/📂) - bleiben in beiden
+   Header-Zuständen sichtbar, analog zu Notiz- und Hintergrundbild-Button,
+   sitzen links neben dem Seiten-Zoom. Funktional Kopien der "Muster
+   speichern"/"Muster laden"-Aktionen aus der Seitenleiste (group-muster). */
 .header-undo-redo {
   position: absolute;
   top: 10px;
-  right: 322px;
+  right: 291px;
   z-index: 4;
   display: flex;
-  gap: 3px;
+  gap: 2px;
 }
 .app-header.is-collapsed .header-undo-redo { top: 7px; right: 147px; }
 
@@ -161,11 +162,14 @@ body {
   color: var(--ink-soft);
   cursor: pointer;
   padding: 0;
+  font-size: 14px;
+  line-height: 1;
 }
 .header-undo-redo__btn svg { width: 16px; height: 16px; }
 .header-undo-redo__btn:hover { background: #f2ebdd; color: var(--wine); }
 .header-undo-redo__btn:disabled { opacity: 0.35; cursor: default; }
 .header-undo-redo__btn:disabled:hover { background: #fff; color: var(--ink-soft); }
+.header-undo-redo__btn--file { cursor: pointer; }
 
 .lang-select {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -235,8 +239,8 @@ body {
 .header-bg-menu-wrap {
   position: absolute;
   top: 10px;
-  right: 84px;
-  z-index: 4;
+  right: 78px;
+  z-index: 5;
 }
 .app-header.is-collapsed .header-bg-menu-wrap { display: none; }
 
@@ -304,13 +308,13 @@ body {
   color: var(--wine);
   border: 1px solid var(--wine);
   border-radius: 999px;
-  padding: 3px 9px;
+  padding: 3px 9px 1px 9px;
   line-height: 1.4;
-  margin-bottom: -6px;
+  margin-bottom: 3px;
 }
 
 .app-header h1 {
-  margin: -7px 0 -7px 0;
+  margin: -7px 0 -5px 0;
   font-size: clamp(24px, 3vw, 32px);
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -318,10 +322,10 @@ body {
 }
 
 .app-header__hint {
-  margin: 6px 0 0;
+  margin: 0px 0 0;
   color: var(--ink-soft);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* ---------- Layout ---------- */
@@ -571,7 +575,7 @@ body {
 
 .field input[type="range"] {
   width: 100%;
-  accent-color: var(--wine);
+  accent-color: #F2EBDD;
 }
 
 .field--inline {
@@ -619,9 +623,9 @@ body {
 .tool-btn svg { width: 18px; height: 18px; }
 .tool-btn:hover { background: #f2ebdd; }
 .tool-btn.is-active {
-  background: var(--wine);
-  border-color: var(--wine);
-  color: #fdf6ee;
+  background: #f2ebdd;
+  border-color: #0bb000;;
+  color: #000;
 }
 
 input[type="color"] {
@@ -662,6 +666,7 @@ input[type="color"] {
   border: 1px solid var(--line-bold);
   border-radius: 8px;
   padding: 8px 10px;
+  margin-top:3px;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
   width: 100%;
@@ -676,18 +681,22 @@ input[type="color"] {
 .btn:disabled:hover { background: #fff; }
 
 .btn--primary {
-  background: var(--wine);
+  background: #fff;
   border-color: var(--wine);
-  color: #fdf6ee;
+  color: #000;
   margin-top: 4px;
 }
-.btn--primary:hover { background: var(--wine-dark); }
+.btn--primary:hover {
+  background: background: #f2ebdd;
+  color: #000;
+}
 
 .btn-row {
   display: flex;
   gap: 8px;
-  margin-top: 5px;
+  margin-top: 0px;
 }
+
 .btn-row .btn { flex: 1; }
 
 .btn--file {
@@ -730,9 +739,10 @@ input[type="color"] {
 }
 .btn--icon svg { width: 16px; height: 16px; }
 .btn--icon.is-active {
-  background: var(--wine);
-  border-color: var(--wine);
-  color: #fdf6ee;
+  background: #f2ebdd;
+  border: 3px solid #0bb000;
+  border-color: #0bb000;
+  color: #000;
 }
 
 /* Undo/Redo: reine Icon-Buttons (kein Text), damit sie bei längeren
@@ -1176,8 +1186,8 @@ input[type="color"] {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 8px;
-  max-height: 46px;
+  margin-top: 0px;
+  max-height: 58px;
   overflow-y: auto;
 }
 .header-palette:empty { display: none; }
@@ -1190,6 +1200,53 @@ input[type="color"] {
 .header-palette .palette-swatch__del { display: none; }
 
 .app-header.is-collapsed .header-palette {
-  margin-top: 5px;
+  margin-top: 3px;
   max-height: 20px;
+}
+
+/* Werkzeugzeile im Header: nur sichtbar, wenn die Seitenleiste eingeklappt
+   ist (dann fehlt der Zugriff auf Stift/Bereich/Pipette/Radiergummi/Undo/Redo
+   in der Seitenleiste). Die Box mit den Buttons ist kompakt (~200px) und
+   steht selbst mittig in der vollen Zeilenbreite. */
+.header-tools-row {
+  display: none;
+  justify-content: center;
+  margin-top: 4px;
+}
+.header-tools-row.is-visible {
+  display: flex;
+}
+
+.header-tools-row__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 200px;
+}
+
+.header-tools-row__btn {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-bold);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+}
+.header-tools-row__btn svg { width: 17px; height: 17px; }
+.header-tools-row__btn:hover { background: #f2ebdd; color: var(--wine); }
+.header-tools-row__btn:disabled { opacity: 0.35; cursor: default; }
+.header-tools-row__btn:disabled:hover { background: #fff; color: var(--ink-soft); }
+.header-tools-row__btn.is-active {
+  width: 30px;
+  height: 30px;
+  background: #f2ebdd;
+  color: #000;
+  border: 2px solid #0bb000;
+  border-color: #0bb000;
 }

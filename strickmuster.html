@@ -47,13 +47,14 @@
         <button type="button" id="bgImageRemoveBtn" class="header-bg-menu__item header-bg-menu__item--btn" data-i18n="bgimage_remove">Bild entfernen</button>
       </div>
     </div>
-    <div class="header-undo-redo" id="headerUndoRedo" role="group" aria-label="Rückgängig / Wiederherstellen" data-i18n-aria-label="header_undoredo_aria">
-      <button type="button" id="headerUndoBtn" class="header-undo-redo__btn" disabled title="Strg+Z" data-i18n-title="undo_title" aria-label="Rückgängig" data-i18n-aria-label="undo_btn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="header-undo-redo" id="headerSaveLoad" role="group" aria-label="Muster speichern / laden" data-i18n-aria-label="header_saveload_aria">
+      <button type="button" id="headerSaveBtn" class="header-undo-redo__btn" title="Muster speichern" data-i18n-title="export_json_btn" aria-label="Muster speichern" data-i18n-aria-label="export_json_btn">
+        <span aria-hidden="true">💾</span>
       </button>
-      <button type="button" id="headerRedoBtn" class="header-undo-redo__btn" disabled title="Strg+Y" data-i18n-title="redo_title" aria-label="Wiederherstellen" data-i18n-aria-label="redo_btn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <label class="header-undo-redo__btn header-undo-redo__btn--file" id="headerLoadBtn" title="Muster laden" data-i18n-title="import_json_btn" aria-label="Muster laden" data-i18n-aria-label="import_json_btn">
+        <span aria-hidden="true">📂</span>
+        <input type="file" id="headerLoadInput" accept="application/json" hidden>
+      </label>
     </div>
     <div class="page-zoom" id="pageZoom" role="group" aria-label="Seiten-Zoom" data-i18n-aria-label="page_zoom_aria">
       <button type="button" id="pageZoomOutBtn" class="page-zoom__btn" title="Verkleinern" data-i18n-title="page_zoom_out_title" aria-label="Seite verkleinern" data-i18n-aria-label="page_zoom_out_title">−</button>
@@ -78,6 +79,28 @@
     </div>
     <p class="app-header__hint" data-i18n="header_hint">Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern</p>
     <div class="header-palette" id="headerPalette" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
+    <div class="header-tools-row" id="headerToolsRow" role="group" aria-label="Werkzeuge" data-i18n-aria-label="header_tools_row_aria">
+      <div class="header-tools-row__inner">
+      <button type="button" class="header-tools-row__btn tool-btn is-active" id="headerToolPaint" data-tool="paint" title="Stift (freihand malen)" data-i18n-title="tool_paint_title" aria-label="Stift" data-i18n-aria-label="tool_paint_label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="header-tools-row__btn tool-btn" id="headerToolArea" data-tool="area" title="Bereich auswählen und füllen" data-i18n-title="tool_area_title" aria-label="Bereich" data-i18n-aria-label="tool_area_label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2.5"/></svg>
+      </button>
+      <button type="button" class="header-tools-row__btn tool-btn" id="headerToolPipette" data-tool="pipette" title="Pipette (Farbe aus dem Muster aufnehmen)" data-i18n-title="tool_pipette_title" aria-label="Pipette" data-i18n-aria-label="tool_pipette_label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" class="header-tools-row__btn" id="headerEraserBtn" data-active="false" title="Radiergummi" data-i18n-title="eraser_btn" aria-label="Radiergummi" data-i18n-aria-label="eraser_btn">
+        <span class="eraser-icon" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="header-tools-row__btn" id="headerToolsUndoBtn" disabled title="Strg+Z" data-i18n-title="undo_title" aria-label="Rückgängig" data-i18n-aria-label="undo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="header-tools-row__btn" id="headerToolsRedoBtn" disabled title="Strg+Y" data-i18n-title="redo_title" aria-label="Wiederherstellen" data-i18n-aria-label="redo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      </div>
+    </div>
   </header>
 
   <main class="layout">
@@ -116,7 +139,7 @@
         <section class="panel__group panel__group--pinned panel__group--current-color" id="group-aktuelle-farbe">
           <label class="field field--inline field--current-color">
             <span data-i18n="current_color_label">Aktuelle Farbe</span>
-            <input type="color" id="colorPicker" value="#7a2e3a">
+            <input type="color" id="colorPicker" value="#effcff">
           </label>
           <label class="field">
             <span><span data-i18n="cellsize_label">Zellgröße</span> <output id="cellSizeOut">20</output>&nbsp;px</span>
@@ -173,7 +196,7 @@
           <div class="replace-row">
             <label class="field field--inline replace-field">
               <span data-i18n="palette_add_color_label">Neue Farbe</span>
-              <input type="color" id="paletteNewColor" value="#7a2e3a">
+              <input type="color" id="paletteNewColor" value="#effcff">
             </label>
             <button type="button" id="palettePickBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="palette_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="palette_pick_title">
               <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
@@ -198,12 +221,12 @@
 
         <section class="panel__group" id="group-muster">
           <h2>
-            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-muster-body">
+            <button type="button" class="panel__group-toggle" aria-expanded="false" aria-controls="group-muster-body">
               <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span data-i18n="group_muster_h2">Muster</span>
             </button>
           </h2>
-          <div class="panel__group-body" id="group-muster-body">
+          <div class="panel__group-body is-collapsed" id="group-muster-body">
           <div class="btn-row">
             <button id="clearBtn" class="btn" data-i18n="clear_btn">Alles leeren</button>
           </div>
@@ -237,18 +260,24 @@
 
         <section class="panel__group" id="group-farbe">
           <h2>
-            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-farbe-body">
+            <button type="button" class="panel__group-toggle" aria-expanded="false" aria-controls="group-farbe-body">
               <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span data-i18n="group_farbe_h2">Farbe</span>
             </button>
           </h2>
-          <div class="panel__group-body" id="group-farbe-body">
+          <div class="panel__group-body is-collapsed" id="group-farbe-body">
+          <label class="field field--inline replace-field">
+            <span data-i18n="cell_bg_label">Standard Zell-Hintergrund</span>
+            <input type="color" id="cellBgColor" value="#f7f5f0">
+          </label>
+          <p class="panel__note" data-i18n="cell_bg_note">Hintergrundfarbe für noch nicht bemalte Zellen. So bleibt bewusst „weiß“ gefärbtes Muster von leeren Zellen unterscheidbar. Wird dauerhaft gemerkt.</p>
+
           <div class="field-label" data-i18n="replace_label">Farbe im Muster austauschen</div>
 
           <div class="replace-row">
             <label class="field field--inline replace-field">
               <span data-i18n="replace_old_label">Alte Farbe</span>
-              <input type="color" id="replaceOldColor" value="#7a2e3a">
+              <input type="color" id="replaceOldColor" value="#effcff">
             </label>
             <button type="button" id="pickOldColorBtn" class="btn btn--icon" title="Aus Raster aufnehmen" data-i18n-title="replace_pick_title" aria-label="Farbe aus Raster aufnehmen" data-i18n-aria-label="replace_pick_title">
               <svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
@@ -269,12 +298,12 @@
 
         <section class="panel__group" id="group-raster">
           <h2>
-            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-raster-body">
+            <button type="button" class="panel__group-toggle" aria-expanded="false" aria-controls="group-raster-body">
               <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span data-i18n="group_raster_h2">Raster</span>
             </button>
           </h2>
-          <div class="panel__group-body" id="group-raster-body">
+          <div class="panel__group-body is-collapsed" id="group-raster-body">
           <label class="field">
             <span data-i18n="rows_label">Reihen (Höhe)</span>
             <input type="number" id="rows" min="50" max="200" value="50">
@@ -290,12 +319,12 @@
 
         <section class="panel__group" id="group-ansicht">
           <h2>
-            <button type="button" class="panel__group-toggle" aria-expanded="true" aria-controls="group-ansicht-body">
+            <button type="button" class="panel__group-toggle" aria-expanded="false" aria-controls="group-ansicht-body">
               <svg class="section-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span data-i18n="group_ansicht_h2">Ansicht</span>
             </button>
           </h2>
-          <div class="panel__group-body" id="group-ansicht-body">
+          <div class="panel__group-body is-collapsed" id="group-ansicht-body">
           <label class="field field--checkbox">
             <input type="checkbox" id="showRgbValues" checked>
             <span data-i18n="rgb_values_label">Farbwerte als RGB anzeigen</span>
@@ -459,8 +488,12 @@
   const toolToggle = document.getElementById('toolToggle');
   const undoBtn = document.getElementById('undoBtn');
   const redoBtn = document.getElementById('redoBtn');
-  const headerUndoBtn = document.getElementById('headerUndoBtn');
-  const headerRedoBtn = document.getElementById('headerRedoBtn');
+  const headerSaveBtn = document.getElementById('headerSaveBtn');
+  const headerLoadInput = document.getElementById('headerLoadInput');
+  const headerToolsRow = document.getElementById('headerToolsRow');
+  const headerEraserBtn = document.getElementById('headerEraserBtn');
+  const headerToolsUndoBtn = document.getElementById('headerToolsUndoBtn');
+  const headerToolsRedoBtn = document.getElementById('headerToolsRedoBtn');
   const clearBtn = document.getElementById('clearBtn');
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   const importJsonInput = document.getElementById('importJsonInput');
@@ -477,6 +510,7 @@
   const swatchesEl = document.getElementById('swatches');
   const replaceOldColor = document.getElementById('replaceOldColor');
   const replaceNewColor = document.getElementById('replaceNewColor');
+  const cellBgColor = document.getElementById('cellBgColor');
   const replaceWithEraser = document.getElementById('replaceWithEraser');
   const pickOldColorBtn = document.getElementById('pickOldColorBtn');
   const replaceColorBtn = document.getElementById('replaceColorBtn');
@@ -498,15 +532,25 @@
 
   const EMPTY = '#ffffff';
   // Liefert die tatsächlich zu setzende Hintergrundfarbe für eine Zelle: bei
-  // gesetztem Hintergrundbild werden leere Maschen transparent dargestellt,
-  // damit das Bild durchscheint - sonst ganz normal die (Leer-)Farbe selbst.
-  function cellBg(color) {
-    return (color === EMPTY && state.backgroundImage && state.backgroundImageVisible) ? 'transparent' : color;
+  // gesetztem Hintergrundbild werden unberührte (nie bemalte) Maschen
+  // transparent dargestellt, damit das Bild durchscheint. Eine unberührte
+  // Zelle ohne Hintergrundbild bekommt keinen Inline-Wert (leerer String),
+  // damit die CSS-Regel mit var(--cell-empty) greift - so bleibt die
+  // einstellbare Zell-Hintergrundfarbe von bewusst weiß gefärbten Zellen
+  // unterscheidbar. Jede berührte (bewusst bemalte) Zelle - auch wenn sie
+  // zufällig #ffffff ist - wird immer mit ihrem echten Farbwert gesetzt.
+  function cellBg(color, touched) {
+    if (!touched) {
+      return (state.backgroundImage && state.backgroundImageVisible) ? 'transparent' : '';
+    }
+    return color;
   }
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
   const PALETTE_KEY = 'strickmuster-farbtabelle-v1';
   const PALETTE_MAX = 49; // 7 x 7 Raster in der Sidebar
   const RGB_DISPLAY_KEY = 'strickmuster-rgb-display';
+  const CELL_BG_KEY = 'strickmuster-cell-bg-color';
+  const CELL_BG_DEFAULT = '#f7f5f0';
 
   // Wandelt einen Hex-Farbcode (#rrggbb) in eine lesbare "rgb(r,g,b)"-Zeichenkette um.
   // Bei ungültigem Format wird der Hex-Wert unverändert zurückgegeben.
@@ -525,7 +569,7 @@
     return showRgbValues.checked ? hexToRgbString(hex) : hex;
   }
 
-  let state = { rows: 50, cols: 50, colors: [], notes: [], backgroundImage: null, backgroundImageVisible: true };
+  let state = { rows: 50, cols: 50, colors: [], touched: [], notes: [], backgroundImage: null, backgroundImageVisible: true };
   let cellEls = [];
   let isPainting = false;
   let paintValue = null; // Farbe, die während des Ziehens verwendet wird
@@ -564,11 +608,20 @@
     return new Array(rows * cols).fill(EMPTY);
   }
 
+  // "Berührt"-Marker pro Zelle: unterscheidet eine nie bemalte (leere) Zelle
+  // von einer bewusst mit Weiß (#ffffff) bemalten Zelle - beide haben denselben
+  // Farbwert, aber nur unbemalte Zellen sollen die einstellbare
+  // Zell-Hintergrundfarbe (--cell-empty) zeigen. Radiergummi setzt eine Zelle
+  // zurück auf "nicht berührt" (= wirklich leer).
+  function newTouchedArray(rows, cols) {
+    return new Array(rows * cols).fill(false);
+  }
+
   // --- Undo / Redo ---
   let hasUnsavedChanges = false;
 
   function snapshot() {
-    return { rows: state.rows, cols: state.cols, colors: state.colors.slice(), notes: state.notes.map(n => ({ ...n })) };
+    return { rows: state.rows, cols: state.cols, colors: state.colors.slice(), touched: state.touched.slice(), notes: state.notes.map(n => ({ ...n })) };
   }
 
   function pushUndo() {
@@ -584,7 +637,7 @@
     redoStack.push(snapshot());
     if (redoStack.length > UNDO_LIMIT) redoStack.shift();
     const prev = undoStack.pop();
-    buildBoard(prev.rows, prev.cols, prev.colors, prev.notes);
+    buildBoard(prev.rows, prev.cols, prev.colors, prev.notes, prev.touched);
     rowsInput.value = prev.rows;
     colsInput.value = prev.cols;
     updateUndoRedoBtnState();
@@ -595,7 +648,7 @@
     undoStack.push(snapshot());
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     const next = redoStack.pop();
-    buildBoard(next.rows, next.cols, next.colors, next.notes);
+    buildBoard(next.rows, next.cols, next.colors, next.notes, next.touched);
     rowsInput.value = next.rows;
     colsInput.value = next.cols;
     updateUndoRedoBtnState();
@@ -604,14 +657,24 @@
   function updateUndoRedoBtnState() {
     undoBtn.disabled = undoStack.length === 0;
     redoBtn.disabled = redoStack.length === 0;
-    if (headerUndoBtn) headerUndoBtn.disabled = undoStack.length === 0;
-    if (headerRedoBtn) headerRedoBtn.disabled = redoStack.length === 0;
+    if (headerToolsUndoBtn) headerToolsUndoBtn.disabled = undoStack.length === 0;
+    if (headerToolsRedoBtn) headerToolsRedoBtn.disabled = redoStack.length === 0;
   }
 
-  function buildBoard(rows, cols, colors, notes) {
+  function buildBoard(rows, cols, colors, notes, touched) {
     state.rows = rows;
     state.cols = cols;
     state.colors = colors || newColorArray(rows, cols);
+    // touched nur übernehmen, wenn ein passend langes Array mitgegeben wurde.
+    // Fehlt es (z.B. beim Öffnen einer älteren, vor dieser Funktion
+    // gespeicherten Musterdatei, oder nach Bild-Import/Größenänderung), wird
+    // es aus den Farben rekonstruiert: alles außer dem reinen Leer-Wert gilt
+    // dann automatisch als "berührt" (sichere Annahme für Altbestände).
+    if (Array.isArray(touched) && touched.length === state.colors.length) {
+      state.touched = touched;
+    } else {
+      state.touched = state.colors.map(c => c !== EMPTY);
+    }
     // notes nur ersetzen, wenn explizit übergeben (z.B. bei Undo/Redo/Import) -
     // beim reinen Raster-Größe-ändern (buildBtn) bleiben bestehende Notizen sonst erhalten,
     // dort wird "notes" nicht mitgegeben, daher expliziter Parameter-Check:
@@ -648,7 +711,7 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.dataset.idx = idx;
-        cell.style.background = cellBg(state.colors[idx]);
+        cell.style.background = cellBg(state.colors[idx], state.touched[idx]);
         if ((c + 1) % 10 === 0) cell.classList.add('cell--edge-v');
         if ((r + 1) % 10 === 0) cell.classList.add('cell--edge-h');
         frag.appendChild(cell);
@@ -719,10 +782,11 @@
     renderNotes();
   }
 
-  function paintCell(cell, color) {
+  function paintCell(cell, color, erasing) {
     const idx = Number(cell.dataset.idx);
     state.colors[idx] = color;
-    cell.style.background = cellBg(color);
+    state.touched[idx] = !erasing;
+    cell.style.background = cellBg(color, state.touched[idx]);
   }
 
   function getActiveColor() {
@@ -749,8 +813,7 @@
       b.title = hex;
       b.addEventListener('click', () => {
         colorPicker.value = hex;
-        eraserBtn.dataset.active = 'false';
-        eraserBtn.classList.remove('is-active');
+        setEraserActive(false);
       });
       swatchesEl.appendChild(b);
     });
@@ -760,13 +823,12 @@
 
   function activatePaletteColor(hex) {
     colorPicker.value = hex;
-    eraserBtn.dataset.active = 'false';
-    eraserBtn.classList.remove('is-active');
+    setEraserActive(false);
     if (toolMode !== 'paint') setToolMode('paint');
   }
 
   function addToPalette(hex) {
-    if (!hex || hex === EMPTY) return;
+    if (!hex) return;
     const normalized = hex.toLowerCase();
     if (paletteColors.some(c => c.toLowerCase() === normalized)) return; // schon enthalten
     if (paletteColors.length >= PALETTE_MAX) {
@@ -979,7 +1041,7 @@
     if (selectionOverlayEl) selectionOverlayEl.style.display = 'none';
   }
 
-  function fillSelection(start, end, color) {
+  function fillSelection(start, end, color, erasing) {
     const cols = state.cols;
     const minR = Math.min(start.r, end.r), maxR = Math.max(start.r, end.r);
     const minC = Math.min(start.c, end.c), maxC = Math.max(start.c, end.c);
@@ -987,7 +1049,8 @@
       for (let c = minC; c <= maxC; c++) {
         const idx = r * cols + c;
         state.colors[idx] = color;
-        if (cellEls[idx]) cellEls[idx].style.background = cellBg(color);
+        state.touched[idx] = !erasing;
+        if (cellEls[idx]) cellEls[idx].style.background = cellBg(color, state.touched[idx]);
       }
     }
   }
@@ -1424,9 +1487,8 @@
     // Aktualisiert bereits im DOM vorhandene Zellen, deren Inline-Hintergrund
     // noch aus der Zeit vor dem Setzen/Entfernen des Hintergrundbilds stammt.
     for (let idx = 0; idx < state.colors.length; idx++) {
-      const color = state.colors[idx];
-      if (color === EMPTY && cellEls[idx]) {
-        cellEls[idx].style.background = cellBg(color);
+      if (!state.touched[idx] && cellEls[idx]) {
+        cellEls[idx].style.background = cellBg(state.colors[idx], false);
       }
     }
   }
@@ -1508,13 +1570,14 @@
       palettePickBtn.classList.remove('is-active');
     }
     toolToggle.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tool === mode));
+    if (headerToolsRow) headerToolsRow.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tool === mode));
     board.classList.remove('board--tool-paint', 'board--tool-area', 'board--tool-pipette');
     board.classList.add('board--tool-' + mode);
     hideSelectionOverlay();
   }
 
   // --- Farbe im gesamten Muster austauschen ---
-  function replaceColor(oldColor, newColor) {
+  function replaceColor(oldColor, newColor, erasing) {
     if (!state.colors.length) return;
     const oldHex = oldColor.toLowerCase();
     const newHex = newColor.toLowerCase();
@@ -1530,7 +1593,8 @@
     for (let idx = 0; idx < state.colors.length; idx++) {
       if (state.colors[idx].toLowerCase() === oldHex) {
         state.colors[idx] = newColor;
-        if (cellEls[idx]) cellEls[idx].style.background = cellBg(newColor);
+        state.touched[idx] = !erasing;
+        if (cellEls[idx]) cellEls[idx].style.background = cellBg(newColor, state.touched[idx]);
       }
     }
     if (newColor !== EMPTY) addRecentColor(newColor);
@@ -1552,7 +1616,7 @@
 
     if (pickingPaletteColor) {
       const picked = state.colors[idx];
-      if (picked !== EMPTY) {
+      if (state.touched[idx]) {
         paletteNewColor.value = picked;
         addToPalette(picked);
       }
@@ -1562,9 +1626,8 @@
     if (toolMode === 'pipette') {
       const picked = state.colors[idx];
       colorPicker.value = picked;
-      if (picked !== EMPTY) addRecentColor(picked);
-      eraserBtn.dataset.active = 'false';
-      eraserBtn.classList.remove('is-active');
+      if (state.touched[idx]) addRecentColor(picked);
+      setEraserActive(false);
       setToolMode('paint');
       return;
     }
@@ -1580,7 +1643,7 @@
     } else {
       pushUndo();
       isPainting = true;
-      paintCell(cell, paintValue);
+      paintCell(cell, paintValue, eraserBtn.dataset.active === 'true');
     }
     board.setPointerCapture(e.pointerId);
   });
@@ -1592,7 +1655,7 @@
     if (!cell) return;
 
     if (isPainting) {
-      paintCell(cell, paintValue);
+      paintCell(cell, paintValue, eraserBtn.dataset.active === 'true');
     } else if (isSelecting) {
       const { r, c } = cellRC(cell);
       selEnd = { r, c };
@@ -1604,7 +1667,7 @@
     if (isPainting && paintValue) addRecentColor(paintValue);
     if (isSelecting) {
       if (selStart && selEnd) {
-        fillSelection(selStart, selEnd, paintValue);
+        fillSelection(selStart, selEnd, paintValue, eraserBtn.dataset.active === 'true');
         if (paintValue) addRecentColor(paintValue);
       }
       hideSelectionOverlay();
@@ -1620,7 +1683,7 @@
     const cell = e.target.closest('.cell');
     if (!cell) return;
     e.preventDefault();
-    paintCell(cell, EMPTY); // Rechtsklick = löschen
+    paintCell(cell, EMPTY, true); // Rechtsklick = löschen
   });
 
   // --- Werkzeug umschalten (Stift / Bereich / Pipette) ---
@@ -1629,6 +1692,13 @@
     if (!btn) return;
     setToolMode(btn.dataset.tool);
   });
+  if (headerToolsRow) {
+    headerToolsRow.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tool-btn');
+      if (!btn) return;
+      setToolMode(btn.dataset.tool);
+    });
+  }
 
   // --- Farbe im gesamten Muster austauschen: Bedienung ---
   pickOldColorBtn.addEventListener('click', () => {
@@ -1649,14 +1719,14 @@
   replaceColorBtn.addEventListener('click', () => {
     const oldColor = replaceOldColor.value;
     const newColor = replaceWithEraser.checked ? EMPTY : replaceNewColor.value;
-    replaceColor(oldColor, newColor);
+    replaceColor(oldColor, newColor, replaceWithEraser.checked);
   });
 
   // --- Rückgängig / Wiederherstellen ---
   undoBtn.addEventListener('click', undo);
   redoBtn.addEventListener('click', redo);
-  if (headerUndoBtn) headerUndoBtn.addEventListener('click', undo);
-  if (headerRedoBtn) headerRedoBtn.addEventListener('click', redo);
+  if (headerToolsUndoBtn) headerToolsUndoBtn.addEventListener('click', undo);
+  if (headerToolsRedoBtn) headerToolsRedoBtn.addEventListener('click', redo);
   document.addEventListener('keydown', (e) => {
     const active = document.activeElement;
     const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
@@ -1738,11 +1808,23 @@
     buildBoard(rows, cols);
   });
 
+  function setEraserActive(active) {
+    eraserBtn.dataset.active = String(active);
+    eraserBtn.classList.toggle('is-active', active);
+    if (headerEraserBtn) {
+      headerEraserBtn.dataset.active = String(active);
+      headerEraserBtn.classList.toggle('is-active', active);
+    }
+  }
+
   eraserBtn.addEventListener('click', () => {
-    const active = eraserBtn.dataset.active === 'true';
-    eraserBtn.dataset.active = String(!active);
-    eraserBtn.classList.toggle('is-active', !active);
+    setEraserActive(eraserBtn.dataset.active !== 'true');
   });
+  if (headerEraserBtn) {
+    headerEraserBtn.addEventListener('click', () => {
+      setEraserActive(headerEraserBtn.dataset.active !== 'true');
+    });
+  }
 
   clearBtn.addEventListener('click', () => {
     if (!confirm(t('confirm_clear_all'))) return;
@@ -1759,6 +1841,22 @@
     localStorage.setItem(RGB_DISPLAY_KEY, showRgbValues.checked ? '1' : '0');
     renderPalette();
   });
+
+  // --- Standard-Hintergrundfarbe für noch nicht bemalte Zellen ---
+  // Getrennt von der eigentlichen Musterfarbe "Weiß" (#ffffff), damit
+  // bewusst weiß gefärbte Zellen von leeren Zellen unterscheidbar bleiben.
+  // Wird dauerhaft gemerkt (localStorage), bis die Anwenderin sie wieder ändert.
+  function applyCellBgColor(hex) {
+    document.documentElement.style.setProperty('--cell-empty', hex);
+  }
+  const storedCellBg = localStorage.getItem(CELL_BG_KEY) || CELL_BG_DEFAULT;
+  cellBgColor.value = storedCellBg;
+  applyCellBgColor(storedCellBg);
+  cellBgColor.addEventListener('input', () => {
+    localStorage.setItem(CELL_BG_KEY, cellBgColor.value);
+    applyCellBgColor(cellBgColor.value);
+  });
+
   showNumbers.addEventListener('change', () => {
     board.classList.toggle('board--numbers', showNumbers.checked);
   });
@@ -1783,7 +1881,7 @@
     return 'strickmuster_' + base + '.png';
   }
 
-  exportJsonBtn.addEventListener('click', () => {
+  function savePattern() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1792,10 +1890,9 @@
     a.click();
     URL.revokeObjectURL(url);
     hasUnsavedChanges = false;
-  });
+  }
 
-  importJsonInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
+  function loadPatternFile(file) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -1807,7 +1904,7 @@
         colsInput.value = data.cols;
         state.backgroundImage = (typeof data.backgroundImage === 'string') ? data.backgroundImage : null;
         state.backgroundImageVisible = (typeof data.backgroundImageVisible === 'boolean') ? data.backgroundImageVisible : true;
-        buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes));
+        buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes), data.touched);
         hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
         lastPatternFileName = file.name || lastPatternFileName;
       } catch (err) {
@@ -1815,8 +1912,22 @@
       }
     };
     reader.readAsText(file);
+  }
+
+  exportJsonBtn.addEventListener('click', savePattern);
+
+  importJsonInput.addEventListener('change', (e) => {
+    loadPatternFile(e.target.files[0]);
     importJsonInput.value = '';
   });
+
+  if (headerSaveBtn) headerSaveBtn.addEventListener('click', savePattern);
+  if (headerLoadInput) {
+    headerLoadInput.addEventListener('change', (e) => {
+      loadPatternFile(e.target.files[0]);
+      headerLoadInput.value = '';
+    });
+  }
 
   // --- Bild importieren (Foto zu Pixelfarben) ---
   importImageInput.addEventListener('change', (e) => {
@@ -1934,7 +2045,9 @@
       }
     }
     pushUndo();
-    buildBoard(rows, cols, newColors);
+    // Jedes aus dem Bild berechnete Pixel gilt als bewusst gesetzt - auch ein
+    // zufällig weißes Pixel ist echter Bildinhalt, keine "leere" Zelle.
+    buildBoard(rows, cols, newColors, undefined, newColors.map(() => true));
   }
 
   function rgbToHex(r, g, b) {
@@ -2001,12 +2114,14 @@
       ctx.drawImage(bgImg, marginX, marginY, gridW, gridH);
     }
 
-    // Maschenfarben (leere Maschen bleiben aus, wenn ein Hintergrundbild
-    // gesetzt ist, damit dieses durch sie hindurchscheint)
+    // Maschenfarben (unberührte/leere Maschen bleiben aus, wenn ein
+    // Hintergrundbild gesetzt ist, damit dieses durch sie hindurchscheint;
+    // bewusst weiß bemalte Maschen werden trotzdem gezeichnet)
     for (let r = 0; r < state.rows; r++) {
       for (let c = 0; c < state.cols; c++) {
-        const color = state.colors[r * state.cols + c];
-        if (bgImg && color === EMPTY) continue;
+        const idx = r * state.cols + c;
+        const color = state.colors[idx];
+        if (bgImg && !state.touched[idx]) continue;
         ctx.fillStyle = color;
         ctx.fillRect(marginX + c * size, marginY + r * size, size, size);
       }
@@ -2222,6 +2337,7 @@
     sidebarToggleBottom.setAttribute('aria-expanded', String(!collapsed));
     sidebarToggleBottom.setAttribute('aria-label', label);
     localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
+    if (headerToolsRow) headerToolsRow.classList.toggle('is-visible', collapsed);
   }
 
   // Wird nach einem Sprachwechsel aufgerufen, damit Aria-Labels, die vom
@@ -2283,14 +2399,18 @@
     }
   }
 
-  // Anfangszustand aus dem Speicher übernehmen (Standard: aufgeklappt) -
-  // ausschließlich beim Laden, niemals später automatisch verändert.
+  // Anfangszustand aus dem Speicher übernehmen - ausschließlich beim Laden,
+  // niemals später automatisch verändert. Ist noch nichts gespeichert
+  // (erster Besuch), ist per Default nur "Farbtabelle" aufgeklappt, alle
+  // anderen Bereiche zu (die gepinnte "Werkzeuge"-Sektion ist davon
+  // unabhängig immer sichtbar).
   const storedGroupStates = loadPanelGroupStates();
   document.querySelectorAll('.panel__group-toggle').forEach((toggleBtn) => {
     const group = toggleBtn.closest('.panel__group');
+    const defaultExpanded = group && group.id === 'group-farbtabelle';
     const expanded = group && Object.prototype.hasOwnProperty.call(storedGroupStates, group.id)
       ? storedGroupStates[group.id]
-      : true;
+      : defaultExpanded;
     setGroupExpanded(toggleBtn, expanded, false);
   });
 

@@ -1,5 +1,5 @@
 /*
-  Julia's Strickmuster Editor – Sprachdatei
+  Julia's Strickmuster-Editor – Sprachdatei
   Copyright (C) 2026 heino17
   https://github.com/heino17/Knitting-Pattern-Editor
 
@@ -30,9 +30,9 @@ const APPLICATION_STARTUP_LANGUAGE_CODE = "de";
 const I18N = {
 
   de: {
-    meta_title: "Julia's Strickmuster Editor",
-    app_title: "Julia's Strickmuster Editor",
-    app_title_short: "🧶 Strickmuster Editor",
+    meta_title: "Julia's Strickmuster-Editor",
+    app_title: "Julia's Strickmuster-Editor",
+    app_title_short: "🧶 Strickmuster-Editor",
     eyebrow: "Maschenraster",
     header_hint: "Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern",
     header_toggle_collapse: "Kopfbereich einklappen",
@@ -80,6 +80,8 @@ const I18N = {
     tool_pipette_label: "Pipette",
     werkzeug_note: "Im Bereich-Modus: Ecke anklicken, Rechteck aufziehen, loslassen zum Füllen. Mit der Pipette eine Zelle anklicken, um deren Farbe zu übernehmen.",
 
+    cell_bg_label: "Standard Zell-Hintergrund",
+    cell_bg_note: "Hintergrundfarbe für noch nicht bemalte Zellen. So bleibt bewusst „weiß“ gefärbtes Muster von leeren Zellen unterscheidbar. Wird dauerhaft gemerkt.",
     replace_label: "Farbe im Muster austauschen",
     replace_old_label: "Alte Farbe",
     replace_new_label: "Neue Farbe",
@@ -122,7 +124,8 @@ const I18N = {
     palette_empty_hint: "Noch keine Farben in der Tabelle. Mit der Pipette oder dem Farbwähler oben Farben hinzufügen.",
     palette_confirm_clear: "Wirklich die gesamte Farbtabelle leeren?",
     page_zoom_aria: "Seiten-Zoom",
-    header_undoredo_aria: "Rückgängig / Wiederherstellen (Kopfbereich)",
+    header_saveload_aria: "Muster speichern / laden (Kopfbereich)",
+    header_tools_row_aria: "Werkzeuge (Kopfbereich)",
     page_zoom_out_title: "Seite verkleinern",
     page_zoom_in_title: "Seite vergrößern",
 
@@ -213,6 +216,8 @@ const I18N = {
     tool_pipette_label: "Eyedropper",
     werkzeug_note: "In area mode: click a corner, drag out a rectangle, release to fill. With the eyedropper, click a stitch to pick up its color.",
 
+    cell_bg_label: "Default cell background",
+    cell_bg_note: "Background color for cells not yet painted. Keeps pattern cells deliberately colored white distinguishable from empty cells. Remembered permanently.",
     replace_label: "Replace a color in the pattern",
     replace_old_label: "Old color",
     replace_new_label: "New color",
@@ -255,7 +260,8 @@ const I18N = {
     palette_empty_hint: "No colors in the palette yet. Add colors above using the eyedropper or the color picker.",
     palette_confirm_clear: "Really clear the entire color palette?",
     page_zoom_aria: "Page zoom",
-    header_undoredo_aria: "Undo / redo (header)",
+    header_saveload_aria: "Save / load pattern (header)",
+    header_tools_row_aria: "Tools (header)",
     page_zoom_out_title: "Zoom page out",
     page_zoom_in_title: "Zoom page in",
 
@@ -296,9 +302,9 @@ const I18N = {
   },
 
   ru: {
-    meta_title: "Редактор схем для вязания Юлии",
-    app_title: "Редактор схем для вязания Юлии",
-    app_title_short: "🧶 Редактор схем для вязания",
+    meta_title: "Julia’s Редактор вязальных узоров",
+    app_title: "Julia’s Редактор вязальных узоров",
+    app_title_short: "🧶 Редактор вязальных узоров",
     eyebrow: "Сетка петель",
     header_hint: "Создайте сетку, закрасьте петли, сохраните узор как изображение или файл",
     header_toggle_collapse: "Свернуть заголовок",
@@ -346,6 +352,8 @@ const I18N = {
     tool_pipette_label: "Пипетка",
     werkzeug_note: "В режиме области: щёлкните по углу, растяните прямоугольник, отпустите для заполнения. Пипеткой щёлкните по клетке, чтобы взять её цвет.",
 
+    cell_bg_label: "Фон пустой ячейки по умолчанию",
+    cell_bg_note: "Цвет фона ещё не закрашенных ячеек. Так специально выбеленные ячейки узора остаются отличимыми от пустых. Сохраняется постоянно.",
     replace_label: "Заменить цвет в узоре",
     replace_old_label: "Старый цвет",
     replace_new_label: "Новый цвет",
@@ -388,7 +396,8 @@ const I18N = {
     palette_empty_hint: "В палитре пока нет цветов. Добавьте цвета выше с помощью пипетки или палитры цветов.",
     palette_confirm_clear: "Действительно очистить всю палитру цветов?",
     page_zoom_aria: "Масштаб страницы",
-    header_undoredo_aria: "Отменить / повторить (шапка)",
+    header_saveload_aria: "Сохранить / загрузить узор (шапка)",
+    header_tools_row_aria: "Инструменты (шапка)",
     page_zoom_out_title: "Уменьшить масштаб страницы",
     page_zoom_in_title: "Увеличить масштаб страницы",
 
@@ -429,9 +438,9 @@ const I18N = {
   },
 
   es: {
-    meta_title: "Editor de patrones de punto de Julia",
-    app_title: "Editor de patrones de punto de Julia",
-    app_title_short: "🧶 Editor de patrones de punto",
+    meta_title: "Julia’s Editor de Patrones de Tejido",
+    app_title: "Julia’s Editor de Patrones de Tejido",
+    app_title_short: "🧶 Editor de Patrones de Tejido",
     eyebrow: "Cuadrícula de puntos",
     header_hint: "Crea una cuadrícula, colorea los puntos, guarda tu patrón como imagen o archivo",
     header_toggle_collapse: "Contraer encabezado",
@@ -479,6 +488,8 @@ const I18N = {
     tool_pipette_label: "Cuentagotas",
     werkzeug_note: "En modo área: haz clic en una esquina, arrastra un rectángulo y suelta para rellenar. Con el cuentagotas, haz clic en una celda para tomar su color.",
 
+    cell_bg_label: "Fondo predeterminado de celda",
+    cell_bg_note: "Color de fondo de las celdas aún sin pintar. Así las celdas pintadas deliberadamente de blanco siguen siendo distinguibles de las vacías. Se recuerda de forma permanente.",
     replace_label: "Reemplazar un color del patrón",
     replace_old_label: "Color antiguo",
     replace_new_label: "Color nuevo",
@@ -521,7 +532,8 @@ const I18N = {
     palette_empty_hint: "Aún no hay colores en la tabla. Añade colores arriba con el cuentagotas o el selector de color.",
     palette_confirm_clear: "¿Seguro que quieres vaciar toda la tabla de colores?",
     page_zoom_aria: "Zoom de página",
-    header_undoredo_aria: "Deshacer / rehacer (encabezado)",
+    header_saveload_aria: "Guardar / cargar patrón (encabezado)",
+    header_tools_row_aria: "Herramientas (encabezado)",
     page_zoom_out_title: "Reducir zoom de página",
     page_zoom_in_title: "Aumentar zoom de página",
 
@@ -562,9 +574,9 @@ const I18N = {
   },
 
   fr: {
-    meta_title: "Éditeur de grille de tricot de Julia",
-    app_title: "Éditeur de grille de tricot de Julia",
-    app_title_short: "🧶 Éditeur de grille de tricot",
+    meta_title: "Julia’s Éditeur de Modèles de Tricot",
+    app_title: "Julia’s Éditeur de Modèles de Tricot",
+    app_title_short: "🧶 Éditeur de Modèles de Tricot",
     eyebrow: "Grille de mailles",
     header_hint: "Créez une grille, coloriez les mailles, enregistrez votre motif en image ou en fichier",
     header_toggle_collapse: "Réduire l'en-tête",
@@ -612,6 +624,8 @@ const I18N = {
     tool_pipette_label: "Pipette",
     werkzeug_note: "En mode zone : cliquez sur un coin, tracez un rectangle, relâchez pour remplir. Avec la pipette, cliquez sur une case pour en récupérer la couleur.",
 
+    cell_bg_label: "Fond de cellule par défaut",
+    cell_bg_note: "Couleur de fond des cellules pas encore peintes. Permet de distinguer les cellules volontairement peintes en blanc des cellules vides. Mémorisé de façon permanente.",
     replace_label: "Remplacer une couleur du motif",
     replace_old_label: "Ancienne couleur",
     replace_new_label: "Nouvelle couleur",
@@ -654,7 +668,8 @@ const I18N = {
     palette_empty_hint: "Aucune couleur dans la palette pour l'instant. Ajoutez des couleurs ci-dessus avec la pipette ou le sélecteur.",
     palette_confirm_clear: "Vraiment vider toute la palette de couleurs ?",
     page_zoom_aria: "Zoom de la page",
-    header_undoredo_aria: "Annuler / rétablir (en-tête)",
+    header_saveload_aria: "Enregistrer / charger le motif (en-tête)",
+    header_tools_row_aria: "Outils (en-tête)",
     page_zoom_out_title: "Réduire le zoom de la page",
     page_zoom_in_title: "Augmenter le zoom de la page",
 
@@ -695,9 +710,9 @@ const I18N = {
   },
 
   ja: {
-    meta_title: "ジュリアの編み図エディター",
-    app_title: "ジュリアの編み図エディター",
-    app_title_short: "🧶 編み図エディター",
+    meta_title: "Julia’s 編み模様エディター",
+    app_title: "Julia’s 編み模様エディター",
+    app_title_short: "🧶 編み模様エディター",
     eyebrow: "編み目グリッド",
     header_hint: "グリッドを作成し、編み目に色を付けて、画像やファイルとして保存しましょう",
     header_toggle_collapse: "ヘッダーを折りたたむ",
@@ -745,6 +760,8 @@ const I18N = {
     tool_pipette_label: "スポイト",
     werkzeug_note: "範囲モード:角をクリックして矩形をドラッグし、離すと塗りつぶされます。スポイトでは、セルをクリックしてその色を取得します。",
 
+    cell_bg_label: "セルの既定背景色",
+    cell_bg_note: "まだ塗られていないセルの背景色です。意図的に白く塗ったセルと空のセルを区別できます。設定は永続的に保存されます。",
     replace_label: "パターン内の色を置き換え",
     replace_old_label: "元の色",
     replace_new_label: "新しい色",
@@ -787,7 +804,8 @@ const I18N = {
     palette_empty_hint: "まだパレットに色がありません。上のスポイトまたはカラーピッカーで色を追加してください。",
     palette_confirm_clear: "本当にカラーパレット全体を空にしますか?",
     page_zoom_aria: "ページの拡大縮小",
-    header_undoredo_aria: "元に戻す・やり直し（ヘッダー）",
+    header_saveload_aria: "パターンの保存・読み込み（ヘッダー）",
+    header_tools_row_aria: "ツール（ヘッダー）",
     page_zoom_out_title: "ページを縮小",
     page_zoom_in_title: "ページを拡大",
 
@@ -828,9 +846,9 @@ const I18N = {
   },
 
   ko: {
-    meta_title: "줄리아의 뜨개질 도안 편집기",
-    app_title: "줄리아의 뜨개질 도안 편집기",
-    app_title_short: "🧶 뜨개질 도안 편집기",
+    meta_title: "Julia’s 뜨개질 패턴 편집기",
+    app_title: "Julia’s 뜨개질 패턴 편집기",
+    app_title_short: "🧶 뜨개질 패턴 편집기",
     eyebrow: "코 그리드",
     header_hint: "그리드를 만들고 코에 색을 입혀 패턴을 이미지나 파일로 저장하세요",
     header_toggle_collapse: "헤더 접기",
@@ -878,6 +896,8 @@ const I18N = {
     tool_pipette_label: "스포이드",
     werkzeug_note: "영역 모드: 모서리를 클릭하고 사각형을 드래그한 뒤 놓으면 채워집니다. 스포이드는 셀을 클릭해 색상을 가져옵니다.",
 
+    cell_bg_label: "기본 셀 배경색",
+    cell_bg_note: "아직 칠하지 않은 셀의 배경색입니다. 의도적으로 흰색으로 칠한 셀과 빈 셀을 구분할 수 있습니다. 설정은 계속 저장됩니다.",
     replace_label: "패턴의 색상 바꾸기",
     replace_old_label: "이전 색상",
     replace_new_label: "새 색상",
@@ -920,7 +940,8 @@ const I18N = {
     palette_empty_hint: "아직 색상표에 색상이 없습니다. 위의 스포이트나 색상 선택기로 색상을 추가하세요.",
     palette_confirm_clear: "정말 전체 색상표를 비우시겠습니까?",
     page_zoom_aria: "페이지 확대/축소",
-    header_undoredo_aria: "실행 취소 / 다시 실행 (헤더)",
+    header_saveload_aria: "패턴 저장 / 불러오기 (헤더)",
+    header_tools_row_aria: "도구 (헤더)",
     page_zoom_out_title: "페이지 축소",
     page_zoom_in_title: "페이지 확대",
 
@@ -961,8 +982,8 @@ const I18N = {
   },
 
   zh_CN: {
-    meta_title: "Julia 的编织图案编辑器",
-    app_title: "Julia 的编织图案编辑器",
+    meta_title: "Julia’s 编织图案编辑器",
+    app_title: "Julia’s 编织图案编辑器",
     app_title_short: "🧶 编织图案编辑器",
     eyebrow: "针目网格",
     header_hint: "创建网格,为针目上色,将图案保存为图片或文件",
@@ -1011,6 +1032,8 @@ const I18N = {
     tool_pipette_label: "吸管",
     werkzeug_note: "区域模式:点击一个角,拖出矩形,松开即可填充。使用吸管点击格子即可获取该颜色。",
 
+    cell_bg_label: "默认单元格背景色",
+    cell_bg_note: "尚未上色的单元格的背景颜色。这样可以将刻意涂成白色的图案格与空白格区分开来。此设置会永久保存。",
     replace_label: "替换图案中的颜色",
     replace_old_label: "旧颜色",
     replace_new_label: "新颜色",
@@ -1053,7 +1076,8 @@ const I18N = {
     palette_empty_hint: "调色板中还没有颜色。请使用上方的吸管或取色器添加颜色。",
     palette_confirm_clear: "确定要清空整个调色板吗?",
     page_zoom_aria: "页面缩放",
-    header_undoredo_aria: "撤销 / 重做（页眉）",
+    header_saveload_aria: "保存 / 加载图案（页眉）",
+    header_tools_row_aria: "工具（页眉）",
     page_zoom_out_title: "缩小页面",
     page_zoom_in_title: "放大页面",
 

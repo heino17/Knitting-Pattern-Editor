@@ -21,6 +21,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Zeilen-/Spaltenzahlen an allen vier Seiten (jede 10.), ein-/ausblendbar  
 - Gitterlinien komplett ein-/ausblendbar, jede 10. Linie optional hervorgehoben  
 - **Hintergrundbild**: eigenes Foto oder eine Vorlage hinter das komplette Raster legen (🖼️-Knopf im Header) – wächst/schrumpft beim Zoomen mit dem Raster mit, leere Maschen bleiben transparent, damit das Bild durchscheint; wird eingebettet gespeichert und ist auch im PNG-Export enthalten, aber bewusst nicht Teil von Undo/Redo  
+- **Einstellbare Zell-Hintergrundfarbe**: Hintergrundfarbe für noch nicht bemalte Maschen frei wählbar (Sektion „Farbe", Startwert `#f7f5f0`), wird dauerhaft gemerkt. So bleibt eine bewusst mit Weiß gefärbte Masche klar von einer leeren, unbemalten Masche unterscheidbar – beide sehen sonst identisch aus
 
 **Werkzeuge**
 - **Stift**: einzelne Maschen anklicken oder durch Ziehen mehrere am Stück einfärben  
@@ -28,6 +29,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - **Pipette**: Farbe aus dem Muster aufnehmen (z. B. aus einem importierten Foto) und als aktuelle Farbe übernehmen  
 - Passende Mauszeiger für Stift und Pipette  
 - Radiergummi zum gezielten Löschen einzelner Maschen oder Bereiche  
+- **Kompakte Werkzeugzeile im Header**: Stift, Bereich, Pipette, Radiergummi, Rückgängig und Wiederherstellen zusätzlich als kleine Buttons im Kopfbereich – erscheinen automatisch, sobald die Seitenleiste eingeklappt ist, und bleiben so auch ohne geöffnete Seitenleiste erreichbar  
 - Zuletzt verwendete Farben als Schnellzugriff  
 - **Farbe austauschen**: eine bestimmte Farbe im gesamten Muster gegen eine andere ersetzen (oder komplett löschen), inkl. Pipette zur Auswahl der alten Farbe direkt im Raster  
 
@@ -42,6 +44,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 **Speichern & Exportieren**
 - Export als PNG-Bild (inkl. Zeilen-/Spaltenzahlen und Gitterlinien, je nach Ansichtseinstellung)  
 - Export/Import als JSON-Datei, um Muster zu sichern oder weiterzugeben  
+- 💾/📂-Buttons im Header für schnellen Zugriff auf „Muster speichern"/„Muster laden", ohne die Seitenleiste öffnen zu müssen  
 - Warnhinweis beim versehentlichen Neuladen oder Verlassen der Seite, solange ungespeicherte Änderungen vorliegen  
 
 **Notizzettel**
@@ -58,7 +61,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 **Farbtabelle (dauerhafte 7x7-Palette)**
 - Eigener, dauerhafter Farbspeicher – getrennt von der flüchtigen "Zuletzt verwendete Farben"-Liste  
 - Sitzt in der Sidebar als eigene Gruppe ("Farbtabelle") und zusätzlich als kompakter Streifen im Header  
-- **Befüllen**: Pipette-Knopf "Aus Raster aufnehmen" + Klick auf eine Masche, oder manuell per Farbwähler + "Zur Farbtabelle hinzufügen"; wächst dynamisch bis maximal 49 Farben  
+- **Befüllen**: Pipette-Knopf "Aus Raster aufnehmen" + Klick auf eine Masche, oder manuell per Farbwähler + "Zur Farbtabelle hinzufügen"; wächst dynamisch bis maximal 49 Farben; auch die Farbe Weiß kann aufgenommen werden  
 - **Nutzen**: Klick auf eine Farbe aktiviert sie sofort im Stift; kleines "×" (beim Hover) entfernt eine Farbe aus der Sidebar-Tabelle  
 - **Sortieren**: Farbfelder per Ziehen frei in die gewünschte Reihenfolge bringen (Maus oder Touch), wirkt sich gleichzeitig auf Sidebar- und Header-Ansicht aus  
 - **Speichern/Laden**: eigene `Farbtabelle.json` exportier- und importierbar (unabhängig vom Muster), zusätzlich automatische Sicherung im Browser (localStorage)  
@@ -67,11 +70,12 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 **Bedienoberfläche**
 - Sprachwahl-Dropdown im Kopfbereich  
 - Ein- und ausklappbare Seitenleiste sowie Kopfbereich für mehr Platz auf kleinen Bildschirmen  
+- Beim ersten Öffnen ist zunächst nur die Sektion „Farbtabelle" aufgeklappt, alle anderen Sidebar-Sektionen starten eingeklappt für einen übersichtlicheren Einstieg; einmal individuell angepasste Auf-/Zuklapp-Einstellungen werden weiterhin gemerkt  
 - Responsives Layout, funktioniert auch auf schmaleren Fenstern/Tablets  
 
 ## Technik
 
-Reines HTML, CSS und JavaScript (Vanilla JS, keine Frameworks oder Build-Tools nötig). Zwei Dateien:  
+Reines HTML, CSS und JavaScript (Vanilla JS, keine Frameworks oder Build-Tools nötig). Drei Dateien:  
 
 - `strickmuster.html` – Struktur und Logik  
 - `strickmuster.css` – Gestaltung  
@@ -110,6 +114,7 @@ The default language can be set in the [lang.js](lang.js) file
 - Row/column numbers on all four sides (every 10th), toggleable  
 - Grid lines fully toggleable, every 10th line optionally highlighted  
 - **Background image**: place your own photo or a reference image behind the entire grid (🖼️ button in the header) – grows/shrinks together with the grid when zooming, empty stitches stay transparent so the image shows through; saved embedded and included in the PNG export, but deliberately not part of undo/redo  
+- **Adjustable cell background color**: freely pick the background color for not-yet-painted stitches (in the "Color" section, default `#f7f5f0`), remembered permanently. Keeps a stitch deliberately painted white clearly distinguishable from an empty, unpainted one – otherwise the two would look identical  
 
 ### **Tools**
 - **Pen**: click individual stitches or drag to color multiple at once  
@@ -117,6 +122,7 @@ The default language can be set in the [lang.js](lang.js) file
 - **Eyedropper**: pick a color from the pattern (e.g., from an imported photo) and set it as the current color  
 - Matching mouse cursors for pen and eyedropper  
 - Eraser for targeted removal of individual stitches or areas  
+- **Compact toolbar row in the header**: pen, area, eyedropper, eraser, undo, and redo also available as small buttons in the header – appear automatically once the sidebar is collapsed, keeping them reachable without opening the sidebar  
 - Recently used colors for quick access  
 - **Replace color**: swap one specific color throughout the whole pattern for another (or clear it entirely), with an eyedropper to pick the old color directly from the grid  
 
@@ -131,6 +137,7 @@ The default language can be set in the [lang.js](lang.js) file
 ### **Saving & Export**
 - Export as PNG image (including row/column numbers and grid lines, depending on view settings)  
 - Export/import as JSON file to save or share patterns  
+- 💾/📂 buttons in the header for quick access to "save pattern"/"load pattern" without opening the sidebar  
 - Warning when accidentally reloading or leaving the page while unsaved changes exist  
 
 ### **Sticky Notes**
@@ -147,7 +154,7 @@ The default language can be set in the [lang.js](lang.js) file
 ### **Color Table (persistent 7x7-slot palette)**
 - A dedicated, persistent color store – separate from the transient "recently used colors" list  
 - Sits in the sidebar as its own group ("Color Table") and additionally as a compact strip in the header  
-- **Filling it**: eyedropper button "Pick from grid" + click a stitch, or manually via the color picker + "Add to color table"; grows dynamically up to a maximum of 49 colors  
+- **Filling it**: eyedropper button "Pick from grid" + click a stitch, or manually via the color picker + "Add to color table"; grows dynamically up to a maximum of 49 colors; white can be added too  
 - **Using it**: clicking a color in the sidebar palette or header strip activates it immediately in the pen tool; a small "×" (shown on hover) removes a single color from the sidebar table  
 - **Reordering**: drag color swatches freely into the order you want (mouse or touch), reflected simultaneously in both the sidebar and header view  
 - **Save/Load**: a dedicated `Farbtabelle.json` file can be exported and imported (independent of the pattern), and the palette is also automatically preserved in the browser (localStorage)  
@@ -156,6 +163,7 @@ The default language can be set in the [lang.js](lang.js) file
 ### **User Interface**
 - Language selection dropdown in header  
 - Collapsible sidebar and header area for more space on small screens  
+- On first launch, only the "Color Table" section starts expanded; all other sidebar sections start collapsed for a cleaner starting point; once you customize the expand/collapse state yourself, your choice is remembered  
 - Responsive layout, works well on narrow windows/tablets  
 
 ## **Technology**
