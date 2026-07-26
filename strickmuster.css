@@ -886,15 +886,28 @@ input[type="color"] {
   background: var(--cell-empty);
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  cursor: crosshair;
   touch-action: none;
 }
 
-.board--tool-paint .cell {
+/* Performance: Der Werkzeug-Cursor wird bewusst NICHT über einen
+   Nachfahren-Selektor (".board--tool-x .cell") gesetzt, sondern direkt
+   auf ".board" - cursor ist eine vererbte CSS-Eigenschaft, daher reicht
+   eine einzige Regel auf dem Container, die an alle Zellen "durchgereicht"
+   wird. Bei großen Rastern (z.B. 200x200 = 40.000 Zellen) müsste der
+   Browser sonst bei jedem Werkzeugwechsel 40.000 Selektor-Treffer einzeln
+   auflösen und den (SVG-)Cursor pro Element neu berechnen - das war die
+   Ursache für die spürbare Verzögerung beim Aktivieren der Pipette.
+   WICHTIG: .cell darf daher selbst KEIN "cursor" mehr explizit setzen,
+   sonst wird die Vererbung vom Elternelement blockiert. */
+.board {
+  cursor: crosshair;
+}
+
+.board--tool-paint {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z' fill='%23322c26' stroke='white' stroke-width='1.2' stroke-linejoin='round'/></svg>") 4 20, crosshair;
 }
 
-.board--tool-pipette .cell {
+.board--tool-pipette {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M14.5 3.5l6 6-3 3-1.5-1.5L9 18l-4 1 1-4 7-7L11.5 6.5l3-3z' fill='%23322c26' stroke='white' stroke-width='1.2' stroke-linejoin='round' stroke-linecap='round'/></svg>") 5 19, crosshair;
 }
 
@@ -905,8 +918,10 @@ input[type="color"] {
 
 /* Lupen-Cursor, solange Strg/Cmd gedrückt gehalten wird (Hinweis auf die
    Zoom-per-Mausrad-Funktion) - überstimmt die Werkzeug-Cursor (Stift/
-   Pipette), da diese Regel weiter unten im Stylesheet steht. */
-.board--zoom-cursor .cell {
+   Pipette), da diese Regel weiter unten im Stylesheet steht. Aus
+   Performance-Gründen ebenfalls auf .board statt .board .cell (siehe
+   Kommentar bei .board weiter oben). */
+.board--zoom-cursor {
   cursor: zoom-in;
 }
 
