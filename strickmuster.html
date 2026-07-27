@@ -367,11 +367,17 @@
   </main>
 
   <footer class="app-footer">
-    <span><span data-i18n="footer_before">(C) 2026</span> <a style="color: #000 !important;" target="_blank" href="https://github.com/heino17/Knitting-Pattern-Editor">heino17</a> <span data-i18n="footer_after">· strickmuster.html · lokal im Browser, keine Serververbindung nötig</span></span>
+    <span><span data-i18n="footer_before">(C) 2026</span> <a style="color: #000 !important;" target="_blank" href="https://github.com/heino17/Knitting-Pattern-Editor">heino17</a> <span id="appVersionTag" style="opacity: 0.65; font-size: 0.85em;"></span> <span data-i18n="footer_after">· strickmuster.html · lokal im Browser, keine Serververbindung nötig</span></span>
   </footer>
 
 <script>
 (() => {
+  // --- App-Version ---
+  // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
+  // Wird im Footer neben "heino17" angezeigt.
+  const APP_VERSION = '1.0.0';
+  document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
+
   // --- i18n ---
   const LANG_KEY = 'strickmuster-lang';
   const langSelect = document.getElementById('langSelect');
