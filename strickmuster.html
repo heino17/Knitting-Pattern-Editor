@@ -25,6 +25,7 @@
 <title data-i18n="meta_title">Julia's Strickmuster Editor</title>
 <link rel="stylesheet" href="strickmuster.css">
 <script src="lang.js"></script>
+<script src="dmc_colors.js"></script>
 </head>
 <body>
 
@@ -247,6 +248,12 @@
             <span data-i18n="import_snap_palette_label">Auf meine Farbtabelle einrasten</span>
           </label>
           <p class="panel__note" data-i18n="import_snap_palette_note">Jede Masche bekommt die ähnlichste Farbe aus deiner gespeicherten Farbtabelle statt einer frei berechneten Farbe. Wird zusätzlich zu den Farbstufen angewendet.</p>
+          <label class="field field--checkbox">
+            <input type="checkbox" id="importSnapDmc">
+            <span data-i18n="import_snap_dmc_label">Auf DMC-Farbtabelle einrasten</span>
+            <a href="edit_dmc_colors.html" id="editDmcColorsLink" class="edit-dmc-link" target="dmc-color-editor" title="DMC-Farbtabelle bearbeiten" data-i18n-title="edit_dmc_colors_link_title" aria-label="DMC-Farbtabelle bearbeiten" data-i18n-aria-label="edit_dmc_colors_link_title">✏️</a>
+          </label>
+          <p class="panel__note" data-i18n="import_snap_dmc_note">Jede Masche bekommt die ähnlichste Farbe aus der hinterlegten DMC-Garnfarbtabelle. Schließt sich mit „Auf meine Farbtabelle einrasten" gegenseitig aus.</p>
           <p class="panel__note"><span data-i18n="import_note_before">Das Bild wird auf das aktuelle Raster (</span><span id="importSizeHint">50 × 50</span><span data-i18n="import_note_after">, Breite × Höhe) gestreckt und in Pixelfarben umgesetzt.</span></p>
           <div class="btn-row">
             <button id="exportJsonBtn" class="btn" data-i18n="export_json_btn">Muster speichern</button>
@@ -375,7 +382,7 @@
   // --- App-Version ---
   // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
   // Wird im Footer neben "heino17" angezeigt.
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.1.1';
   document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
 
   // --- i18n ---
@@ -435,6 +442,10 @@
     // Hintergrundbild-Sichtbarkeits-Button zeigt "Bild ausblenden" ODER
     // "Bild einblenden", je nach Zustand - kein fixer data-i18n-Text.
     if (typeof updateBgImageToggleBtnLabel === 'function') updateBgImageToggleBtnLabel();
+
+    // Link zu edit_dmc_colors.html soll immer die aktuell gewählte Sprache
+    // als ?lang= mitgeben.
+    if (typeof updateEditDmcColorsLinkHref === 'function') updateEditDmcColorsLinkHref();
   }
 
   if (langSelect) {
@@ -508,6 +519,8 @@
   const importLevels = document.getElementById('importLevels');
   const importLevelsOut = document.getElementById('importLevelsOut');
   const importSnapPalette = document.getElementById('importSnapPalette');
+  const importSnapDmc = document.getElementById('importSnapDmc');
+  const editDmcColorsLink = document.getElementById('editDmcColorsLink');
   const importSizeHint = document.getElementById('importSizeHint');
   const exportPngBtn = document.getElementById('exportPngBtn');
   const showGrid10 = document.getElementById('showGrid10');
@@ -970,6 +983,34 @@
     importSnapPalette.disabled = !hasPalette;
     if (!hasPalette) importSnapPalette.checked = false;
     importSnapPalette.title = hasPalette ? '' : t('import_snap_palette_empty_title');
+  }
+
+  // "Auf meine Farbtabelle einrasten" und "Auf DMC-Farbtabelle einrasten"
+  // schließen sich gegenseitig aus - beim Aktivieren der einen wird die
+  // andere automatisch deaktiviert.
+  importSnapPalette.addEventListener('change', () => {
+    if (importSnapPalette.checked) importSnapDmc.checked = false;
+  });
+  importSnapDmc.addEventListener('change', () => {
+    if (importSnapDmc.checked) importSnapPalette.checked = false;
+  });
+
+  // Link zu edit_dmc_colors.html: sitzt innerhalb des <label>, daher darf ein
+  // Klick darauf nicht zusätzlich die Checkbox umschalten (Label-Klickverhalten
+  // würde das sonst tun). Außerdem wird die aktuelle Sprache als ?lang=
+  // mitgegeben, damit das Tool gleich in der passenden Sprache öffnet.
+  // target="dmc-color-editor" (statt "_blank") sorgt dafür, dass ein bereits
+  // offener Tab wiederverwendet statt bei jedem Klick ein neuer geöffnet wird.
+  // WICHTIG: kein rel="noopener" hier - das würde die opener-Beziehung zum
+  // neuen Tab kappen, wodurch der Browser den benannten Tab nicht mehr
+  // wiederfindet und stattdessen jedes Mal einen neuen öffnet.
+  function updateEditDmcColorsLinkHref() {
+    if (!editDmcColorsLink) return;
+    editDmcColorsLink.href = 'edit_dmc_colors.html?lang=' + encodeURIComponent(currentLang);
+  }
+  if (editDmcColorsLink) {
+    editDmcColorsLink.addEventListener('click', (e) => e.stopPropagation());
+    updateEditDmcColorsLinkHref();
   }
 
   paletteAddBtn.addEventListener('click', () => addToPalette(paletteNewColor.value));
@@ -1994,11 +2035,34 @@
     return bestHex;
   }
 
+  // Findet die Farbe aus der DMC-Farbtabelle (dmc_colors.js), die am
+  // nächsten an der übergebenen Farbe liegt. Nur Farben mit active: true
+  // werden berücksichtigt (Einzelfarben lassen sich direkt in dmc_colors.js
+  // deaktivieren, z. B. wenn ein Garn gerade nicht vorrätig ist).
+  function nearestDmcColor(r, g, b) {
+    let bestHex = null;
+    let bestDist = Infinity;
+    const list = (typeof DMC_COLORS !== 'undefined') ? DMC_COLORS : [];
+    for (const entry of list) {
+      if (!entry.active) continue;
+      const p = hexToRgb(entry.hex);
+      const dr = p.r - r, dg = p.g - g, db = p.b - b;
+      const dist = dr * dr + dg * dg + db * db;
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestHex = entry.hex;
+      }
+    }
+    return bestHex;
+  }
+
   function applyImageToGrid(img) {
     const rows = state.rows;
     const cols = state.cols;
     const levels = Number(importLevels.value); // 0 = aus (volle Farbtiefe)
     const snapToPalette = importSnapPalette.checked && paletteColors.length > 0;
+    const dmcList = (typeof DMC_COLORS !== 'undefined') ? DMC_COLORS : [];
+    const snapToDmc = importSnapDmc.checked && dmcList.some(c => c.active);
 
     // Bild zunächst auf eine moderate Arbeitsgröße bringen (schneller & der
     // Browser glättet dabei bereits sinnvoll vor), danach exakt blockweise mitteln.
@@ -2047,6 +2111,8 @@
         let hex = rgbToHex(rAvg, gAvg, bAvg);
         if (snapToPalette) {
           hex = nearestPaletteColor(rAvg, gAvg, bAvg) || hex;
+        } else if (snapToDmc) {
+          hex = nearestDmcColor(rAvg, gAvg, bAvg) || hex;
         }
         newColors[r * cols + c] = hex;
       }

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>DMC-Farbtabelle bearbeiten</title>
+<style>
+  :root {
+    --paper: #f7f2e9;
+    --paper-raised: #fffdf9;
+    --ink: #322c26;
+    --ink-soft: #6b6255;
+    --line: #ddd4c2;
+    --line-bold: #a89c86;
+    --wine: #7a2e3a;
+    --wine-dark: #5e2029;
+    --sage: #6b7a5e;
+    --gold: #c69b4e;
+    --radius: 10px;
+    --shadow: 0 2px 10px rgba(50, 44, 38, 0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--paper-raised);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+  .header-top-text { flex: 1; min-width: 0; }
+  header h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    color: var(--wine-dark);
+  }
+  header p {
+    margin: 0 0 12px 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .lang-select-wrap { flex: none; }
+  .lang-select {
+    padding: 8px 10px;
+    border: 1px solid var(--line-bold);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .lang-select:hover { background: #f2ebdd; color: var(--wine); }
+  .lang-select:focus { outline: 2px solid var(--wine); outline-offset: -1px; }
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .search {
+    flex: 1 1 220px;
+    padding: 8px 12px;
+    border: 1px solid var(--line-bold);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink);
+    font-size: 0.9rem;
+  }
+  .search:focus { outline: 2px solid var(--wine); outline-offset: -1px; }
+  .btn {
+    padding: 8px 14px;
+    border: 1px solid var(--line-bold);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover { background: #f2ebdd; color: var(--wine); }
+  .btn--primary {
+    background: var(--wine);
+    border-color: var(--wine);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn--primary:hover { background: var(--wine-dark); }
+  .btn--file { position: relative; overflow: hidden; }
+  .btn--file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .status {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-left: auto;
+  }
+  .status strong { color: var(--wine-dark); }
+  main {
+    padding: 16px 20px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 8px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    transition: opacity 0.15s;
+  }
+  .row.is-inactive { opacity: 0.45; }
+  .row label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer;
+  }
+  .row input[type="checkbox"] {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--wine);
+    cursor: pointer;
+  }
+  .swatch {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--line-bold);
+  }
+  .row .info {
+    min-width: 0;
+    flex: 1;
+  }
+  .row .code {
+    font-weight: 600;
+    color: var(--wine-dark);
+    font-size: 0.85rem;
+  }
+  .row .name {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .empty-hint {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 40px 0;
+    font-size: 0.9rem;
+  }
+  footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--paper-raised);
+    border-top: 1px solid var(--line);
+    padding: 12px 20px;
+    box-shadow: 0 -2px 10px rgba(50, 44, 38, 0.08);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  footer .hint {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-left: auto;
+    max-width: 420px;
+    text-align: right;
+  }
+  .toast {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--sage);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 100;
+  }
+  .toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-top-text">
+      <h1 data-i18n="heading">🧵 DMC-Farbtabelle bearbeiten</h1>
+      <p data-i18n="intro">Einzelne Garnfarben aktivieren oder deaktivieren, dann als dmc_colors.js speichern und die bestehende Datei im Editor-Ordner damit ersetzen.</p>
+    </div>
+    <label class="lang-select-wrap">
+      <span class="sr-only" data-i18n="lang_select_aria">Sprache wählen</span>
+      <select id="langSelect" class="lang-select" data-i18n-aria-label="lang_select_aria" aria-label="Sprache wählen">
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="en">🇺🇸 American</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="zh_CN">🇨🇳 中文（简体）</option>
+      </select>
+    </label>
+  </div>
+  <div class="toolbar">
+    <input type="text" class="search" id="search" data-i18n-placeholder="search_placeholder" placeholder="Suchen nach Nummer oder Name…">
+    <button type="button" class="btn" id="activateAllBtn" data-i18n="activate_all_btn">Alle aktivieren</button>
+    <button type="button" class="btn" id="deactivateAllBtn" data-i18n="deactivate_all_btn">Alle deaktivieren</button>
+    <span class="status" id="status"></span>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <p class="empty-hint" id="emptyHint" data-i18n="empty_hint" hidden>Keine Farben gefunden.</p>
+</main>
+
+<footer>
+  <button type="button" class="btn btn--primary" id="saveBtn" data-i18n="save_btn">💾 dmc_colors.js speichern</button>
+  <span class="hint" data-i18n="save_hint">Der Browser lädt die Datei herunter (meist in den Downloads-Ordner). Anschließend die alte dmc_colors.js im Editor-Ordner damit überschreiben.</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="dmc_colors.js"></script>
+<script src="edit_dmc_colors_lang.js"></script>
+<script>
+  // --- i18n ---
+  // Eigener localStorage-Key für dieses Tool, aber beim allerersten Öffnen
+  // wird - falls vorhanden - die zuletzt in strickmuster.html gewählte
+  // Sprache ('strickmuster-lang') als Startwert übernommen.
+  const LANG_KEY = 'edit-dmc-colors-lang';
+  const MAIN_APP_LANG_KEY = 'strickmuster-lang';
+  const langSelect = document.getElementById('langSelect');
+
+  function detectInitialLang() {
+    // 1. Höchste Priorität: expliziter ?lang=xx Parameter, z. B. aus dem
+    //    Link in strickmuster.html. Gewinnt bewusst auch gegen eine bereits
+    //    gespeicherte eigene Wahl, da ein Link-Aufruf ein aktiver Wunsch ist.
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    if (urlLang && EDIT_DMC_I18N_AVAILABLE.includes(urlLang)) return urlLang;
+
+    // 2. Hat der Nutzer die Sprache in diesem Tool schon einmal gewechselt? -> gewinnt.
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved && EDIT_DMC_I18N_AVAILABLE.includes(saved)) return saved;
+
+    // 3. Sonst: Sprache aus der Haupt-App (strickmuster.html) übernehmen, falls vorhanden.
+    const mainAppLang = localStorage.getItem(MAIN_APP_LANG_KEY);
+    if (mainAppLang && EDIT_DMC_I18N_AVAILABLE.includes(mainAppLang)) return mainAppLang;
+
+    // 4. Sonst die in edit_dmc_colors_lang.js festgelegte Start-Sprache.
+    if (typeof EDIT_DMC_STARTUP_LANGUAGE_CODE !== 'undefined' && EDIT_DMC_I18N_AVAILABLE.includes(EDIT_DMC_STARTUP_LANGUAGE_CODE)) {
+      return EDIT_DMC_STARTUP_LANGUAGE_CODE;
+    }
+
+    // 5. Absoluter Notfall-Fallback.
+    return 'de';
+  }
+
+  let currentLang = detectInitialLang();
+
+  // Kam die Sprache über ?lang=xx aus einem Link (z. B. aus strickmuster.html),
+  // wird sie gleich als eigene Wahl für dieses Tool gemerkt. Ohne das würde ein
+  // späteres Öffnen ohne Parameter wieder auf eine ältere Wahl zurückfallen.
+  {
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    if (urlLang && EDIT_DMC_I18N_AVAILABLE.includes(urlLang)) {
+      localStorage.setItem(LANG_KEY, urlLang);
+    }
+  }
+
+  function t(key) {
+    const dict = EDIT_DMC_I18N[currentLang] || EDIT_DMC_I18N.de;
+    return (key in dict) ? dict[key] : (EDIT_DMC_I18N.de[key] || key);
+  }
+
+  function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = t('meta_title');
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
+      el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+    });
+
+    // Dynamisch erzeugte Texte (Statuszeile, Farbkarten-Präfix) hängen nicht
+    // an data-i18n-Elementen und müssen beim Sprachwechsel neu gerendert werden.
+    updateStatus();
+    render();
+  }
+
+  if (langSelect) {
+    langSelect.value = currentLang;
+    langSelect.addEventListener('change', () => {
+      currentLang = EDIT_DMC_I18N_AVAILABLE.includes(langSelect.value) ? langSelect.value : 'de';
+      localStorage.setItem(LANG_KEY, currentLang);
+      applyLang();
+    });
+  }
+
+  // --- Farbtabelle ---
+  const grid = document.getElementById('grid');
+  const emptyHint = document.getElementById('emptyHint');
+  const search = document.getElementById('search');
+  const status = document.getElementById('status');
+  const toast = document.getElementById('toast');
+
+  const colors = (typeof DMC_COLORS !== 'undefined') ? DMC_COLORS : [];
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('is-visible'), 2200);
+  }
+
+  function updateStatus() {
+    const activeCount = colors.filter(c => c.active).length;
+    status.innerHTML = '<strong>' + activeCount + '</strong> / ' + colors.length + ' ' + t('status_active');
+  }
+
+  function matchesFilter(entry, query) {
+    if (!query) return true;
+    return entry.code.toLowerCase().includes(query) ||
+           entry.name.toLowerCase().includes(query);
+  }
+
+  function render() {
+    const query = search.value.trim().toLowerCase();
+    grid.innerHTML = '';
+    let shown = 0;
+
+    colors.forEach((entry, index) => {
+      if (!matchesFilter(entry, query)) return;
+      shown++;
+
+      const row = document.createElement('div');
+      row.className = 'row' + (entry.active ? '' : ' is-inactive');
+
+      const label = document.createElement('label');
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = entry.active;
+      checkbox.addEventListener('change', () => {
+        entry.active = checkbox.checked;
+        row.classList.toggle('is-inactive', !entry.active);
+        updateStatus();
+      });
+
+      const swatch = document.createElement('span');
+      swatch.className = 'swatch';
+      swatch.style.background = entry.hex;
+
+      const info = document.createElement('span');
+      info.className = 'info';
+      info.innerHTML =
+        '<span class="code">' + t('code_prefix') + ' ' + entry.code + '</span><br>' +
+        '<span class="name">' + entry.name + '</span>';
+
+      label.appendChild(checkbox);
+      label.appendChild(swatch);
+      label.appendChild(info);
+      row.appendChild(label);
+      grid.appendChild(row);
+    });
+
+    emptyHint.hidden = shown > 0;
+  }
+
+  search.addEventListener('input', render);
+
+  document.getElementById('activateAllBtn').addEventListener('click', () => {
+    const query = search.value.trim().toLowerCase();
+    colors.forEach(entry => {
+      if (matchesFilter(entry, query)) entry.active = true;
+    });
+    render();
+    updateStatus();
+    showToast(query ? t('toast_activated_filtered') : t('toast_activated_all'));
+  });
+
+  document.getElementById('deactivateAllBtn').addEventListener('click', () => {
+    const query = search.value.trim().toLowerCase();
+    colors.forEach(entry => {
+      if (matchesFilter(entry, query)) entry.active = false;
+    });
+    render();
+    updateStatus();
+    showToast(query ? t('toast_deactivated_filtered') : t('toast_deactivated_all'));
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const lines = [];
+    lines.push('// DMC-Farbtabelle (Garnfarben der Firma DMC)');
+    lines.push('//');
+    lines.push('// Diese Datei ist die alleinige Quelle fuer die Funktion "Auf DMC-Farbtabelle');
+    lines.push('// einrasten" beim Bild-Import im Strickmuster-Editor. Sie liegt bewusst als');
+    lines.push('// eigene .js-Datei vor (wie lang.js) und nicht in einer austauschbaren .json,');
+    lines.push('// damit sie nicht versehentlich mit den Muster-Vorlagen geloescht wird.');
+    lines.push('//');
+    lines.push('// Einzelne Farben (de-)aktivieren:');
+    lines.push('//   Feld "active" auf true oder false setzen. Nur Farben mit active: true');
+    lines.push('//   werden beim Einrasten beruecksichtigt - z.B. wenn ein bestimmtes Garn');
+    lines.push('//   gerade nicht vorraetig ist. Bequem geht das mit edit_dmc_colors.html -');
+    lines.push('//   Checkbox pro Farbe umschalten und ueber "dmc_colors.js speichern" die');
+    lines.push('//   aktualisierte Datei herunterladen, dann die alte damit ersetzen.');
+    lines.push('//');
+    lines.push('// code = DMC-Farbnummer, name = DMC-Farbname (Englisch), hex = Farbwert');
+    lines.push('');
+    lines.push('const DMC_COLORS = [');
+    colors.forEach(entry => {
+      const name = entry.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      lines.push(
+        "  { code: '" + entry.code + "', name: '" + name + "', hex: '" + entry.hex +
+        "', active: " + (entry.active ? 'true' : 'false') + " },"
+      );
+    });
+    lines.push('];');
+    lines.push('');
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dmc_colors.js';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(t('toast_saved'));
+  });
+
+  if (!colors.length) {
+    emptyHint.hidden = false;
+    emptyHint.removeAttribute('data-i18n');
+    emptyHint.textContent = t('load_error_hint');
+  }
+
+  applyLang();
+</script>
+
+</body>
+</html>

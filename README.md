@@ -9,7 +9,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 
 ## Nutzung
 
-1. `strickmuster.html`, `strickmuster.css` und `lang.js`im selben Ordner speichern.  
+1. `strickmuster.html`, `strickmuster.css`, `lang.js`, `dmc_colors.js`, `edit_dmc_colors.html` und `edit_dmc_colors_lang.js` im selben Ordner speichern.  
 2. `strickmuster.html` per Doppelklick im Browser öffnen.  
 3. Fertig – alles läuft lokal im Browser, es wird nichts an einen Server übertragen.  
 
@@ -37,6 +37,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Foto importieren, wird automatisch auf das aktuelle Raster gestreckt und in Pixelfarben umgesetzt (echtes Downsampling per Blockmittelung)  
 - **Farbstufen-Reduktion**: Farbtiefe optional auf wenige, klar unterscheidbare Stufen je Kanal begrenzen (Regler) – ergibt ein gröberes, blockigeres Ergebnis statt vieler feiner Zwischentöne  
 - **Auf Farbtabelle einrasten**: jede Masche kann statt einer frei berechneten Farbe automatisch die ähnlichste Farbe aus der eigenen Farbtabelle bekommen – ideal, um ein Muster nur mit tatsächlich vorhandenen Wollfarben umzusetzen; beide Optionen sind kombinierbar  
+- **Auf DMC-Farbtabelle einrasten**: alternativ kann jede Masche stattdessen die ähnlichste Farbe aus der mitgelieferten DMC-Garnfarbtabelle bekommen (schließt sich mit „Auf Farbtabelle einrasten" gegenseitig aus). DMC ist eine seit 1746 im französischen Mulhouse ansässige Garn-Manufaktur ([dmc.com](https://www.dmc.com)); die Farbtabelle lässt sich online z. B. unter [threadcolors.com](https://threadcolors.com) einsehen. Einzelne DMC-Farben lassen sich über das separate Werkzeug `edit_dmc_colors.html` (✏️-Knopf neben der Checkbox) bequem (de)aktivieren – praktisch, wenn ein bestimmtes Garn gerade nicht vorrätig ist  
 
 **Rückgängig / Wiederherstellen**
 - Vollständiger Undo/Redo-Verlauf (bis zu 30 Schritte), per Button oder Tastenkombination (Strg+Z / Strg+Umschalt+Z bzw. Strg+Y)  
@@ -75,11 +76,14 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 
 ## Technik
 
-Reines HTML, CSS und JavaScript (Vanilla JS, keine Frameworks oder Build-Tools nötig). Drei Dateien:  
+Reines HTML, CSS und JavaScript (Vanilla JS, keine Frameworks oder Build-Tools nötig). Sechs Dateien:  
 
 - `strickmuster.html` – Struktur und Logik  
 - `strickmuster.css` – Gestaltung  
 - `lang.js` - Sprachendatei  
+- `dmc_colors.js` – DMC-Garnfarbtabelle (Quelle für „Auf DMC-Farbtabelle einrasten")  
+- `edit_dmc_colors.html` – separates, unverlinktes Werkzeug zum bequemen (De-)Aktivieren einzelner DMC-Farben  
+- `edit_dmc_colors_lang.js` – eigene Sprachendatei für `edit_dmc_colors.html`  
 
 ## Lizenz
 
@@ -102,7 +106,7 @@ The default language can be set in the [lang.js](lang.js) file
 
 ## **Usage**
 
-1. Save `strickmuster.html`, `strickmuster.css` and `lang.js`in the same folder.  
+1. Save `strickmuster.html`, `strickmuster.css`, `lang.js`, `dmc_colors.js`, `edit_dmc_colors.html` and `edit_dmc_colors_lang.js` in the same folder.  
 2. Open `strickmuster.html` in your browser via double‑click.  
 3. Done – everything runs locally in the browser, nothing is transmitted to any server.
 
@@ -130,6 +134,7 @@ The default language can be set in the [lang.js](lang.js) file
 - Import a photo; it is automatically stretched to the current grid and converted into pixel colors (true downsampling via block averaging)  
 - **Color level reduction**: optionally limit the color depth to a few clearly distinct levels per channel (slider) – gives a coarser, blockier result instead of many fine in-between tones  
 - **Snap to color table**: each stitch can automatically get the closest match from your own color table instead of a freely computed color – great for working only with yarn colors you actually have; both options can be combined  
+- **Snap to DMC color table**: alternatively, each stitch can get the closest match from the built-in DMC thread color table instead (mutually exclusive with "Snap to color table"). DMC is a yarn manufacturer based in Mulhouse, France, since 1746 ([dmc.com](https://www.dmc.com)); the color table can be viewed online e.g. at [threadcolors.com](https://threadcolors.com). Individual DMC colors can be conveniently activated/deactivated with the separate `edit_dmc_colors.html` tool (✏️ button next to the checkbox) – handy when a particular yarn isn't currently in stock  
 
 ### **Undo / Redo**
 - Full undo/redo history (up to 30 steps), via button or keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y)
@@ -168,11 +173,14 @@ The default language can be set in the [lang.js](lang.js) file
 
 ## **Technology**
 
-Pure HTML, CSS, and JavaScript (vanilla JS, no frameworks or build tools required). Three files:
+Pure HTML, CSS, and JavaScript (vanilla JS, no frameworks or build tools required). Six files:
 
 - `strickmuster.html` – structure and logic  
 - `strickmuster.css` – styling  
 - `lang.js` - languages file  
+- `dmc_colors.js` – DMC thread color table (source for "Snap to DMC color table")  
+- `edit_dmc_colors.html` – separate, deliberately unlinked tool for conveniently activating/deactivating individual DMC colors  
+- `edit_dmc_colors_lang.js` – dedicated languages file for `edit_dmc_colors.html`  
 
 ## **License**
 
