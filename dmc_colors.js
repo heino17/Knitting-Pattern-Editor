@@ -357,7 +357,7 @@ const DMC_COLORS = [
   { code: '3341', name: 'Apricot', hex: '#fcab98', active: true },
   { code: '3340', name: 'Apricot Med', hex: '#ff836f', active: true },
   { code: '608', name: 'Burnt Orange Bright', hex: '#fd5d35', active: true },
-  { code: '606', name: 'Orange?Red Bright', hex: '#fa3203', active: true },
+  { code: '606', name: 'Orange Red Bright', hex: '#fa3203', active: true },
   { code: '951', name: 'Tawny Light', hex: '#ffe2cf', active: true },
   { code: '3856', name: 'Mahogany Ult Vy Lt', hex: '#ffd3b5', active: true },
   { code: '722', name: 'Orange Spice Light', hex: '#f7976f', active: true },

@@ -67,6 +67,8 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - **Sortieren**: Farbfelder per Ziehen frei in die gewünschte Reihenfolge bringen (Maus oder Touch), wirkt sich gleichzeitig auf Sidebar- und Header-Ansicht aus  
 - **Speichern/Laden**: eigene `Farbtabelle.json` exportier- und importierbar (unabhängig vom Muster), zusätzlich automatische Sicherung im Browser (localStorage)  
 - Bewusst **nicht** Teil von Undo/Redo oder der Muster-`.json` – bleibt musterunabhängig über mehrere Muster hinweg erhalten  
+- **Export** der aktuellen Farbtabelle als DMC-Namensliste, der, oder der ähnlichsten Farben unter den DMC-Farben  
+  -  Kopieren der DMC-Namensliste in die Zwischenablage, speichern als .txt oder einer farbigen, sortierbaren .html-seite  
 
 **Bedienoberfläche**
 - Sprachwahl-Dropdown im Kopfbereich  
@@ -137,7 +139,7 @@ The default language can be set in the [lang.js](lang.js) file
 - **Snap to DMC color table**: alternatively, each stitch can get the closest match from the built-in DMC thread color table instead (mutually exclusive with "Snap to color table"). DMC is a yarn manufacturer based in Mulhouse, France, since 1746 ([dmc.com](https://www.dmc.com)); the color table can be viewed online e.g. at [threadcolors.com](https://threadcolors.com). Individual DMC colors can be conveniently activated/deactivated with the separate `edit_dmc_colors.html` tool (✏️ button next to the checkbox) – handy when a particular yarn isn't currently in stock  
 
 ### **Undo / Redo**
-- Full undo/redo history (up to 30 steps), via button or keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y)
+- Full undo/redo history (up to 30 steps), via button or keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y)  
 
 ### **Saving & Export**
 - Export as PNG image (including row/column numbers and grid lines, depending on view settings)  
@@ -164,6 +166,8 @@ The default language can be set in the [lang.js](lang.js) file
 - **Reordering**: drag color swatches freely into the order you want (mouse or touch), reflected simultaneously in both the sidebar and header view  
 - **Save/Load**: a dedicated `Farbtabelle.json` file can be exported and imported (independent of the pattern), and the palette is also automatically preserved in the browser (localStorage)  
 - Deliberately **not** part of undo/redo or the pattern `.json` – it's a pattern-independent, personal collection that stays consistent across multiple patterns  
+- **Export** the current color chart as a list of DMC names, or the most similar colors among the DMC colors  
+  - Copy the DMC name list to the clipboard, save it as a .txt file, or as a colored, sortable .html page  
 
 ### **User Interface**
 - Language selection dropdown in header  

@@ -205,8 +205,10 @@
             </button>
           </div>
           <button type="button" id="paletteAddBtn" class="btn" data-i18n="palette_add_btn">Zur Farbtabelle hinzufügen</button>
+          <button type="button" id="paletteAddGridColorsBtn" class="btn" data-i18n="palette_add_grid_colors_btn">Alle Rasterfarben übernehmen</button>
 
           <div class="field-label" id="paletteCountLabel">Farbtabelle (0 / 49)</div>
+          <div class="field-label field-label--filename" id="paletteFileNameLabel" hidden></div>
           <div class="palette-grid" id="paletteGrid" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
           <p class="panel__note" data-i18n="palette_usage_note">Klick auf eine Farbe aktiviert sie im Stift. Klick auf das "×" entfernt sie aus der Tabelle.</p>
 
@@ -217,6 +219,7 @@
               <input type="file" id="paletteImportInput" accept="application/json" hidden>
             </label>
           </div>
+          <button type="button" id="paletteDmcNamesBtn" class="btn" data-i18n="palette_dmc_names_btn">🧵 DMC-Namensliste</button>
           <button type="button" id="paletteClearBtn" class="btn" data-i18n="palette_clear_btn">Farbtabelle leeren</button>
           </div>
         </section>
@@ -377,12 +380,32 @@
     <span><span data-i18n="footer_before">(C) 2026</span> <a style="color: #000 !important;" target="_blank" href="https://github.com/heino17/Knitting-Pattern-Editor">heino17</a> <span id="appVersionTag" style="opacity: 0.65; font-size: 0.85em;"></span> <span data-i18n="footer_after">· strickmuster.html · lokal im Browser, keine Serververbindung nötig</span></span>
   </footer>
 
+  <div class="modal-overlay" id="dmcNamesModalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dmcNamesModalTitle">
+      <div class="modal__header">
+        <h2 id="dmcNamesModalTitle" data-i18n="dmc_names_modal_title">DMC-Namensliste</h2>
+        <button type="button" id="dmcNamesModalCloseBtn" class="modal__close" aria-label="Schließen" data-i18n-aria-label="dmc_names_modal_close_aria">✕</button>
+      </div>
+      <p class="panel__note" data-i18n="dmc_names_modal_intro">Für jede Farbe der Farbtabelle wird das jeweils ähnlichste aktive DMC-Garn angezeigt.</p>
+      <p class="dmc-names-meta" id="dmcNamesSourceLabel" hidden></p>
+      <p class="dmc-names-meta" id="dmcNamesCountLabel"></p>
+      <div class="modal__body">
+        <ul class="dmc-names-list" id="dmcNamesList"></ul>
+      </div>
+      <div class="modal__footer">
+        <button type="button" id="dmcNamesCopyBtn" class="btn" data-i18n="dmc_names_copy_btn">📋 Liste kopieren</button>
+        <button type="button" id="dmcNamesDownloadBtn" class="btn" data-i18n="dmc_names_download_btn">💾 Als Textdatei speichern</button>
+        <button type="button" id="dmcNamesDownloadHtmlBtn" class="btn" data-i18n="dmc_names_download_html_btn">🎨 Als HTML mit Farben speichern</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 (() => {
   // --- App-Version ---
   // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
   // Wird im Footer neben "heino17" angezeigt.
-  const APP_VERSION = '1.1.1';
+  const APP_VERSION = '1.2.0';
   document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
 
   // --- i18n ---
@@ -538,11 +561,22 @@
   const paletteNewColor = document.getElementById('paletteNewColor');
   const palettePickBtn = document.getElementById('palettePickBtn');
   const paletteAddBtn = document.getElementById('paletteAddBtn');
+  const paletteAddGridColorsBtn = document.getElementById('paletteAddGridColorsBtn');
   const paletteCountLabel = document.getElementById('paletteCountLabel');
+  const paletteFileNameLabel = document.getElementById('paletteFileNameLabel');
   const paletteGrid = document.getElementById('paletteGrid');
   const paletteExportBtn = document.getElementById('paletteExportBtn');
   const paletteImportInput = document.getElementById('paletteImportInput');
   const paletteClearBtn = document.getElementById('paletteClearBtn');
+  const paletteDmcNamesBtn = document.getElementById('paletteDmcNamesBtn');
+  const dmcNamesModalOverlay = document.getElementById('dmcNamesModalOverlay');
+  const dmcNamesModalCloseBtn = document.getElementById('dmcNamesModalCloseBtn');
+  const dmcNamesList = document.getElementById('dmcNamesList');
+  const dmcNamesSourceLabel = document.getElementById('dmcNamesSourceLabel');
+  const dmcNamesCountLabel = document.getElementById('dmcNamesCountLabel');
+  const dmcNamesCopyBtn = document.getElementById('dmcNamesCopyBtn');
+  const dmcNamesDownloadBtn = document.getElementById('dmcNamesDownloadBtn');
+  const dmcNamesDownloadHtmlBtn = document.getElementById('dmcNamesDownloadHtmlBtn');
   const headerPalette = document.getElementById('headerPalette');
   const bgImageBtn = document.getElementById('bgImageBtn');
   const bgImageMenu = document.getElementById('bgImageMenu');
@@ -860,6 +894,65 @@
     renderPalette();
   }
 
+  // Sammelt alle im aktuellen Raster tatsächlich verwendeten Farben (nur
+  // bewusst bemalte Zellen, state.touched - leere Zellen mit bloßer
+  // Hintergrundfarbe zählen nicht mit), eindeutig und ohne feste Reihenfolge-
+  // Garantie außer "erstes Auftreten im Raster zuerst".
+  function collectGridColors() {
+    const seen = new Set();
+    const result = [];
+    for (let i = 0; i < state.colors.length; i++) {
+      if (!state.touched[i]) continue;
+      const hex = state.colors[i].toLowerCase();
+      if (seen.has(hex)) continue;
+      seen.add(hex);
+      result.push(state.colors[i]);
+    }
+    return result;
+  }
+
+  // Übernimmt alle Rasterfarben in die Farbtabelle, bis die 49er-Obergrenze
+  // erreicht ist. Bereits vorhandene Farben werden übersprungen, keine
+  // Duplikate. Meldet per Toast/Alert, falls nicht alle Farben Platz fanden.
+  function addGridColorsToPalette() {
+    const gridColors = collectGridColors();
+    if (gridColors.length === 0) {
+      alert(t('palette_add_grid_colors_empty_msg'));
+      return;
+    }
+
+    const existing = new Set(paletteColors.map(c => c.toLowerCase()));
+    let added = 0;
+    let skippedFull = 0;
+
+    for (const hex of gridColors) {
+      const normalized = hex.toLowerCase();
+      if (existing.has(normalized)) continue; // schon in der Farbtabelle
+      if (paletteColors.length >= PALETTE_MAX) {
+        skippedFull++;
+        continue;
+      }
+      paletteColors.push(hex);
+      existing.add(normalized);
+      added++;
+    }
+
+    if (added > 0) {
+      savePaletteToStorage();
+      renderPalette();
+    }
+
+    if (skippedFull > 0) {
+      alert(t('palette_add_grid_colors_full_msg')
+        .replace('{added}', added)
+        .replace('{skipped}', skippedFull));
+    } else if (added === 0) {
+      alert(t('palette_add_grid_colors_none_new_msg'));
+    } else {
+      alert(t('palette_add_grid_colors_success_msg').replace('{added}', added));
+    }
+  }
+
   function removeFromPalette(hex) {
     paletteColors = paletteColors.filter(c => c !== hex);
     savePaletteToStorage();
@@ -974,6 +1067,22 @@
     }
     paletteCountLabel.textContent = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_MAX + ')';
 
+    // Zweite Zeile: Name der zuletzt geladenen Farbtabelle-Datei, falls
+    // vorhanden - sonst ganz ausgeblendet (kein Platzhaltertext). Nutzt den
+    // gleichen Namens-Helfer wie die DMC-Namensliste.
+    if (paletteFileNameLabel) {
+      const baseName = (typeof currentPaletteFileBaseName === 'function') ? currentPaletteFileBaseName() : null;
+      if (baseName) {
+        paletteFileNameLabel.textContent = baseName;
+        paletteFileNameLabel.title = baseName; // voller Name als Tooltip, falls per Ellipsis abgeschnitten
+        paletteFileNameLabel.hidden = false;
+      } else {
+        paletteFileNameLabel.textContent = '';
+        paletteFileNameLabel.removeAttribute('title');
+        paletteFileNameLabel.hidden = true;
+      }
+    }
+
     headerPalette.innerHTML = '';
     paletteColors.forEach(hex => headerPalette.appendChild(makePaletteSwatch(hex, true)));
 
@@ -1014,6 +1123,7 @@
   }
 
   paletteAddBtn.addEventListener('click', () => addToPalette(paletteNewColor.value));
+  paletteAddGridColorsBtn.addEventListener('click', addGridColorsToPalette);
 
   palettePickBtn.addEventListener('click', () => {
     pickingPaletteColor = !pickingPaletteColor;
@@ -1025,17 +1135,22 @@
     }
   });
 
+  // Merkt sich den zuletzt geladenen Farbtabelle-Dateinamen, analog zum
+  // Muster-Dateinamen oben. paletteFileLoaded unterscheidet "wurde wirklich
+  // eine Datei geladen" von "steht noch auf dem Startwert" - relevant für
+  // die DMC-Namensliste und die Dateinamen-Anzeige, die den Namen nur
+  // zeigen/vorschlagen, wenn er echt ist.
+  let lastPaletteFileName = 'Farbtabelle.json';
+  let paletteFileLoaded = false;
+
   paletteClearBtn.addEventListener('click', () => {
     if (!paletteColors.length) return;
     if (!confirm(t('palette_confirm_clear'))) return;
     paletteColors = [];
+    paletteFileLoaded = false; // geleerte Tabelle hat keine "Quelle" mehr
     savePaletteToStorage();
     renderPalette();
   });
-
-  // Merkt sich den zuletzt geladenen Farbtabelle-Dateinamen, analog zum
-  // Muster-Dateinamen oben.
-  let lastPaletteFileName = 'Farbtabelle.json';
 
   paletteExportBtn.addEventListener('click', () => {
     const blob = new Blob([JSON.stringify({ colors: paletteColors }, null, 2)], { type: 'application/json' });
@@ -1057,9 +1172,10 @@
         const colors = Array.isArray(data) ? data : data.colors; // beide Formen tolerieren
         if (!Array.isArray(colors)) throw new Error(t('err_invalid_format'));
         paletteColors = colors.filter(c => typeof c === 'string').slice(0, PALETTE_MAX);
+        lastPaletteFileName = file.name || lastPaletteFileName;
+        paletteFileLoaded = true;
         savePaletteToStorage();
         renderPalette();
-        lastPaletteFileName = file.name || lastPaletteFileName;
       } catch (err) {
         alert(t('err_file_read') + err.message);
       }
@@ -2054,6 +2170,338 @@
       }
     }
     return bestHex;
+  }
+
+  // Wie nearestDmcColor(), gibt aber den kompletten DMC-Eintrag zurück
+  // (Nummer, Name, Hex) statt nur der Hex-Farbe - Grundlage für die
+  // "Farbtabelle als DMC-Namensliste"-Funktion. Nimmt eine Hex-Farbe direkt
+  // entgegen statt r/g/b einzeln.
+  function nearestDmcEntry(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    let best = null;
+    let bestDist = Infinity;
+    const list = (typeof DMC_COLORS !== 'undefined') ? DMC_COLORS : [];
+    for (const entry of list) {
+      if (!entry.active) continue;
+      const p = hexToRgb(entry.hex);
+      const dr = p.r - r, dg = p.g - g, db = p.b - b;
+      const dist = dr * dr + dg * dg + db * db;
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = entry;
+      }
+    }
+    return best;
+  }
+
+  // --- DMC-Namensliste (Modal) ---
+  // Baut für jede aktuelle Farbtabellen-Farbe eine Zeile mit Swatch,
+  // DMC-Nummer und -Name. Wird sowohl fürs Rendern im Modal als auch für
+  // Kopieren/Download als reiner Text verwendet.
+  function buildDmcNamesRows() {
+    return paletteColors.map(hex => ({ hex, entry: nearestDmcEntry(hex) }));
+  }
+
+  // Liefert den "nackten" Namen der zuletzt geladenen Farbtabelle-Datei
+  // (ohne Dateiendung), oder null, wenn noch keine Datei geladen wurde -
+  // z. B. "Farbtabelle_Blueten_Farben_1" aus "Farbtabelle_Blueten_Farben_1.json".
+  function currentPaletteFileBaseName() {
+    if (!paletteFileLoaded) return null;
+    return lastPaletteFileName.replace(/\.[^.]+$/, '');
+  }
+
+  function dmcNamesRowsToText(rows) {
+    const lines = [];
+    const baseName = currentPaletteFileBaseName();
+    if (baseName) lines.push(t('dmc_names_source_label') + ': ' + baseName);
+    lines.push(t('dmc_names_count_label') + ': ' + rows.length);
+    lines.push('');
+    rows.forEach(({ hex, entry }) => {
+      if (!entry) lines.push(hex + ' \u2192 ' + t('dmc_names_no_match'));
+      else lines.push(hex + ' \u2192 DMC ' + entry.code + ' ' + entry.name);
+    });
+    return lines.join('\n');
+  }
+
+  function renderDmcNamesModal() {
+    const rows = buildDmcNamesRows();
+    const baseName = currentPaletteFileBaseName();
+    dmcNamesSourceLabel.textContent = baseName
+      ? t('dmc_names_source_label') + ': ' + baseName
+      : '';
+    dmcNamesSourceLabel.hidden = !baseName;
+    dmcNamesCountLabel.textContent = t('dmc_names_count_label') + ': ' + rows.length;
+
+    dmcNamesList.innerHTML = '';
+
+    if (rows.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'dmc-none';
+      li.textContent = t('dmc_names_palette_empty');
+      dmcNamesList.appendChild(li);
+      return;
+    }
+
+    rows.forEach(({ hex, entry }) => {
+      const li = document.createElement('li');
+
+      const swatch = document.createElement('span');
+      swatch.className = 'swatch';
+      swatch.style.background = hex;
+
+      const info = document.createElement('span');
+      info.className = 'dmc-info';
+      if (entry) {
+        info.innerHTML = '<span class="dmc-code">DMC ' + entry.code + '</span> '
+          + '<span class="dmc-name">' + entry.name + '</span>';
+      } else {
+        info.innerHTML = '<span class="dmc-none">' + t('dmc_names_no_match') + '</span>';
+      }
+
+      li.appendChild(swatch);
+      li.appendChild(info);
+      dmcNamesList.appendChild(li);
+    });
+  }
+
+  function openDmcNamesModal() {
+    renderDmcNamesModal();
+    dmcNamesModalOverlay.hidden = false;
+  }
+
+  function closeDmcNamesModal() {
+    dmcNamesModalOverlay.hidden = true;
+  }
+
+  if (paletteDmcNamesBtn) {
+    paletteDmcNamesBtn.addEventListener('click', openDmcNamesModal);
+  }
+  if (dmcNamesModalCloseBtn) {
+    dmcNamesModalCloseBtn.addEventListener('click', closeDmcNamesModal);
+  }
+  if (dmcNamesModalOverlay) {
+    // Klick auf den dunklen Hintergrund schließt das Modal, Klick auf den
+    // Inhalt selbst nicht (kein stopPropagation im Inhalt nötig - der
+    // Overlay-Klick greift nur, wenn das Overlay-Element selbst getroffen wird).
+    dmcNamesModalOverlay.addEventListener('click', (e) => {
+      if (e.target === dmcNamesModalOverlay) closeDmcNamesModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && dmcNamesModalOverlay && !dmcNamesModalOverlay.hidden) {
+      closeDmcNamesModal();
+    }
+  });
+
+  if (dmcNamesCopyBtn) {
+    dmcNamesCopyBtn.addEventListener('click', async () => {
+      const text = dmcNamesRowsToText(buildDmcNamesRows());
+      try {
+        await navigator.clipboard.writeText(text);
+        dmcNamesCopyBtn.textContent = t('dmc_names_copied_confirm');
+        setTimeout(() => { dmcNamesCopyBtn.textContent = t('dmc_names_copy_btn'); }, 1600);
+      } catch (err) {
+        // Clipboard-API evtl. nicht verfügbar (z. B. sehr alte Browser oder
+        // fehlende Berechtigung) - Fallback: Text in einem Prompt anzeigen,
+        // damit er sich trotzdem manuell markieren/kopieren lässt.
+        window.prompt(t('dmc_names_copy_fallback_prompt'), text);
+      }
+    });
+  }
+
+  // Baut einen sinnvollen Dateinamen-Vorschlag für den Download. Nutzt den
+  // Namen der zuletzt geladenen Farbtabelle-Datei, falls vorhanden, sonst
+  // den generischen Standardnamen. sanitizeForFileName entfernt Zeichen, die
+  // in Dateinamen Probleme machen könnten.
+  function sanitizeForFileName(str) {
+    return str.replace(/[\\/:*?"<>|]/g, '').trim();
+  }
+
+  function buildDmcNamesDownloadFileName(extension) {
+    const baseName = currentPaletteFileBaseName();
+    const stem = baseName ? sanitizeForFileName(baseName) : null;
+    return (stem ? 'dmc-farbtabelle-' + stem : 'dmc-farbtabelle') + '.' + extension;
+  }
+
+  if (dmcNamesDownloadBtn) {
+    dmcNamesDownloadBtn.addEventListener('click', () => {
+      const text = dmcNamesRowsToText(buildDmcNamesRows());
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = buildDmcNamesDownloadFileName('txt');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Baut eine eigenständige, kleine HTML-Datei mit denselben Farbfeld-Zeilen
+  // wie im Modal - anders als .txt kann sie die tatsächlichen Farbflächen
+  // zeigen. Enthält ihr eigenes, minimales CSS (keine Abhängigkeit von
+  // strickmuster.css), damit die Datei für sich allein funktioniert, auch
+  // wenn sie später an einem anderen Ort geöffnet wird. Enthält bewusst auch
+  // Quellname und Farbanzahl im Text, da die Datei eigenständig ist und
+  // diese Zusatzinfo sonst verloren ginge.
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // Wandelt Hex in HSL um - Grundlage für die Sortierung "nach Farbton"
+  // (Regenbogen, sortiert nach Hue) und "nach Helligkeit" (sortiert nach
+  // Lightness) im exportierten HTML. Reine Hilfsfunktion, unabhängig vom
+  // Rest der App.
+  function hexToHsl(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const rn = r / 255, gn = g / 255, bn = b / 255;
+    const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    const d = max - min;
+    if (d !== 0) {
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case rn: h = ((gn - bn) / d + (gn < bn ? 6 : 0)); break;
+        case gn: h = ((bn - rn) / d + 2); break;
+        default: h = ((rn - gn) / d + 4); break;
+      }
+      h *= 60;
+    }
+    return { h, s, l };
+  }
+
+  function buildDmcNamesHtmlDocument(rows) {
+    const title = t('dmc_names_modal_title');
+    const baseName = currentPaletteFileBaseName();
+    const metaHtml = (baseName
+        ? '<p class="meta">' + escapeHtml(t('dmc_names_source_label')) + ': ' + escapeHtml(baseName) + '</p>\n'
+        : '')
+      + '<p class="meta">' + escapeHtml(t('dmc_names_count_label')) + ': ' + rows.length + '</p>\n';
+
+    // Für jede Zeile die Sortierschlüssel als data-* Attribute mitgeben, damit
+    // das kleine Inline-Script in der exportierten Datei rein per DOM
+    // (Array aus <li>-Elementen, nach Attribut sortiert, neu angehängt)
+    // umsortieren kann - ganz ohne eigene Datenstruktur im exportierten JS.
+    const rowsHtml = rows.length === 0
+      ? '<li class="dmc-none">' + escapeHtml(t('dmc_names_palette_empty')) + '</li>'
+      : rows.map(({ hex, entry }, index) => {
+          const infoHtml = entry
+            ? '<span class="dmc-code">DMC ' + escapeHtml(entry.code) + '</span> '
+              + '<span class="dmc-name">' + escapeHtml(entry.name) + '</span>'
+            : '<span class="dmc-none">' + escapeHtml(t('dmc_names_no_match')) + '</span>';
+          const { h, l } = hexToHsl(hex);
+          // Fehlender Match sortiert bei Nummer/Name ans Ende, statt vorne
+          // zu erscheinen wie es "" oder 0 tun würde.
+          const sortCode = entry ? parseInt(entry.code, 10) || 999999 : 999999;
+          const sortName = entry ? entry.name.toLowerCase() : '\uffff';
+          return '<li data-order="' + index + '" data-code="' + sortCode
+            + '" data-name="' + escapeHtml(sortName) + '" data-hue="' + h.toFixed(2)
+            + '" data-light="' + l.toFixed(4) + '">'
+            + '<span class="swatch" style="background:' + escapeHtml(hex) + '"></span>'
+            + '<span class="dmc-info">' + infoHtml + '</span></li>';
+        }).join('\n');
+
+    const sortBarHtml = rows.length === 0 ? '' : (
+      '<div class="sort-bar">'
+      + '<span class="sort-label">' + escapeHtml(t('dmc_names_sort_label')) + ':</span> '
+      + '<button type="button" class="sort-btn is-active" data-sort="order">' + escapeHtml(t('dmc_names_sort_original')) + '</button>'
+      + '<button type="button" class="sort-btn" data-sort="code">' + escapeHtml(t('dmc_names_sort_code')) + '</button>'
+      + '<button type="button" class="sort-btn" data-sort="name">' + escapeHtml(t('dmc_names_sort_name')) + '</button>'
+      + '<button type="button" class="sort-btn" data-sort="hue">' + escapeHtml(t('dmc_names_sort_hue')) + '</button>'
+      + '<button type="button" class="sort-btn" data-sort="light">' + escapeHtml(t('dmc_names_sort_light')) + '</button>'
+      + '</div>\n'
+    );
+
+    // Kleines, eigenständiges Sortier-Script: liest data-* Attribute der
+    // <li>-Elemente, sortiert eine Kopie des Arrays und hängt die Elemente
+    // in neuer Reihenfolge wieder an <ul> an. Kein externes JS, funktioniert
+    // offline direkt beim Doppelklick auf die Datei.
+    const sortScript = rows.length === 0 ? '' : (
+      '<script>\n'
+      + '(function(){\n'
+      + '  var list = document.getElementById("dmcList");\n'
+      + '  var buttons = document.querySelectorAll(".sort-btn");\n'
+      + '  var comparators = {\n'
+      + '    order: function(a,b){ return (+a.dataset.order) - (+b.dataset.order); },\n'
+      + '    code: function(a,b){ return (+a.dataset.code) - (+b.dataset.code); },\n'
+      + '    name: function(a,b){ return a.dataset.name.localeCompare(b.dataset.name); },\n'
+      + '    hue: function(a,b){ return (+a.dataset.hue) - (+b.dataset.hue); },\n'
+      + '    light: function(a,b){ return (+b.dataset.light) - (+a.dataset.light); }\n'
+      + '  };\n'
+      + '  buttons.forEach(function(btn){\n'
+      + '    btn.addEventListener("click", function(){\n'
+      + '      var key = btn.dataset.sort;\n'
+      + '      var items = Array.prototype.slice.call(list.children);\n'
+      + '      items.sort(comparators[key]);\n'
+      + '      items.forEach(function(li){ list.appendChild(li); });\n'
+      + '      buttons.forEach(function(b){ b.classList.remove("is-active"); });\n'
+      + '      btn.classList.add("is-active");\n'
+      + '    });\n'
+      + '  });\n'
+      + '})();\n'
+      // "<\/script>" statt dem eigentlichen schließenden Tag: der
+      // HTML-Parser erkennt diese Zeichenfolge auch INNERHALB eines
+      // JS-String-Literals (oder Kommentars!) als echtes Tag-Ende und würde
+      // damit den umgebenden Script-Block dieser Datei (strickmuster.html)
+      // vorzeitig abschließen - der escapte Schrägstrich verhindert das
+      // zuverlässig, ohne das Ergebnis im exportierten HTML zu verändern.
+      + '<\/script>\n'
+    );
+
+    return '<!DOCTYPE html>\n<html lang="' + escapeHtml(currentLang) + '">\n<head>\n'
+      + '<meta charset="UTF-8">\n<title>' + escapeHtml(title) + '</title>\n<style>\n'
+      + 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+      + 'background:#f7f2e9;color:#322c26;margin:0;padding:24px;}\n'
+      + 'h1{font-size:1.2rem;color:#5e2029;margin:0 0 4px;}\n'
+      + '.meta{font-size:0.85rem;color:#6b6255;margin:0 0 4px;}\n'
+      + '.sort-bar{margin:14px 0 4px;font-size:0.85rem;}\n'
+      + '.sort-label{color:#6b6255;margin-right:4px;}\n'
+      + '.sort-btn{border:1px solid #a89c86;background:#fffdf9;color:#6b6255;'
+      + 'border-radius:6px;padding:4px 10px;margin:0 4px 4px 0;font-size:0.82rem;'
+      + 'cursor:pointer;}\n'
+      + '.sort-btn:hover{background:#f2ebdd;color:#5e2029;}\n'
+      + '.sort-btn.is-active{background:#7a2e3a;border-color:#7a2e3a;color:#fff;}\n'
+      // Zweispaltiger Satz per CSS Multi-Column: füllt Spalte 1 komplett,
+      // dann Spalte 2 - sieht beim Ausdrucken/PDF-Export deutlich
+      // kompakter und aufgeräumter aus als eine lange einspaltige Liste.
+      + 'ul{list-style:none;margin:12px 0 0;padding:0;'
+      + 'column-count:2;column-gap:16px;max-width:760px;}\n'
+      + 'li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;'
+      + 'background:#fffdf9;border:1px solid #ddd4c2;margin:0 0 6px;'
+      + 'break-inside:avoid;-webkit-column-break-inside:avoid;}\n'
+      + '.swatch{flex:none;width:24px;height:24px;border-radius:5px;border:1px solid #a89c86;}\n'
+      + '.dmc-info{font-size:0.9rem;}\n'
+      + '.dmc-code{font-weight:600;color:#5e2029;}\n'
+      + '.dmc-name{color:#6b6255;}\n'
+      + '.dmc-none{font-style:italic;color:#6b6255;}\n'
+      + '@media print{body{background:#fff;}li{break-inside:avoid;}.sort-bar{display:none;}}\n'
+      + '@media (max-width:600px){ul{column-count:1;}}\n'
+      + '</style>\n</head>\n<body>\n'
+      + '<h1>' + escapeHtml(title) + '</h1>\n' + metaHtml + sortBarHtml
+      + '<ul id="dmcList">\n' + rowsHtml + '\n</ul>\n'
+      + sortScript
+      + '</body>\n</html>\n';
+  }
+
+  if (dmcNamesDownloadHtmlBtn) {
+    dmcNamesDownloadHtmlBtn.addEventListener('click', () => {
+      const html = buildDmcNamesHtmlDocument(buildDmcNamesRows());
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = buildDmcNamesDownloadFileName('html');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   }
 
   function applyImageToGrid(img) {
