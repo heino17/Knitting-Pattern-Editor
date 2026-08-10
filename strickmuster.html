@@ -115,6 +115,8 @@
 
       <div class="panel__scroll" id="panelScroll">
 
+        <input type="color" id="colorPickerCollapsed" class="color-picker-collapsed" value="#effcff" title="Aktuelle Farbe" data-i18n-title="current_color_label" aria-label="Aktuelle Farbe" data-i18n-aria-label="current_color_label">
+
         <nav class="panel__icons" id="panelIcons" aria-label="Eingeklappte Seitenleiste" data-i18n-aria-label="panel_icons_aria">
           <button type="button" class="icon-btn" data-target="group-werkzeuge" title="Werkzeuge" data-i18n-title="icon_werkzeuge_title" aria-label="Werkzeuge anzeigen" data-i18n-aria-label="icon_werkzeuge_aria">
             <svg viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5 19 8.5 8.5 19 4 20z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
@@ -145,7 +147,7 @@
           </label>
           <label class="field">
             <span><span data-i18n="cellsize_label">Zellgröße</span> <output id="cellSizeOut">20</output>&nbsp;px</span>
-            <input type="range" id="cellSize" min="10" max="36" value="20">
+            <input type="range" id="cellSize" min="5" max="36" value="20">
           </label>
         </section>
 
@@ -405,7 +407,7 @@
   // --- App-Version ---
   // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
   // Wird im Footer neben "heino17" angezeigt.
-  const APP_VERSION = '1.2.0';
+  const APP_VERSION = '1.2.1';
   document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
 
   // --- i18n ---
@@ -525,6 +527,16 @@
   const cellSizeOut = document.getElementById('cellSizeOut');
   const buildBtn = document.getElementById('buildBtn');
   const colorPicker = document.getElementById('colorPicker');
+  const colorPickerCollapsed = document.getElementById('colorPickerCollapsed');
+  if (colorPickerCollapsed) {
+    colorPickerCollapsed.value = colorPicker.value;
+    // Eingeklappter Picker -> Haupt-Picker
+    colorPickerCollapsed.addEventListener('input', () => {
+      colorPicker.value = colorPickerCollapsed.value;
+    });
+    // Haupt-Picker -> eingeklappter Picker (deckt manuelle Auswahl im Hauptpicker ab)
+    colorPicker.addEventListener('input', () => { colorPickerCollapsed.value = colorPicker.value; });
+  }
   const eraserBtn = document.getElementById('eraserBtn');
   const toolToggle = document.getElementById('toolToggle');
   const undoBtn = document.getElementById('undoBtn');
@@ -867,6 +879,7 @@
       b.title = hex;
       b.addEventListener('click', () => {
         colorPicker.value = hex;
+        if (colorPickerCollapsed) colorPickerCollapsed.value = hex;
         setEraserActive(false);
       });
       swatchesEl.appendChild(b);
@@ -877,6 +890,7 @@
 
   function activatePaletteColor(hex) {
     colorPicker.value = hex;
+    if (colorPickerCollapsed) colorPickerCollapsed.value = hex;
     setEraserActive(false);
     if (toolMode !== 'paint') setToolMode('paint');
   }
@@ -1790,6 +1804,7 @@
     if (toolMode === 'pipette') {
       const picked = state.colors[idx];
       colorPicker.value = picked;
+      if (colorPickerCollapsed) colorPickerCollapsed.value = picked;
       if (state.touched[idx]) addRecentColor(picked);
       setEraserActive(false);
       setToolMode('paint');

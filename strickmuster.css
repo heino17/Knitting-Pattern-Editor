@@ -445,6 +445,34 @@ body {
 }
 .panel.is-collapsed .panel__icons { display: flex; }
 
+.color-picker-collapsed {
+  display: none;
+}
+.panel.is-collapsed .color-picker-collapsed {
+  display: block;
+  width: 27px;
+  height: 27px;
+  margin: 10px 0 -20px 5px;
+  padding: 0;
+  border: 1px solid var(--line-bold);
+  border-radius: 50%;
+  cursor: pointer;
+  background: none;
+  overflow: hidden;
+}
+.color-picker-collapsed::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+.color-picker-collapsed::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+.color-picker-collapsed::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
 .icon-btn {
   width: 32px;
   height: 32px;
