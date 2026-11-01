@@ -45,7 +45,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Gefilterte Farben deaktiviert",
     toast_deactivated_all: "Alle Farben deaktiviert",
     toast_saved: "dmc_colors.js wurde heruntergeladen",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   en: {
@@ -66,7 +66,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Filtered colors deactivated",
     toast_deactivated_all: "All colors deactivated",
     toast_saved: "dmc_colors.js has been downloaded",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   ru: {
@@ -87,7 +87,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Отфильтрованные цвета отключены",
     toast_deactivated_all: "Все цвета отключены",
     toast_saved: "Файл dmc_colors.js загружен",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   es: {
@@ -108,7 +108,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Colores filtrados desactivados",
     toast_deactivated_all: "Todos los colores desactivados",
     toast_saved: "Se descargó dmc_colors.js",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   fr: {
@@ -129,7 +129,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Couleurs filtrées désactivées",
     toast_deactivated_all: "Toutes les couleurs désactivées",
     toast_saved: "dmc_colors.js a été téléchargé",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   ja: {
@@ -150,7 +150,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "絞り込んだ色を無効にしました",
     toast_deactivated_all: "すべての色を無効にしました",
     toast_saved: "dmc_colors.js をダウンロードしました",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   ko: {
@@ -171,7 +171,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "필터링된 색상을 비활성화했습니다",
     toast_deactivated_all: "모든 색상을 비활성화했습니다",
     toast_saved: "dmc_colors.js가 다운로드되었습니다",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
   zh_CN: {
@@ -192,7 +192,7 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "已禁用筛选出的颜色",
     toast_deactivated_all: "已禁用所有颜色",
     toast_saved: "dmc_colors.js 已下载",
-    code_prefix: "DMC",
+    code_prefix: "",
   },
 
 };

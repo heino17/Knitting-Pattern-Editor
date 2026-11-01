@@ -49,6 +49,14 @@
         <button type="button" id="bgImageRemoveBtn" class="header-bg-menu__item header-bg-menu__item--btn" data-i18n="bgimage_remove">Bild entfernen</button>
       </div>
     </div>
+    <div class="header-undo-redo header-undo-redo--sidebar-open" id="headerSidebarUndoRedo" role="group" aria-label="Rückgängig / Wiederherstellen" data-i18n-aria-label="header_undo_redo_aria" hidden>
+      <button type="button" id="headerSidebarUndoBtn" class="header-undo-redo__btn" disabled title="Strg+Z" data-i18n-title="undo_title" aria-label="Rückgängig" data-i18n-aria-label="undo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" id="headerSidebarRedoBtn" class="header-undo-redo__btn" disabled title="Strg+Y" data-i18n-title="redo_title" aria-label="Wiederherstellen" data-i18n-aria-label="redo_btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
     <div class="header-undo-redo" id="headerSaveLoad" role="group" aria-label="Muster speichern / laden" data-i18n-aria-label="header_saveload_aria">
       <button type="button" id="headerSaveBtn" class="header-undo-redo__btn" title="Muster speichern" data-i18n-title="export_json_btn" aria-label="Muster speichern" data-i18n-aria-label="export_json_btn">
         <span aria-hidden="true">💾</span>
@@ -80,7 +88,19 @@
       <h1 id="appTitle" data-i18n="app_title">Julia's Strickmuster Editor</h1>
     </div>
     <p class="app-header__hint" data-i18n="header_hint">Raster aufziehen, Maschen einfärben, Muster als Bild oder Datei sichern</p>
-    <div class="header-palette" id="headerPalette" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
+    <div class="header-palette-row" id="headerPaletteRow" hidden>
+      <div class="header-palette" id="headerPalette" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria">
+        <div class="palette-pager palette-pager--header" id="headerPalettePager" hidden>
+          <button type="button" class="palette-pager__btn" id="headerPalettePagerPrev" title="Vorherige Farben" data-i18n-title="palette_pager_prev_title" aria-label="Vorherige Farben" data-i18n-aria-label="palette_pager_prev_title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="palette-pager__range" id="headerPalettePagerBadge"></span>
+          <button type="button" class="palette-pager__btn" id="headerPalettePagerNext" title="Weitere Farben" data-i18n-title="palette_pager_next_title" aria-label="Weitere Farben" data-i18n-aria-label="palette_pager_next_title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="header-tools-row" id="headerToolsRow" role="group" aria-label="Werkzeuge" data-i18n-aria-label="header_tools_row_aria">
       <div class="header-tools-row__inner">
       <button type="button" class="header-tools-row__btn tool-btn is-active" id="headerToolPaint" data-tool="paint" title="Stift (freihand malen)" data-i18n-title="tool_paint_title" aria-label="Stift" data-i18n-aria-label="tool_paint_label">
@@ -209,9 +229,19 @@
           <button type="button" id="paletteAddBtn" class="btn" data-i18n="palette_add_btn">Zur Farbtabelle hinzufügen</button>
           <button type="button" id="paletteAddGridColorsBtn" class="btn" data-i18n="palette_add_grid_colors_btn">Alle Rasterfarben übernehmen</button>
 
-          <div class="field-label" id="paletteCountLabel">Farbtabelle (0 / 49)</div>
+          <div class="field-label" id="paletteCountLabel">Farbtabelle (0 / 454)</div>
           <div class="field-label field-label--filename" id="paletteFileNameLabel" hidden></div>
           <div class="palette-grid" id="paletteGrid" aria-label="Farbtabelle" data-i18n-aria-label="palette_grid_aria"></div>
+          <div class="palette-pager" id="palettePager" hidden>
+            <button type="button" class="palette-pager__btn" id="palettePagerPrev" title="Vorherige Farben" data-i18n-title="palette_pager_prev_title" aria-label="Vorherige Farben" data-i18n-aria-label="palette_pager_prev_title">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="palette-pager__label" id="palettePagerLabel">1 / 1</span>
+            <button type="button" class="palette-pager__btn" id="palettePagerNext" title="Weitere Farben" data-i18n-title="palette_pager_next_title" aria-label="Weitere Farben" data-i18n-aria-label="palette_pager_next_title">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="palette-pager__range" id="palettePagerBadge"></span>
+          </div>
           <p class="panel__note" data-i18n="palette_usage_note">Klick auf eine Farbe aktiviert sie im Stift. Klick auf das "×" entfernt sie aus der Tabelle.</p>
 
           <div class="btn-row">
@@ -340,7 +370,7 @@
           <div class="panel__group-body is-collapsed" id="group-ansicht-body">
           <label class="field field--checkbox">
             <input type="checkbox" id="showRgbValues" checked>
-            <span data-i18n="rgb_values_label">Farbwerte als RGB anzeigen</span>
+            <span data-i18n="rgb_values_label">Farbwerte als RGB anzeigen (nur Header)</span>
           </label>
           <label class="field field--checkbox">
             <input type="checkbox" id="showGrid10" checked>
@@ -407,7 +437,7 @@
   // --- App-Version ---
   // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
   // Wird im Footer neben "heino17" angezeigt.
-  const APP_VERSION = '1.2.1';
+  const APP_VERSION = '1.2.2';
   document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
 
   // --- i18n ---
@@ -547,6 +577,9 @@
   const headerEraserBtn = document.getElementById('headerEraserBtn');
   const headerToolsUndoBtn = document.getElementById('headerToolsUndoBtn');
   const headerToolsRedoBtn = document.getElementById('headerToolsRedoBtn');
+  const headerSidebarUndoRedo = document.getElementById('headerSidebarUndoRedo');
+  const headerSidebarUndoBtn = document.getElementById('headerSidebarUndoBtn');
+  const headerSidebarRedoBtn = document.getElementById('headerSidebarRedoBtn');
   const clearBtn = document.getElementById('clearBtn');
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   const importJsonInput = document.getElementById('importJsonInput');
@@ -590,6 +623,16 @@
   const dmcNamesDownloadBtn = document.getElementById('dmcNamesDownloadBtn');
   const dmcNamesDownloadHtmlBtn = document.getElementById('dmcNamesDownloadHtmlBtn');
   const headerPalette = document.getElementById('headerPalette');
+  const headerPaletteRow = document.getElementById('headerPaletteRow');
+  const palettePager = document.getElementById('palettePager');
+  const palettePagerPrev = document.getElementById('palettePagerPrev');
+  const palettePagerNext = document.getElementById('palettePagerNext');
+  const palettePagerLabel = document.getElementById('palettePagerLabel');
+  const palettePagerBadge = document.getElementById('palettePagerBadge');
+  const headerPalettePager = document.getElementById('headerPalettePager');
+  const headerPalettePagerPrev = document.getElementById('headerPalettePagerPrev');
+  const headerPalettePagerNext = document.getElementById('headerPalettePagerNext');
+  const headerPalettePagerBadge = document.getElementById('headerPalettePagerBadge');
   const bgImageBtn = document.getElementById('bgImageBtn');
   const bgImageMenu = document.getElementById('bgImageMenu');
   const bgImageInput = document.getElementById('bgImageInput');
@@ -613,7 +656,9 @@
   }
   const RECENT_KEY = 'strickmuster-recent-colors-v1';
   const PALETTE_KEY = 'strickmuster-farbtabelle-v1';
-  const PALETTE_MAX = 49; // 7 x 7 Raster in der Sidebar
+  const PALETTE_STORE_MAX = 454; // Obergrenze für die gespeicherte Farbtabelle (entspricht der vollen DMC-Farbtabelle)
+  const PALETTE_VISIBLE_MAX = 49; // 7 x 7 Raster - so viele Farben werden gleichzeitig in Header/Sidebar angezeigt
+  let paletteViewOffset = 0; // Index (in paletteColors), ab dem das aktuell sichtbare 49er-Fenster beginnt
   const RGB_DISPLAY_KEY = 'strickmuster-rgb-display';
   const CELL_BG_KEY = 'strickmuster-cell-bg-color';
   const CELL_BG_DEFAULT = '#f7f5f0';
@@ -633,6 +678,14 @@
   // "Farbwerte als RGB anzeigen"-Einstellung.
   function colorDisplayValue(hex) {
     return showRgbValues.checked ? hexToRgbString(hex) : hex;
+  }
+
+  // Liefert für Palette-Grid-Tooltips den nächsten DMC-Farbcode
+  // (z.B. "DMC 3713") über nearestDmcEntry, oder bei keiner DMC-Tabelle
+  // den normalen Farbwert (hex/rgb).
+  function dmcDisplayValue(hex) {
+    const entry = nearestDmcEntry(hex);
+    return entry ? 'DMC ' + entry.code : colorDisplayValue(hex);
   }
 
   let state = { rows: 50, cols: 50, colors: [], touched: [], notes: [], backgroundImage: null, backgroundImageVisible: true };
@@ -658,7 +711,7 @@
     try {
       const raw = JSON.parse(localStorage.getItem(PALETTE_KEY) || '[]');
       if (!Array.isArray(raw)) return [];
-      return raw.filter(c => typeof c === 'string').slice(0, PALETTE_MAX);
+      return raw.filter(c => typeof c === 'string').slice(0, PALETTE_STORE_MAX);
     } catch (e) {
       return [];
     }
@@ -725,6 +778,8 @@
     redoBtn.disabled = redoStack.length === 0;
     if (headerToolsUndoBtn) headerToolsUndoBtn.disabled = undoStack.length === 0;
     if (headerToolsRedoBtn) headerToolsRedoBtn.disabled = redoStack.length === 0;
+    if (headerSidebarUndoBtn) headerSidebarUndoBtn.disabled = undoStack.length === 0;
+    if (headerSidebarRedoBtn) headerSidebarRedoBtn.disabled = redoStack.length === 0;
   }
 
   function buildBoard(rows, cols, colors, notes, touched) {
@@ -899,12 +954,13 @@
     if (!hex) return;
     const normalized = hex.toLowerCase();
     if (paletteColors.some(c => c.toLowerCase() === normalized)) return; // schon enthalten
-    if (paletteColors.length >= PALETTE_MAX) {
+    if (paletteColors.length >= PALETTE_STORE_MAX) {
       alert(t('palette_full_msg'));
       return;
     }
     paletteColors.push(hex);
     savePaletteToStorage();
+    jumpPaletteViewToNewest();
     renderPalette();
   }
 
@@ -942,7 +998,7 @@
     for (const hex of gridColors) {
       const normalized = hex.toLowerCase();
       if (existing.has(normalized)) continue; // schon in der Farbtabelle
-      if (paletteColors.length >= PALETTE_MAX) {
+      if (paletteColors.length >= PALETTE_STORE_MAX) {
         skippedFull++;
         continue;
       }
@@ -953,6 +1009,7 @@
 
     if (added > 0) {
       savePaletteToStorage();
+      jumpPaletteViewToNewest();
       renderPalette();
     }
 
@@ -970,6 +1027,47 @@
   function removeFromPalette(hex) {
     paletteColors = paletteColors.filter(c => c !== hex);
     savePaletteToStorage();
+    clampPaletteViewOffset();
+    renderPalette();
+  }
+
+  // --- Sichtfenster für Header/Sidebar: Header und Sidebar zeigen bei mehr
+  // als PALETTE_VISIBLE_MAX gespeicherten Farben immer nur einen Ausschnitt
+  // (ein "Blatt") von 49 Farben gleichzeitig - blättern per Pfeil-Buttons.
+  // Neue Farben (hinzufügen/importieren) springen automatisch zum letzten
+  // Blatt, damit die zuletzt hinzugefügte Farbe immer sichtbar ist.
+
+  function paletteTotalPages() {
+    return Math.max(1, Math.ceil(paletteColors.length / PALETTE_VISIBLE_MAX));
+  }
+
+  function paletteCurrentPage() {
+    return Math.floor(paletteViewOffset / PALETTE_VISIBLE_MAX) + 1;
+  }
+
+  function clampPaletteViewOffset() {
+    const maxOffset = Math.max(0, (paletteTotalPages() - 1) * PALETTE_VISIBLE_MAX);
+    if (paletteViewOffset > maxOffset) paletteViewOffset = maxOffset;
+    if (paletteViewOffset < 0) paletteViewOffset = 0;
+  }
+
+  function jumpPaletteViewToNewest() {
+    const maxOffset = Math.max(0, (paletteTotalPages() - 1) * PALETTE_VISIBLE_MAX);
+    paletteViewOffset = maxOffset;
+  }
+
+  function getVisiblePaletteColors() {
+    return paletteColors.slice(paletteViewOffset, paletteViewOffset + PALETTE_VISIBLE_MAX);
+  }
+
+  function paletteGoPrevPage() {
+    paletteViewOffset = Math.max(0, paletteViewOffset - PALETTE_VISIBLE_MAX);
+    renderPalette();
+  }
+
+  function paletteGoNextPage() {
+    const maxOffset = Math.max(0, (paletteTotalPages() - 1) * PALETTE_VISIBLE_MAX);
+    paletteViewOffset = Math.min(maxOffset, paletteViewOffset + PALETTE_VISIBLE_MAX);
     renderPalette();
   }
 
@@ -1042,12 +1140,61 @@
     });
   }
 
+  // Löschbestätigung für Farbtabellen-Einträge: erster Klick auf "×" markiert
+  // den Button nur als bestätigungsbereit, erst der zweite Klick (innerhalb
+  // CONFIRM_DELETE_TIMEOUT) löscht wirklich. Schützt vor versehentlichem
+  // Entfernen bei schnellen Mausbewegungen/Klicks. Da immer nur ein Button
+  // gleichzeitig "wartet", genügt eine einzelne Modul-Variable.
+  const CONFIRM_DELETE_TIMEOUT = 2200;
+  let pendingDeleteBtn = null;
+  let pendingDeleteTimer = null;
+
+  function resetPendingDelete() {
+    if (pendingDeleteBtn) {
+      pendingDeleteBtn.classList.remove('is-confirming');
+      pendingDeleteBtn.title = t('palette_remove_title');
+      pendingDeleteBtn.setAttribute('aria-label', t('palette_remove_title'));
+    }
+    if (pendingDeleteTimer) clearTimeout(pendingDeleteTimer);
+    pendingDeleteBtn = null;
+    pendingDeleteTimer = null;
+  }
+
+  function attachConfirmDelete(del, onConfirm) {
+    del.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (pendingDeleteBtn === del) {
+        resetPendingDelete();
+        onConfirm();
+        return;
+      }
+      resetPendingDelete();
+      pendingDeleteBtn = del;
+      del.classList.add('is-confirming');
+      del.title = t('palette_remove_confirm_title');
+      del.setAttribute('aria-label', t('palette_remove_confirm_title'));
+      pendingDeleteTimer = setTimeout(resetPendingDelete, CONFIRM_DELETE_TIMEOUT);
+    });
+    // Bestätigung verwerfen, wenn der Button den Fokus/die Maus wieder
+    // verlässt, ohne dass geklickt wurde (z.B. Maus wandert weiter).
+    del.addEventListener('mouseleave', () => {
+      if (pendingDeleteBtn === del) resetPendingDelete();
+    });
+  }
+
+  // Klick irgendwo anders auf der Seite (nicht auf den wartenden Button
+  // selbst) verwirft die Löschbestätigung ebenfalls - deckt z.B. Touch-
+  // Geräte ab, wo es kein "mouseleave" gibt.
+  document.addEventListener('click', (e) => {
+    if (pendingDeleteBtn && e.target !== pendingDeleteBtn) resetPendingDelete();
+  });
+
   function makePaletteSwatch(hex, forHeader) {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'palette-swatch';
     b.style.background = hex;
-    b.title = colorDisplayValue(hex);
+    b.title = forHeader ? colorDisplayValue(hex) : dmcDisplayValue(hex);
     b.dataset.hex = hex;
     b.classList.toggle('is-active', !forHeader && colorPicker.value.toLowerCase() === hex.toLowerCase() && eraserBtn.dataset.active !== 'true');
     b.addEventListener('click', () => activatePaletteColor(hex));
@@ -1060,16 +1207,18 @@
       del.setAttribute('aria-label', t('palette_remove_title'));
       del.title = t('palette_remove_title');
       del.textContent = '×';
-      del.addEventListener('click', (e) => {
-        e.stopPropagation();
-        removeFromPalette(hex);
-      });
+      attachConfirmDelete(del, () => removeFromPalette(hex));
       b.appendChild(del);
     }
     return b;
   }
 
   function renderPalette() {
+    resetPendingDelete(); // altes DOM wird gleich ersetzt - keine "wartende" Löschung übrig lassen
+    clampPaletteViewOffset();
+    const visibleColors = getVisiblePaletteColors();
+    const hiddenCount = paletteColors.length - visibleColors.length;
+
     paletteGrid.innerHTML = '';
     if (!paletteColors.length) {
       const hint = document.createElement('p');
@@ -1077,9 +1226,10 @@
       hint.textContent = t('palette_empty_hint');
       paletteGrid.appendChild(hint);
     } else {
-      paletteColors.forEach(hex => paletteGrid.appendChild(makePaletteSwatch(hex, false)));
+      visibleColors.forEach(hex => paletteGrid.appendChild(makePaletteSwatch(hex, false)));
     }
-    paletteCountLabel.textContent = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_MAX + ')';
+    paletteCountLabel.textContent = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_STORE_MAX + ')';
+    renderPalettePager();
 
     // Zweite Zeile: Name der zuletzt geladenen Farbtabelle-Datei, falls
     // vorhanden - sonst ganz ausgeblendet (kein Platzhaltertext). Nutzt den
@@ -1097,8 +1247,13 @@
       }
     }
 
-    headerPalette.innerHTML = '';
-    paletteColors.forEach(hex => headerPalette.appendChild(makePaletteSwatch(hex, true)));
+    // headerPalette enthält den Pager als letztes Kind (damit er im
+    // Flex-Wrap direkt hinter der letzten Farb-Swatch mitläuft, statt an den
+    // rechten Rand gedrückt zu werden) - daher hier gezielt nur die
+    // Swatches entfernen/einfügen, statt den kompletten Inhalt zu leeren.
+    headerPalette.querySelectorAll('.palette-swatch').forEach(el => el.remove());
+    visibleColors.forEach(hex => headerPalette.insertBefore(makePaletteSwatch(hex, true), headerPalettePager));
+    headerPaletteRow.hidden = paletteColors.length === 0;
 
     // "Auf Palette einrasten" beim Bild-Import ergibt ohne gespeicherte
     // Farben keinen Sinn - Checkbox so lange deaktivieren.
@@ -1107,6 +1262,43 @@
     if (!hasPalette) importSnapPalette.checked = false;
     importSnapPalette.title = hasPalette ? '' : t('import_snap_palette_empty_title');
   }
+
+  // Blättersteuerung unter (Sidebar) bzw. neben (Header) dem Farbtabellen-
+  // Raster: nur sichtbar, wenn mehr als PALETTE_VISIBLE_MAX Farben
+  // gespeichert sind. Zeigt Seite X/Y sowie den aktuell sichtbaren
+  // Nummernbereich (z.B. "50 - 98") statt einer verwirrenden Gesamtzahl.
+  function renderPalettePager() {
+    const totalPages = paletteTotalPages();
+    const currentPage = paletteCurrentPage();
+    const showPager = paletteColors.length > PALETTE_VISIBLE_MAX;
+    const rangeStart = paletteViewOffset + 1;
+    const rangeEnd = Math.min(paletteColors.length, paletteViewOffset + PALETTE_VISIBLE_MAX);
+    const rangeText = rangeStart + ' - ' + rangeEnd;
+
+    if (palettePager) {
+      palettePager.hidden = !showPager;
+      palettePagerPrev.disabled = currentPage <= 1;
+      palettePagerNext.disabled = currentPage >= totalPages;
+      palettePagerLabel.textContent = currentPage + ' / ' + totalPages;
+      palettePagerBadge.hidden = false;
+      palettePagerBadge.textContent = rangeText;
+      palettePagerBadge.title = t('palette_pager_range_title').replace('{start}', rangeStart).replace('{end}', rangeEnd).replace('{total}', paletteColors.length);
+    }
+
+    if (headerPalettePager) {
+      headerPalettePager.hidden = !showPager;
+      headerPalettePagerPrev.disabled = currentPage <= 1;
+      headerPalettePagerNext.disabled = currentPage >= totalPages;
+      headerPalettePagerBadge.hidden = false;
+      headerPalettePagerBadge.textContent = rangeText;
+      headerPalettePagerBadge.title = t('palette_pager_range_title').replace('{start}', rangeStart).replace('{end}', rangeEnd).replace('{total}', paletteColors.length);
+    }
+  }
+
+  if (palettePagerPrev) palettePagerPrev.addEventListener('click', paletteGoPrevPage);
+  if (palettePagerNext) palettePagerNext.addEventListener('click', paletteGoNextPage);
+  if (headerPalettePagerPrev) headerPalettePagerPrev.addEventListener('click', paletteGoPrevPage);
+  if (headerPalettePagerNext) headerPalettePagerNext.addEventListener('click', paletteGoNextPage);
 
   // "Auf meine Farbtabelle einrasten" und "Auf DMC-Farbtabelle einrasten"
   // schließen sich gegenseitig aus - beim Aktivieren der einen wird die
@@ -1185,10 +1377,11 @@
         const data = JSON.parse(reader.result);
         const colors = Array.isArray(data) ? data : data.colors; // beide Formen tolerieren
         if (!Array.isArray(colors)) throw new Error(t('err_invalid_format'));
-        paletteColors = colors.filter(c => typeof c === 'string').slice(0, PALETTE_MAX);
+        paletteColors = colors.filter(c => typeof c === 'string').slice(0, PALETTE_STORE_MAX);
         lastPaletteFileName = file.name || lastPaletteFileName;
         paletteFileLoaded = true;
         savePaletteToStorage();
+        paletteViewOffset = 0;
         renderPalette();
       } catch (err) {
         alert(t('err_file_read') + err.message);
@@ -1906,6 +2099,8 @@
   redoBtn.addEventListener('click', redo);
   if (headerToolsUndoBtn) headerToolsUndoBtn.addEventListener('click', undo);
   if (headerToolsRedoBtn) headerToolsRedoBtn.addEventListener('click', redo);
+  if (headerSidebarUndoBtn) headerSidebarUndoBtn.addEventListener('click', undo);
+  if (headerSidebarRedoBtn) headerSidebarRedoBtn.addEventListener('click', redo);
   document.addEventListener('keydown', (e) => {
     const active = document.activeElement;
     const inField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
@@ -2231,15 +2426,21 @@
     if (baseName) lines.push(t('dmc_names_source_label') + ': ' + baseName);
     lines.push(t('dmc_names_count_label') + ': ' + rows.length);
     lines.push('');
-    rows.forEach(({ hex, entry }) => {
-      if (!entry) lines.push(hex + ' \u2192 ' + t('dmc_names_no_match'));
-      else lines.push(hex + ' \u2192 DMC ' + entry.code + ' ' + entry.name);
+    rows.forEach(({ entry }) => {
+      if (entry) lines.push(entry.code + ' ' + entry.name);
     });
     return lines.join('\n');
   }
 
   function renderDmcNamesModal() {
     const rows = buildDmcNamesRows();
+    rows.sort((a, b) => {
+      const codeA = a.entry ? a.entry.code : '';
+      const codeB = b.entry ? b.entry.code : '';
+      const countA = codeA ? rows.filter(r => r.entry && r.entry.code === codeA).length : Infinity;
+      const countB = codeB ? rows.filter(r => r.entry && r.entry.code === codeB).length : Infinity;
+      return countA - countB;
+    });
     const baseName = currentPaletteFileBaseName();
     dmcNamesSourceLabel.textContent = baseName
       ? t('dmc_names_source_label') + ': ' + baseName
@@ -2267,7 +2468,7 @@
       const info = document.createElement('span');
       info.className = 'dmc-info';
       if (entry) {
-        info.innerHTML = '<span class="dmc-code">DMC ' + entry.code + '</span> '
+        info.innerHTML = '<span class="dmc-code">' + entry.code + '</span> '
           + '<span class="dmc-name">' + entry.name + '</span>';
       } else {
         info.innerHTML = '<span class="dmc-none">' + t('dmc_names_no_match') + '</span>';
@@ -2407,7 +2608,7 @@
       ? '<li class="dmc-none">' + escapeHtml(t('dmc_names_palette_empty')) + '</li>'
       : rows.map(({ hex, entry }, index) => {
           const infoHtml = entry
-            ? '<span class="dmc-code">DMC ' + escapeHtml(entry.code) + '</span> '
+            ? '<span class="dmc-code">' + escapeHtml(entry.code) + '</span> '
               + '<span class="dmc-name">' + escapeHtml(entry.name) + '</span>'
             : '<span class="dmc-none">' + escapeHtml(t('dmc_names_no_match')) + '</span>';
           const { h, l } = hexToHsl(hex);
@@ -2874,6 +3075,7 @@
     sidebarToggleBottom.setAttribute('aria-label', label);
     localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
     if (headerToolsRow) headerToolsRow.classList.toggle('is-visible', collapsed);
+    if (headerSidebarUndoRedo) headerSidebarUndoRedo.hidden = collapsed;
   }
 
   // Wird nach einem Sprachwechsel aufgerufen, damit Aria-Labels, die vom

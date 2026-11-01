@@ -134,7 +134,7 @@ body {
 .page-zoom__btn:disabled { opacity: 0.35; cursor: default; }
 .page-zoom__btn:disabled:hover { background: #fff; color: var(--ink-soft); }
 
-.app-header.is-collapsed .page-zoom { top: 7px; right: 84px; }
+.app-header.is-collapsed .page-zoom { display: none; }
 
 /* Speichern/Laden-Buttons im Header (💾/📂) - bleiben in beiden
    Header-Zuständen sichtbar, analog zu Notiz- und Hintergrundbild-Button,
@@ -149,6 +149,17 @@ body {
   gap: 2px;
 }
 .app-header.is-collapsed .header-undo-redo { top: 7px; right: 147px; }
+
+/* Zusätzliches Undo/Redo-Paar links neben "Muster speichern/laden": nur
+   sichtbar, solange die Sidebar AUFgeklappt ist - dann liegen die
+   Sidebar-eigenen Undo/Redo-Buttons außer Sicht (müsste dorthin gescrollt
+   werden). Bei zugeklappter Sidebar zeigt stattdessen schon headerToolsRow
+   ein Undo/Redo-Paar, dieses hier wird dann ausgeblendet. */
+.header-undo-redo--sidebar-open {
+  right: 353px;
+}
+.header-undo-redo--sidebar-open[hidden] { display: none; }
+.app-header.is-collapsed .header-undo-redo--sidebar-open { right: 209px; }
 
 .header-undo-redo__btn {
   width: 26px;
@@ -233,16 +244,15 @@ body {
 .header-note-btn:hover { background: #fff9df; border-color: #e0c96a; }
 .app-header.is-collapsed .header-note-btn { top: 7px; }
 
-/* Hintergrundbild-Button: sitzt links neben dem Notiz-Button. Wird beim
-   Einklappen des Headers ausgeblendet (im Gegensatz zum Notiz-Button), um
-   Platz für das zweite Undo/Redo-Set zu schaffen. */
+/* Hintergrundbild-Button: sitzt links neben dem Notiz-Button. Bleibt wie
+   der Notiz-Button in beiden Header-Zuständen (auf-/zugeklappt) sichtbar. */
 .header-bg-menu-wrap {
   position: absolute;
   top: 10px;
   right: 78px;
   z-index: 5;
 }
-.app-header.is-collapsed .header-bg-menu-wrap { display: none; }
+.app-header.is-collapsed .header-bg-menu-wrap { top: 7px; }
 
 .header-bg-btn {
   position: static;
@@ -1251,6 +1261,27 @@ input[type="color"] {
 }
 .palette-swatch__del:hover { background: rgba(122, 46, 58, 0.15); color: var(--wine-dark); }
 
+/* Löschbestätigung: erster Klick auf "×" fragt nach, statt sofort zu
+   löschen - wichtig bei schnellem Klicken/Bewegen, damit keine Farbe aus
+   Versehen verschwindet. Zweiter Klick innerhalb kurzer Zeit löscht wirklich. */
+.palette-swatch__del.is-confirming {
+  opacity: 1;
+  width: 18px;
+  height: 18px;
+  top: -8px;
+  right: -8px;
+  background: var(--wine-dark);
+  border-color: var(--wine-dark);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  animation: palette-del-pulse 0.9s ease-in-out infinite;
+}
+@keyframes palette-del-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
 .palette-empty-hint {
   font-size: 11px;
   color: var(--ink-soft);
@@ -1262,12 +1293,12 @@ input[type="color"] {
 .header-palette {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
   margin-top: 0px;
   max-height: 58px;
   overflow-y: auto;
 }
-.header-palette:empty { display: none; }
 
 .header-palette .palette-swatch {
   width: 16px;
@@ -1279,6 +1310,80 @@ input[type="color"] {
 .app-header.is-collapsed .header-palette {
   margin-top: 3px;
   max-height: 20px;
+}
+
+/* Blättersteuerung für das Farbtabellen-Sichtfenster (Sidebar + Header):
+   nur sichtbar, wenn mehr als 49 Farben gespeichert sind. */
+.palette-pager {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 4px;
+}
+.palette-pager[hidden] { display: none; }
+
+.palette-pager__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--line-bold);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.palette-pager__btn svg { width: 15px; height: 15px; }
+.palette-pager__btn:hover:not(:disabled) { background: rgba(122, 46, 58, 0.1); color: var(--wine-dark); }
+.palette-pager__btn:disabled { opacity: 0.35; cursor: default; }
+
+.palette-pager__label {
+  font-size: 11px;
+  color: var(--ink-soft);
+  min-width: 34px;
+  text-align: center;
+}
+
+.palette-pager__range {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wine-dark);
+  background: rgba(122, 46, 58, 0.12);
+  border-radius: 8px;
+  padding: 2px 6px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+/* Pager sitzt als letztes Kind direkt in .header-palette, damit er im
+   Flex-Wrap unmittelbar hinter der letzten Farb-Swatch mitläuft statt an
+   den rechten Rand der Zeile gedrückt zu werden (wichtig bei zugeklapptem
+   Header, wo sonst der Pager abgeschnitten würde). */
+.header-palette-row {
+  display: flex;
+}
+.header-palette-row[hidden] { display: none; }
+
+.palette-pager--header {
+  flex-shrink: 0;
+  gap: 3px;
+  margin: 0;
+}
+.palette-pager--header .palette-pager__btn {
+  width: 18px;
+  height: 18px;
+}
+.palette-pager--header .palette-pager__btn svg { width: 12px; height: 12px; }
+.palette-pager--header .palette-pager__range {
+  font-size: 9px;
+  padding: 1px 5px;
+}
+
+.app-header.is-collapsed .palette-pager--header .palette-pager__btn {
+  width: 16px;
+  height: 16px;
 }
 
 /* Werkzeugzeile im Header: nur sichtbar, wenn die Seitenleiste eingeklappt
