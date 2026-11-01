@@ -45,6 +45,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Gefilterte Farben deaktiviert",
     toast_deactivated_all: "Alle Farben deaktiviert",
     toast_saved: "dmc_colors.js wurde heruntergeladen",
+    export_palette_btn: "📊 Farbtabelle (.json) exportieren",
+    export_palette_hint: "Exportiert die aktivierten DMC-Farben als Farbtabelle im .json-Format (zum Import in strickmuster.html).",
+    toast_exported: "Farbtabelle (.json) wurde heruntergeladen",
     code_prefix: "",
   },
 
@@ -66,6 +69,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Filtered colors deactivated",
     toast_deactivated_all: "All colors deactivated",
     toast_saved: "dmc_colors.js has been downloaded",
+    export_palette_btn: "📊 Export color table (.json)",
+    export_palette_hint: "Exports the activated DMC colors as a color table in .json format (for import into strickmuster.html).",
+    toast_exported: "Color table (.json) has been downloaded",
     code_prefix: "",
   },
 
@@ -87,6 +93,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Отфильтрованные цвета отключены",
     toast_deactivated_all: "Все цвета отключены",
     toast_saved: "Файл dmc_colors.js загружен",
+    export_palette_btn: "📊 Экспорт цветовой таблицы (.json)",
+    export_palette_hint: "Экспортирует активированные цвета DMC в виде цветовой таблицы в формате .json (для импорта в strickmuster.html).",
+    toast_exported: "Цветовая таблица (.json) загружена",
     code_prefix: "",
   },
 
@@ -108,6 +117,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Colores filtrados desactivados",
     toast_deactivated_all: "Todos los colores desactivados",
     toast_saved: "Se descargó dmc_colors.js",
+    export_palette_btn: "📊 Exportar tabla de colores (.json)",
+    export_palette_hint: "Exporta los colores DMC activados como tabla de colores en formato .json (para importar en strickmuster.html).",
+    toast_exported: "Tabla de colores (.json) descargada",
     code_prefix: "",
   },
 
@@ -129,6 +141,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "Couleurs filtrées désactivées",
     toast_deactivated_all: "Toutes les couleurs désactivées",
     toast_saved: "dmc_colors.js a été téléchargé",
+    export_palette_btn: "📊 Exporter la table de couleurs (.json)",
+    export_palette_hint: "Exporte les couleurs DMC activées sous forme de table de couleurs au format .json (pour import dans strickmuster.html).",
+    toast_exported: "Table de couleurs (.json) téléchargée",
     code_prefix: "",
   },
 
@@ -150,6 +165,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "絞り込んだ色を無効にしました",
     toast_deactivated_all: "すべての色を無効にしました",
     toast_saved: "dmc_colors.js をダウンロードしました",
+    export_palette_btn: "📊 カラーテーブルをエクスポート (.json)",
+    export_palette_hint: "有効化されたDMCカラーを.json形式のカラーテーブルとしてエクスポートします（strickmuster.htmlへのインポート用）。",
+    toast_exported: "カラーテーブル (.json) をダウンロードしました",
     code_prefix: "",
   },
 
@@ -171,6 +189,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "필터링된 색상을 비활성화했습니다",
     toast_deactivated_all: "모든 색상을 비활성화했습니다",
     toast_saved: "dmc_colors.js가 다운로드되었습니다",
+    export_palette_btn: "📊 색상표 내보내기 (.json)",
+    export_palette_hint: "활성화된 DMC 색상을 .json 형식의 색상표로 내보냅니다(strickmuster.html 가져오기용).",
+    toast_exported: "색상표 (.json)가 다운로드되었습니다",
     code_prefix: "",
   },
 
@@ -192,6 +213,9 @@ const EDIT_DMC_I18N = {
     toast_deactivated_filtered: "已禁用筛选出的颜色",
     toast_deactivated_all: "已禁用所有颜色",
     toast_saved: "dmc_colors.js 已下载",
+    export_palette_btn: "📊 导出色彩表 (.json)",
+    export_palette_hint: "将已启用的DMC颜色导出为.json格式的色彩表（用于导入strickmuster.html）。",
+    toast_exported: "色彩表 (.json) 已下载",
     code_prefix: "",
   },
 

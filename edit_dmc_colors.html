@@ -257,7 +257,9 @@
 
 <footer>
   <button type="button" class="btn btn--primary" id="saveBtn" data-i18n="save_btn">💾 dmc_colors.js speichern</button>
+  <button type="button" class="btn" id="exportPaletteBtn" data-i18n="export_palette_btn">📊 Farbtabelle (.json) exportieren</button>
   <span class="hint" data-i18n="save_hint">Der Browser lädt die Datei herunter (meist in den Downloads-Ordner). Anschließend die alte dmc_colors.js im Editor-Ordner damit überschreiben.</span>
+  <span class="hint" data-i18n="export_palette_hint">Exportiert die aktivierten DMC-Farben als Farbtabelle im .json-Format (zum Import in strickmuster.html).</span>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -475,6 +477,33 @@
     URL.revokeObjectURL(url);
 
     showToast(t('toast_saved'));
+  });
+
+  document.getElementById('exportPaletteBtn').addEventListener('click', () => {
+    // Nur aktivierte Farben exportieren, Duplikate (gleicher Hex-Wert) entfernen,
+    // Reihenfolge aus dmc_colors.js beibehalten.
+    const seen = new Set();
+    const exported = [];
+    colors.forEach(entry => {
+      if (!entry.active) return;
+      const hex = (entry.hex || '').trim().toLowerCase();
+      if (!hex || seen.has(hex)) return;
+      seen.add(hex);
+      exported.push(entry.hex);
+    });
+
+    const payload = { colors: exported };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'DMC_Farbtabelle.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(t('toast_exported'));
   });
 
   if (!colors.length) {
