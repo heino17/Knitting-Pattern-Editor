@@ -20,7 +20,8 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Einstellbare Zellgröße (Zoomstufe), auch per Strg/Cmd + Mausrad direkt über dem Raster – während Strg/Cmd gedrückt gehalten wird, zeigt der Mauszeiger eine Lupe  
 - Zeilen-/Spaltenzahlen an allen vier Seiten (jede 10.), ein-/ausblendbar  
 - Gitterlinien komplett ein-/ausblendbar, jede 10. Linie optional hervorgehoben  
-- **Hintergrundbild**: eigenes Foto oder eine Vorlage hinter das komplette Raster legen (🖼️-Knopf im Header) – wächst/schrumpft beim Zoomen mit dem Raster mit, leere Maschen bleiben transparent, damit das Bild durchscheint; wird eingebettet gespeichert und ist auch im PNG-Export enthalten, aber bewusst nicht Teil von Undo/Redo  
+- **Hintergrundbild**: eigenes Foto oder eine Vorlage hinter das komplette Raster legen (🖼️-Knopf im Header) – wächst/schrumpft beim Zoomen mit dem Raster mit, leere Maschen bleiben transparent, damit das Bild durchscheint; Position per X/Y-Verschiebung (px) im Menü feinjustierbar; wird eingebettet gespeichert und ist auch im PNG-Export enthalten, aber bewusst nicht Teil von Undo/Redo
+- **Farb-Highlight-Overlay (Rasterbereich)**: Fähnchen oben rechts im Zeichenbereich öffnet ein Panel mit den aktuell sichtbaren Palettenfarben in zwei Spalten (DMC-Nummer + Kachel); Farbe gedrückt halten hebt alle passenden, bemalten Maschen im Raster hervor und zeigt die Anzahl an.
 - **Einstellbare Zell-Hintergrundfarbe**: Hintergrundfarbe für noch nicht bemalte Maschen frei wählbar (Sektion „Farbe", Startwert `#f7f5f0`), wird dauerhaft gemerkt. So bleibt eine bewusst mit Weiß gefärbte Masche klar von einer leeren, unbemalten Masche unterscheidbar – beide sehen sonst identisch aus
 
 **Werkzeuge**
@@ -37,7 +38,7 @@ Die Standard-Sprache kann in Datei [lang.js](lang.js) festgelegt werden
 - Foto importieren, wird automatisch auf das aktuelle Raster gestreckt und in Pixelfarben umgesetzt (echtes Downsampling per Blockmittelung)  
 - **Farbstufen-Reduktion**: Farbtiefe optional auf wenige, klar unterscheidbare Stufen je Kanal begrenzen (Regler) – ergibt ein gröberes, blockigeres Ergebnis statt vieler feiner Zwischentöne  
 - **Auf Farbtabelle einrasten**: jede Masche kann statt einer frei berechneten Farbe automatisch die ähnlichste Farbe aus der eigenen Farbtabelle bekommen – ideal, um ein Muster nur mit tatsächlich vorhandenen Wollfarben umzusetzen; beide Optionen sind kombinierbar  
-- **Auf DMC-Farbtabelle einrasten**: alternativ kann jede Masche stattdessen die ähnlichste Farbe aus der mitgelieferten DMC-Garnfarbtabelle bekommen (schließt sich mit „Auf Farbtabelle einrasten" gegenseitig aus). DMC ist eine seit 1746 im französischen Mulhouse ansässige Garn-Manufaktur ([dmc.com](https://www.dmc.com)); die Farbtabelle lässt sich online z. B. unter [threadcolors.com](https://threadcolors.com) einsehen. Einzelne DMC-Farben lassen sich über das separate Werkzeug `edit_dmc_colors.html` (✏️-Knopf neben der Checkbox) bequem (de)aktivieren – praktisch, wenn ein bestimmtes Garn gerade nicht vorrätig ist  
+- **Auf DMC-Farbtabelle einrasten**: alternativ kann jede Masche stattdessen die ähnlichste Farbe aus der mitgelieferten DMC-Garnfarbtabelle bekommen (schließt sich mit „Auf Farbtabelle einrasten" gegenseitig aus). DMC ist eine seit 1746 im französischen Mulhouse ansässige Garn-Manufaktur ([dmc.com](https://www.dmc.com)); die Farbtabelle lässt sich online z. B. unter [threadcolors.com](https://threadcolors.com) einsehen. Einzelne DMC-Farben lassen sich über das separate Werkzeug `edit_dmc_colors.html` (✏️-Knopf neben der Checkbox) bequem (de)aktivieren (inkl. Mehrfachsuche z. B. nach `964,3851,518`) – praktisch, wenn ein bestimmtes Garn gerade nicht vorrätig ist  
 
 **Rückgängig / Wiederherstellen**
 - Vollständiger Undo/Redo-Verlauf (bis zu 30 Schritte), per Button oder Tastenkombination (Strg+Z / Strg+Umschalt+Z bzw. Strg+Y)  
@@ -119,8 +120,9 @@ The default language can be set in the [lang.js](lang.js) file
 - Adjustable cell size (zoom level), also via Ctrl/Cmd + mouse wheel directly over the grid – while Ctrl/Cmd is held down, the cursor turns into a magnifying glass  
 - Row/column numbers on all four sides (every 10th), toggleable  
 - Grid lines fully toggleable, every 10th line optionally highlighted  
-- **Background image**: place your own photo or a reference image behind the entire grid (🖼️ button in the header) – grows/shrinks together with the grid when zooming, empty stitches stay transparent so the image shows through; saved embedded and included in the PNG export, but deliberately not part of undo/redo  
-- **Adjustable cell background color**: freely pick the background color for not-yet-painted stitches (in the "Color" section, default `#f7f5f0`), remembered permanently. Keeps a stitch deliberately painted white clearly distinguishable from an empty, unpainted one – otherwise the two would look identical  
+- **Background image**: place your own photo or a reference image behind the entire grid (🖼️ button in the header) – grows/shrinks together with the grid when zooming, empty stitches stay transparent so the image shows through; fine-tune position with X/Y offset (px) in the menu; saved embedded and included in the PNG export, but deliberately not part of undo/redo
+- **Color highlight overlay (board area)**: a flag button at the top right of the board opens a panel with the currently visible palette colors in two columns (DMC number + swatch); hold a color to highlight all matching painted stitches in the grid and show the count.
+- **Adjustable cell background color**: freely pick the background color for not-yet-painted stitches (in the "Color" section, default `#f7f5f0`), remembered permanently. Keeps a stitch deliberately painted white clearly distinguishable from an empty, unpainted one – otherwise the two would look identical
 
 ### **Tools**
 - **Pen**: click individual stitches or drag to color multiple at once  
@@ -136,7 +138,7 @@ The default language can be set in the [lang.js](lang.js) file
 - Import a photo; it is automatically stretched to the current grid and converted into pixel colors (true downsampling via block averaging)  
 - **Color level reduction**: optionally limit the color depth to a few clearly distinct levels per channel (slider) – gives a coarser, blockier result instead of many fine in-between tones  
 - **Snap to color table**: each stitch can automatically get the closest match from your own color table instead of a freely computed color – great for working only with yarn colors you actually have; both options can be combined  
-- **Snap to DMC color table**: alternatively, each stitch can get the closest match from the built-in DMC thread color table instead (mutually exclusive with "Snap to color table"). DMC is a yarn manufacturer based in Mulhouse, France, since 1746 ([dmc.com](https://www.dmc.com)); the color table can be viewed online e.g. at [threadcolors.com](https://threadcolors.com). Individual DMC colors can be conveniently activated/deactivated with the separate `edit_dmc_colors.html` tool (✏️ button next to the checkbox) – handy when a particular yarn isn't currently in stock  
+- **Snap to DMC color table**: alternatively, each stitch can get the closest match from the built-in DMC thread color table instead (mutually exclusive with "Snap to color table"). DMC is a yarn manufacturer based in Mulhouse, France, since 1746 ([dmc.com](https://www.dmc.com)); the color table can be viewed online e.g. at [threadcolors.com](https://threadcolors.com). Individual DMC colors can be conveniently activated/deactivated with the separate `edit_dmc_colors.html` tool (✏️ button next to the checkbox), with multi-search (e.g. `964,3851,518`) – handy when a particular yarn isn't currently in stock  
 
 ### **Undo / Redo**
 - Full undo/redo history (up to 30 steps), via button or keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y)  
