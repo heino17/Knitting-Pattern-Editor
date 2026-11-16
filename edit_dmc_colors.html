@@ -243,7 +243,7 @@
     </label>
   </div>
   <div class="toolbar">
-    <input type="text" class="search" id="search" data-i18n-placeholder="search_placeholder" placeholder="Suchen nach Nummer oder Name…">
+    <input type="text" class="search" id="search" data-i18n-placeholder="search_placeholder" placeholder="Suchen nach Nummer oder Name (z.B. 964,3851,518)…">
     <button type="button" class="btn" id="activateAllBtn" data-i18n="activate_all_btn">Alle aktivieren</button>
     <button type="button" class="btn" id="deactivateAllBtn" data-i18n="deactivate_all_btn">Alle deaktivieren</button>
     <span class="status" id="status"></span>
@@ -368,8 +368,12 @@
 
   function matchesFilter(entry, query) {
     if (!query) return true;
-    return entry.code.toLowerCase().includes(query) ||
-           entry.name.toLowerCase().includes(query);
+    const terms = query.split(/[,\s;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (!terms.length) return true;
+    return terms.some(term =>
+      entry.code.toLowerCase().includes(term) ||
+      entry.name.toLowerCase().includes(term)
+    );
   }
 
   function render() {
