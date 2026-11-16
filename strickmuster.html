@@ -45,6 +45,14 @@
           <span data-i18n="bgimage_choose">Bild wählen …</span>
           <input type="file" id="bgImageInput" accept="image/*" hidden>
         </label>
+        <div class="header-bg-menu__item" style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:12px;">X (px)</span>
+          <input type="number" id="bgImageOffsetX" value="0" step="1" style="width:64px;padding:2px 4px;">
+        </div>
+        <div class="header-bg-menu__item" style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:12px;">Y (px)</span>
+          <input type="number" id="bgImageOffsetY" value="0" step="1" style="width:64px;padding:2px 4px;">
+        </div>
         <button type="button" id="bgImageToggleBtn" class="header-bg-menu__item header-bg-menu__item--btn" disabled data-i18n="bgimage_hide">Bild ausblenden</button>
         <button type="button" id="bgImageRemoveBtn" class="header-bg-menu__item header-bg-menu__item--btn" data-i18n="bgimage_remove">Bild entfernen</button>
       </div>
@@ -401,6 +409,18 @@
     </aside>
 
     <section class="board-wrap" aria-label="Strickraster" data-i18n-aria-label="board_aria">
+      <button type="button" class="palette-overlay-toggle" id="paletteOverlayToggle" aria-expanded="false" aria-controls="paletteOverlayPanel" title="Farb-Highlight Overlay" data-i18n-title="palette_overlay_toggle_title" aria-label="Farb-Highlight Overlay öffnen" data-i18n-aria-label="palette_overlay_toggle_aria">
+        <span aria-hidden="true">🏳</span>
+      </button>
+      <div class="palette-overlay" id="paletteOverlayPanel" hidden>
+        <div class="palette-overlay__title" data-i18n="palette_overlay_title">Farb-Highlight</div>
+        <div class="palette-overlay__hint" data-i18n="palette_overlay_hint">Farbe gedrückt halten → passende Maschen im Raster hervorheben</div>
+        <div class="palette-overlay__count is-empty" id="paletteOverlayCount"></div>
+        <div class="palette-overlay__cols" id="paletteOverlayCols">
+          <div class="palette-overlay__col" id="paletteOverlayColLeft" aria-label="Farben Spalte 1" data-i18n-aria-label="palette_overlay_col1_aria"></div>
+          <div class="palette-overlay__col" id="paletteOverlayColRight" aria-label="Farben Spalte 2" data-i18n-aria-label="palette_overlay_col2_aria"></div>
+        </div>
+      </div>
       <div class="board-scroll" id="boardScroll">
         <div class="board" id="board"></div>
       </div>
@@ -437,7 +457,7 @@
   // --- App-Version ---
   // Bei jedem inhaltlichen Update hochzählen (SemVer: MAJOR.MINOR.PATCH).
   // Wird im Footer neben "heino17" angezeigt.
-  const APP_VERSION = '1.2.2';
+  const APP_VERSION = '1.3.0';
   document.getElementById('appVersionTag').textContent = 'v' + APP_VERSION;
 
   // --- i18n ---
@@ -638,6 +658,13 @@
   const bgImageInput = document.getElementById('bgImageInput');
   const bgImageRemoveBtn = document.getElementById('bgImageRemoveBtn');
   const bgImageToggleBtn = document.getElementById('bgImageToggleBtn');
+  const bgImageOffsetXInput = document.getElementById('bgImageOffsetX');
+  const bgImageOffsetYInput = document.getElementById('bgImageOffsetY');
+  const paletteOverlayToggle = document.getElementById('paletteOverlayToggle');
+  const paletteOverlayPanel = document.getElementById('paletteOverlayPanel');
+  const paletteOverlayColLeft = document.getElementById('paletteOverlayColLeft');
+  const paletteOverlayColRight = document.getElementById('paletteOverlayColRight');
+  const paletteOverlayCount = document.getElementById('paletteOverlayCount');
 
   const EMPTY = '#ffffff';
   // Liefert die tatsächlich zu setzende Hintergrundfarbe für eine Zelle: bei
@@ -688,7 +715,7 @@
     return entry ? 'DMC ' + entry.code : colorDisplayValue(hex);
   }
 
-  let state = { rows: 50, cols: 50, colors: [], touched: [], notes: [], backgroundImage: null, backgroundImageVisible: true };
+  let state = { rows: 50, cols: 50, colors: [], touched: [], notes: [], backgroundImage: null, backgroundImageVisible: true, backgroundImageOffsetX: 0, backgroundImageOffsetY: 0 };
   let cellEls = [];
   let isPainting = false;
   let paintValue = null; // Farbe, die während des Ziehens verwendet wird
@@ -1213,8 +1240,70 @@
     return b;
   }
 
+  function setPaletteHighlight(hex, active) {
+    document.querySelectorAll('.cell.is-palette-highlight').forEach(el => el.classList.remove('is-palette-highlight'));
+    if (paletteOverlayCount) {
+      paletteOverlayCount.textContent = '';
+      paletteOverlayCount.classList.add('is-empty');
+    }
+    if (!active || !hex) return;
+    const target = String(hex).toLowerCase();
+    let count = 0;
+    for (let i = 0; i < state.colors.length; i++) {
+      if (!state.touched[i]) continue;
+      if (String(state.colors[i]).toLowerCase() === target) {
+        count++;
+        if (cellEls[i]) cellEls[i].classList.add('is-palette-highlight');
+      }
+    }
+    if (paletteOverlayCount) {
+      paletteOverlayCount.textContent = (t('palette_overlay_count') || '{n} Maschen').replace('{n}', String(count));
+      paletteOverlayCount.classList.remove('is-empty');
+    }
+  }
+
+  function renderPaletteOverlay() {
+    if (!paletteOverlayColLeft || !paletteOverlayColRight || !paletteOverlayPanel) return;
+    const visibleColors = getVisiblePaletteColors();
+    paletteOverlayColLeft.innerHTML = '';
+    paletteOverlayColRight.innerHTML = '';
+    if (!visibleColors.length) {
+      paletteOverlayColLeft.innerHTML = '<div class="palette-overlay__hint">' + (t('palette_empty_hint') || 'Keine Farben') + '</div>';
+      return;
+    }
+    const mid = Math.ceil(visibleColors.length / 2);
+    const leftColors = visibleColors.slice(0, mid);
+    const rightColors = visibleColors.slice(mid);
+
+    function makeItem(hex, side) {
+      const item = document.createElement('div');
+      item.className = 'palette-overlay-item ' + (side === 'left' ? 'palette-overlay-item--left' : 'palette-overlay-item--right');
+      const entry = (typeof nearestDmcEntry === 'function') ? nearestDmcEntry(hex) : null;
+      const codeText = entry && entry.code ? String(entry.code) : '';
+      const sw = document.createElement('span');
+      sw.className = 'palette-overlay-item__swatch';
+      sw.style.background = hex;
+      const lbl = document.createElement('span');
+      lbl.className = 'palette-overlay-item__label';
+      lbl.textContent = codeText;
+      if (side === 'left') {
+        item.appendChild(sw);
+        item.appendChild(lbl);
+      } else {
+        item.appendChild(sw);
+        item.appendChild(lbl);
+      }
+      item.title = (typeof dmcDisplayValue === 'function') ? dmcDisplayValue(hex) : hex;
+      item.addEventListener('pointerdown', (e) => { e.preventDefault(); setPaletteHighlight(hex, true); });
+      return item;
+    }
+
+    leftColors.forEach(hex => paletteOverlayColLeft.appendChild(makeItem(hex, 'left')));
+    rightColors.forEach(hex => paletteOverlayColRight.appendChild(makeItem(hex, 'right')));
+  }
+
   function renderPalette() {
-    resetPendingDelete(); // altes DOM wird gleich ersetzt - keine "wartende" Löschung übrig lassen
+    resetPendingDelete();
     clampPaletteViewOffset();
     const visibleColors = getVisiblePaletteColors();
     const hiddenCount = paletteColors.length - visibleColors.length;
@@ -1228,17 +1317,17 @@
     } else {
       visibleColors.forEach(hex => paletteGrid.appendChild(makePaletteSwatch(hex, false)));
     }
-    paletteCountLabel.textContent = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_STORE_MAX + ')';
+    const baseCount = t('palette_count_label') + ' (' + paletteColors.length + ' / ' + PALETTE_STORE_MAX + ')';
+    paletteCountLabel.textContent = hiddenCount > 0
+      ? baseCount + ' · ' + t('palette_hidden_hint').replace('%d', String(hiddenCount))
+      : baseCount;
     renderPalettePager();
 
-    // Zweite Zeile: Name der zuletzt geladenen Farbtabelle-Datei, falls
-    // vorhanden - sonst ganz ausgeblendet (kein Platzhaltertext). Nutzt den
-    // gleichen Namens-Helfer wie die DMC-Namensliste.
     if (paletteFileNameLabel) {
       const baseName = (typeof currentPaletteFileBaseName === 'function') ? currentPaletteFileBaseName() : null;
       if (baseName) {
         paletteFileNameLabel.textContent = baseName;
-        paletteFileNameLabel.title = baseName; // voller Name als Tooltip, falls per Ellipsis abgeschnitten
+        paletteFileNameLabel.title = baseName;
         paletteFileNameLabel.hidden = false;
       } else {
         paletteFileNameLabel.textContent = '';
@@ -1247,20 +1336,19 @@
       }
     }
 
-    // headerPalette enthält den Pager als letztes Kind (damit er im
-    // Flex-Wrap direkt hinter der letzten Farb-Swatch mitläuft, statt an den
-    // rechten Rand gedrückt zu werden) - daher hier gezielt nur die
-    // Swatches entfernen/einfügen, statt den kompletten Inhalt zu leeren.
-    headerPalette.querySelectorAll('.palette-swatch').forEach(el => el.remove());
-    visibleColors.forEach(hex => headerPalette.insertBefore(makePaletteSwatch(hex, true), headerPalettePager));
-    headerPaletteRow.hidden = paletteColors.length === 0;
+    if (headerPalette) {
+      headerPalette.querySelectorAll('.palette-swatch').forEach(el => el.remove());
+      visibleColors.forEach(hex => headerPalette.insertBefore(makePaletteSwatch(hex, true), headerPalettePager));
+    }
+    if (headerPaletteRow) headerPaletteRow.hidden = paletteColors.length === 0;
 
-    // "Auf Palette einrasten" beim Bild-Import ergibt ohne gespeicherte
-    // Farben keinen Sinn - Checkbox so lange deaktivieren.
     const hasPalette = paletteColors.length > 0;
-    importSnapPalette.disabled = !hasPalette;
-    if (!hasPalette) importSnapPalette.checked = false;
-    importSnapPalette.title = hasPalette ? '' : t('import_snap_palette_empty_title');
+    if (importSnapPalette) {
+      importSnapPalette.disabled = !hasPalette;
+      if (!hasPalette) importSnapPalette.checked = false;
+      importSnapPalette.title = hasPalette ? '' : t('import_snap_palette_empty_title');
+    }
+    renderPaletteOverlay();
   }
 
   // Blättersteuerung unter (Sidebar) bzw. neben (Header) dem Farbtabellen-
@@ -1299,6 +1387,16 @@
   if (palettePagerNext) palettePagerNext.addEventListener('click', paletteGoNextPage);
   if (headerPalettePagerPrev) headerPalettePagerPrev.addEventListener('click', paletteGoPrevPage);
   if (headerPalettePagerNext) headerPalettePagerNext.addEventListener('click', paletteGoNextPage);
+  if (paletteOverlayToggle && paletteOverlayPanel) {
+    paletteOverlayToggle.addEventListener('click', () => {
+      const isHidden = paletteOverlayPanel.hidden;
+      paletteOverlayPanel.hidden = !isHidden;
+      paletteOverlayToggle.setAttribute('aria-expanded', String(isHidden));
+      if (paletteOverlayPanel.hidden) setPaletteHighlight(null, false);
+    });
+  }
+  window.addEventListener('pointerup', () => setPaletteHighlight(null, false));
+  window.addEventListener('pointercancel', () => setPaletteHighlight(null, false));
 
   // "Auf meine Farbtabelle einrasten" und "Auf DMC-Farbtabelle einrasten"
   // schließen sich gegenseitig aus - beim Aktivieren der einen wird die
@@ -1840,9 +1938,6 @@
     const showImage = !!state.backgroundImage && state.backgroundImageVisible;
     board.classList.toggle('board--has-bg-image', showImage);
     updateBgImageToggleBtnLabel();
-    // Vorherige Bild-Layer-Div immer zuerst entfernen: sonst sammeln sich bei
-    // wiederholtem Laden/Entfernen mehrere .board__bg-image-Divs im DOM an,
-    // die als zusätzliche (unsichtbare) Grid-Items das Raster verschieben.
     if (bgImageLayerEl && bgImageLayerEl.parentNode) {
       bgImageLayerEl.remove();
     }
@@ -1851,6 +1946,9 @@
     bgImageLayerEl = document.createElement('div');
     bgImageLayerEl.className = 'board__bg-image';
     bgImageLayerEl.style.backgroundImage = 'url("' + state.backgroundImage + '")';
+    const ox = Number(state.backgroundImageOffsetX) || 0;
+    const oy = Number(state.backgroundImageOffsetY) || 0;
+    bgImageLayerEl.style.backgroundPosition = ox + 'px ' + oy + 'px';
     board.insertBefore(bgImageLayerEl, board.firstChild);
   }
 
@@ -1909,12 +2007,34 @@
     if (!bgImageMenu.hidden) closeBgImageMenu();
   });
 
+  if (bgImageOffsetXInput) {
+    bgImageOffsetXInput.addEventListener('input', () => {
+      state.backgroundImageOffsetX = parseInt(bgImageOffsetXInput.value, 10) || 0;
+      hasUnsavedChanges = true;
+      renderBackgroundImage();
+    });
+  }
+  if (bgImageOffsetYInput) {
+    bgImageOffsetYInput.addEventListener('input', () => {
+      state.backgroundImageOffsetY = parseInt(bgImageOffsetYInput.value, 10) || 0;
+      hasUnsavedChanges = true;
+      renderBackgroundImage();
+    });
+  }
+
   bgImageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     closeBgImageMenu();
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setBackgroundImage(reader.result);
+    reader.onload = () => {
+      setBackgroundImage(reader.result);
+      state.backgroundImageOffsetX = 0;
+      state.backgroundImageOffsetY = 0;
+      if (bgImageOffsetXInput) bgImageOffsetXInput.value = '0';
+      if (bgImageOffsetYInput) bgImageOffsetYInput.value = '0';
+      renderBackgroundImage();
+    };
     reader.onerror = () => alert(t('err_image_load'));
     reader.readAsDataURL(file);
     bgImageInput.value = '';
@@ -1926,7 +2046,15 @@
   });
 
   bgImageRemoveBtn.addEventListener('click', () => {
-    setBackgroundImage(null);
+    state.backgroundImage = null;
+    state.backgroundImageVisible = true;
+    state.backgroundImageOffsetX = 0;
+    state.backgroundImageOffsetY = 0;
+    if (bgImageOffsetXInput) bgImageOffsetXInput.value = '0';
+    if (bgImageOffsetYInput) bgImageOffsetYInput.value = '0';
+    hasUnsavedChanges = true;
+    renderBackgroundImage();
+    refreshEmptyCellBackgrounds();
     closeBgImageMenu();
   });
 
@@ -2278,8 +2406,12 @@
         colsInput.value = data.cols;
         state.backgroundImage = (typeof data.backgroundImage === 'string') ? data.backgroundImage : null;
         state.backgroundImageVisible = (typeof data.backgroundImageVisible === 'boolean') ? data.backgroundImageVisible : true;
+        state.backgroundImageOffsetX = (typeof data.backgroundImageOffsetX === 'number') ? data.backgroundImageOffsetX : 0;
+        state.backgroundImageOffsetY = (typeof data.backgroundImageOffsetY === 'number') ? data.backgroundImageOffsetY : 0;
+        if (bgImageOffsetXInput) bgImageOffsetXInput.value = String(state.backgroundImageOffsetX);
+        if (bgImageOffsetYInput) bgImageOffsetYInput.value = String(state.backgroundImageOffsetY);
         buildBoard(data.rows, data.cols, data.colors, normalizeNotes(data.notes), data.touched);
-        hasUnsavedChanges = false; // frisch geladen, entspricht der Datei auf der Festplatte
+        hasUnsavedChanges = false;
         lastPatternFileName = file.name || lastPatternFileName;
       } catch (err) {
         alert(t('err_file_read') + err.message);
